@@ -37,6 +37,34 @@ app.get("/", async (req, res) => {
   });
 });
 
+app.get("/login", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/login.ejs"),
+    {}
+  );
+
+  res.render("layouts/auth", {
+    title: "Login | LabLy",
+    meta: "",
+    style: "",
+    content
+  });
+});
+
+app.get("/register", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/register.ejs"),
+    {}
+  );
+
+  res.render("layouts/auth", {
+    title: "Register | LabLy",
+    meta: "",
+    style: "",
+    content
+  });
+});
+
 // Jalankan server
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
