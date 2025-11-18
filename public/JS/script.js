@@ -2,31 +2,62 @@ document.addEventListener("DOMContentLoaded", function () {
   const header = document.querySelector(".main-header");
   const footer = document.querySelector(".main-footer");
 
-  // Tentukan ambang batas 75% dari tinggi viewport
   const viewportHeight = window.innerHeight;
-  const threshold = viewportHeight * 0.25; // Header hilang saat footer mencapai 25% dari atas (atau 75% terisi)
+  const threshold = viewportHeight * 0.25;
 
   function checkFooterVisibility() {
-    // Mendapatkan posisi Y dari tepi atas footer relatif terhadap viewport
     const footerTop = footer.getBoundingClientRect().top;
 
-    // Kondisi: Header disembunyikan jika tepi atas footer
-    // sudah melewati 75% dari tinggi viewport (yaitu footerTop <= threshold)
     if (footerTop <= threshold) {
-      // Footer sudah mengisi 75% layar atau lebih, sembunyikan header
       header.classList.add("header-hidden");
     } else {
-      // Footer belum memenuhi ambang batas, tampilkan header
       header.classList.remove("header-hidden");
     }
   }
 
-  // Panggil saat halaman pertama kali dimuat
   checkFooterVisibility();
 
-  // Panggil setiap kali terjadi event scroll
   window.addEventListener("scroll", checkFooterVisibility);
 
-  // Panggil saat ukuran jendela berubah (misalnya rotasi tablet)
   window.addEventListener("resize", checkFooterVisibility);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleButton = document.getElementById("menu-toggle");
+  const navMenu = document.getElementById("main-nav");
+  const navIcons = document.querySelector(".nav-icons");
+
+  if (toggleButton && navMenu && navIcons) {
+    toggleButton.addEventListener("click", function () {
+      navMenu.classList.toggle("active");
+      navIcons.classList.toggle("active");
+
+      const icon = toggleButton.querySelector("i");
+
+      if (navMenu.classList.contains("active")) {
+        icon.classList.remove("bi-list");
+        icon.classList.add("bi-x-lg");
+
+        setTimeout(() => {
+          const navHeight = navMenu.offsetHeight;
+
+          const navMarginBottom = parseFloat(
+            getComputedStyle(navMenu).marginBottom
+          );
+
+          const iconsMarginTop = parseFloat(
+            getComputedStyle(navIcons).marginTop
+          );
+
+          const totalOffset = navHeight + navMarginBottom + iconsMarginTop;
+
+          navIcons.style.top = `calc(100% + ${totalOffset}px)`;
+        }, 0);
+      } else {
+        icon.classList.remove("bi-x-lg");
+        icon.classList.add("bi-list");
+        navIcons.style.top = "";
+      }
+    });
+  }
 });

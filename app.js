@@ -37,6 +37,33 @@ app.get("/", async (req, res) => {
   });
 });
 
+// ROUTE CATALOGUE
+app.get("/catalogue", async (req, res) => {
+  // Render halaman konten
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/catalogue.ejs"),
+    {}
+  );
+
+  // Render ke layout
+  res.render("layouts/main", {
+    title: "Catalogue | Lably Official Web",
+    showFooter: true,
+
+    meta: `
+            <meta name="description" content="Katalog LabLy: Temukan mikroskop berkualitas tinggi, sentrifuga, inkubator, dan berbagai instrumen laboratorium esensial. Akses alat riset terbaik tanpa investasi besar." />
+            <meta name="keywords" content="Katalog LabLy, mikroskop, sentrifuga, inkubator, instrumen laboratorium, alat riset, daftar alat lab, harga alat laboratorium" />
+            <meta name="author" content="LabLy" />
+        `,
+
+    style: `
+            <link rel="stylesheet" href="/CSS/catalogue.css" />
+        `,
+
+    content,
+  });
+});
+
 // Jalankan server
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
