@@ -14,4 +14,14 @@ router.get("/", (req, res) => {
   res.render("index", dataHome);
 });
 
+// LOGIN PAGE (URL: /login)
+router.get("/login", (req, res) => {
+  res.render("pages/login", { title: "Login" });
+});
+
+// REGISTER PAGE (URL: /register)
+router.get("/register", (req, res) => {
+  res.render("pages/register", { title: "Register" });
+});
+
 module.exports = router;

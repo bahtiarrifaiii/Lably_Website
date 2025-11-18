@@ -37,6 +37,7 @@ app.get("/", async (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 // ROUTE CATALOGUE
 app.get("/catalogue", async (req, res) => {
   // Render halaman konten
@@ -61,6 +62,33 @@ app.get("/catalogue", async (req, res) => {
         `,
 
     content,
+=======
+app.get("/login", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/login.ejs"),
+    {}
+  );
+
+  res.render("layouts/auth", {
+    title: "Login | LabLy",
+    meta: "",
+    style: "",
+    content
+  });
+});
+
+app.get("/register", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/register.ejs"),
+    {}
+  );
+
+  res.render("layouts/auth", {
+    title: "Register | LabLy",
+    meta: "",
+    style: "",
+    content
+>>>>>>> 74108909f21f6d53e89642c8f07d3780243fee4a
   });
 });
 
