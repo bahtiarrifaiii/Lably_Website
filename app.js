@@ -37,7 +37,6 @@ app.get("/", async (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 // ROUTE CATALOGUE
 app.get("/catalogue", async (req, res) => {
   // Render halaman konten
@@ -62,7 +61,10 @@ app.get("/catalogue", async (req, res) => {
         `,
 
     content,
-=======
+  });
+});
+
+// ROUTE LOGIN
 app.get("/login", async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "views/pages/login.ejs"),
@@ -70,13 +72,14 @@ app.get("/login", async (req, res) => {
   );
 
   res.render("layouts/auth", {
-    title: "Login | LabLy",
+    title: "Login | Lably Official Web",
     meta: "",
     style: "",
-    content
+    content,
   });
 });
 
+// ROUTE REGISTER
 app.get("/register", async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "views/pages/register.ejs"),
@@ -84,11 +87,10 @@ app.get("/register", async (req, res) => {
   );
 
   res.render("layouts/auth", {
-    title: "Register | LabLy",
+    title: "Register | LabLy Official Web",
     meta: "",
     style: "",
-    content
->>>>>>> 74108909f21f6d53e89642c8f07d3780243fee4a
+    content,
   });
 });
 
