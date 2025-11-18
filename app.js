@@ -80,6 +80,24 @@ app.get("/catalogue", async (req, res) => {
   });
 });
 
+// ==========================
+// 3. ROUTE FORM
+// ==========================
+
+app.get("/form", async (req, res) => {
+    const content = await ejs.renderFile(
+        path.join(__dirname, "views/pages/form.ejs"),
+        {}
+    );
+
+    res.render("layouts/forms", {
+        title: "Form | LabLy",
+        meta: "",
+        style: "",
+        content
+    });
+});
+
 
 // ==========================
 // 4. ROUTES AUTENTIKASI (LOGIN, REGISTER)

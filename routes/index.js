@@ -60,8 +60,21 @@ router.post("/register", authController.register);
 
 
 // FORM PAGE (URL: /form)
-router.get("/form", (req, res) => {
-  res.render("pages/form", { title: "Form" });
+router.get("/form", async (req, res) => {
+  const message = req.session.message || null;
+  req.session.message = null;
+
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/form.ejs"),
+    { message }
+  );
+
+  res.render("layouts/auth", {
+    title: "Form | Lably",
+    meta: "",
+    style: "",
+    content,
+  });
 });
 
 module.exports = router;
