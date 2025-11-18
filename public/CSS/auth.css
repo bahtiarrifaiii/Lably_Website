@@ -1,16 +1,27 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden; 
+    font-family: "Poppins", sans-serif;
+}
+
 /* Container */
 .auth-container {
     display: flex;
     height: 100vh;
     width: 100%;
-    font-family: "Poppins", sans-serif;
 }
 
 /* Left gradient area */
 .auth-left {
     flex: 1.2;
     background: linear-gradient(135deg, #56a4ff, #b2f2bb);
-    padding: 80px 60px;
+    padding: 60px; 
     color: #0c2763;
     border-radius: 0 40px 40px 0;
     display: flex;
@@ -19,14 +30,13 @@
 }
 
 .auth-left h1 {
-    font-size: 44px;
+    font-size: 42px;
     font-weight: 700;
     margin-bottom: 10px;
 }
 
 .auth-left p {
     font-size: 18px;
-    margin-top: 5px;
 }
 
 /* Right area (form) */
@@ -34,8 +44,27 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 40px 80px;
+    padding: 40px 70px;
     justify-content: center;
+    position: relative;
+}
+
+.btn-back {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #d8dfe4;
+    background: #0c2763;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #0c2763;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: #0c2763;
 }
 
 .auth-right h2 {
@@ -69,7 +98,7 @@
 
 /* Button normal */
 .btn-auth {
-    width: 106%;
+    width: 100%;
     padding: 12px 14px;
     font-size: 16px;
     font-weight: 600;
@@ -90,7 +119,7 @@
     align-items: center;
     justify-content: center;
     margin: 10px 0 5px 0;
-    width: 106%;
+    width: 100%;
 }
 
 .auth-separator span {
@@ -109,7 +138,7 @@
 
 /* Button Google */
 .btn-google {
-    width: 106%;
+    width: 100%;
     padding: 12px 14px;
     display: flex;
     align-items: center;
