@@ -1,3 +1,4 @@
+/* GLOBAL FIX — WAJIB */
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +7,7 @@
 
 html, body {
     height: 100%;
-    overflow: hidden; 
+    overflow: hidden; /* hilangkan scrollbar */
     font-family: "Poppins", sans-serif;
 }
 
@@ -21,7 +22,7 @@ html, body {
 .auth-left {
     flex: 1.2;
     background: linear-gradient(135deg, #56a4ff, #b2f2bb);
-    padding: 60px; 
+    padding: 60px; /* dikurangi sedikit agar muat 100vh */
     color: #0c2763;
     border-radius: 0 40px 40px 0;
     display: flex;
@@ -49,17 +50,18 @@ html, body {
     position: relative;
 }
 
+/* Tombol Back */
 .btn-back {
     position: absolute;
     top: 20px;
     right: 20px;
     text-decoration: none;
     font-size: 14px;
-    color: #d8dfe4;
+    color: #cfd8dc;
     background: #0c2763;
     padding: 7px 14px;
     border-radius: 8px;
-    border: 1px solid #0c2763;
+    border: 1px solid #cfd8dc;
     transition: 0.2s;
 }
 
@@ -167,3 +169,35 @@ html, body {
     color: #133b8c;
     font-weight: 600;
 }
+
+/* Popup notification */
+.popup {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    animation: fadeIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+    z-index: 9999;
+}
+
+.popup.success {
+    border-left: 5px solid #28a745;
+}
+
+.popup.error {
+    border-left: 5px solid #dc3545;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-10px); }
+}
+

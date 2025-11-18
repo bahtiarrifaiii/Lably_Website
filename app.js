@@ -1,100 +1,98 @@
 const express = require("express");
+const session = require("express-session");
 const app = express();
 const ejs = require("ejs");
 const path = require("path");
 
-// Public folder untuk CSS & Asset
+// ==========================
+// 1. Middleware penting
+// ==========================
+
+// Untuk membaca data POST dari form
+app.use(express.urlencoded({ extended: true }));
+
+// Session
+app.use(session({
+  secret: "lably-secret-key",
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Public folder (CSS, JS, Asset)
 app.use(express.static(path.join(__dirname, "public")));
 
 // Set view engine EJS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ROUTE HOME
+
+// ==========================
+// 2. ROUTE HOME
+// ==========================
+
 app.get("/", async (req, res) => {
-  // Render halaman konten
   const content = await ejs.renderFile(
     path.join(__dirname, "views/pages/home.ejs"),
     {}
   );
 
-  // Render ke layout
   res.render("layouts/main", {
     title: "Home | Lably Official Web",
     showFooter: true,
 
     meta: `
-            <meta name="description" content="LabLy: Solusi terdepan untuk pengadaan alat riset dan laboratorium. Kami menyediakan mikroskop berkualitas tinggi dan peralatan ilmiah esensial untuk penelitian Anda." />
-            <meta name="keywords" content="LabLy, alat riset, alat laboratorium, mikroskop, peralatan ilmiah, pengadaan alat lab, pinjam alat riset" />
-            <meta name="author" content="LabLy" />
-        `,
+      <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
 
     style: `
-            <link rel="stylesheet" href="/CSS/home.css" />
-        `,
+      <link rel="stylesheet" href="/CSS/home.css" />
+    `,
 
     content,
   });
 });
 
-// ROUTE CATALOGUE
+
+// ==========================
+// 3. ROUTE CATALOGUE
+// ==========================
+
 app.get("/catalogue", async (req, res) => {
-  // Render halaman konten
   const content = await ejs.renderFile(
     path.join(__dirname, "views/pages/catalogue.ejs"),
     {}
   );
 
-  // Render ke layout
   res.render("layouts/main", {
     title: "Catalogue | Lably Official Web",
     showFooter: true,
 
     meta: `
-            <meta name="description" content="Katalog LabLy: Temukan mikroskop berkualitas tinggi, sentrifuga, inkubator, dan berbagai instrumen laboratorium esensial. Akses alat riset terbaik tanpa investasi besar." />
-            <meta name="keywords" content="Katalog LabLy, mikroskop, sentrifuga, inkubator, instrumen laboratorium, alat riset, daftar alat lab, harga alat laboratorium" />
-            <meta name="author" content="LabLy" />
-        `,
+      <meta name="description" content="Katalog alat laboratorium LabLy." />
+    `,
 
     style: `
-            <link rel="stylesheet" href="/CSS/catalogue.css" />
-        `,
+      <link rel="stylesheet" href="/CSS/catalogue.css" />
+    `,
 
     content,
   });
 });
 
-// ROUTE LOGIN
-app.get("/login", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/login.ejs"),
-    {}
-  );
 
-  res.render("layouts/auth", {
-    title: "Login | Lably Official Web",
-    meta: "",
-    style: "",
-    content,
-  });
-});
+// ==========================
+// 4. ROUTES AUTENTIKASI (LOGIN, REGISTER)
+// ==========================
 
-// ROUTE REGISTER
-app.get("/register", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/register.ejs"),
-    {}
-  );
+const routes = require("./routes/index");
+app.use("/", routes);
 
-  res.render("layouts/auth", {
-    title: "Register | LabLy Official Web",
-    meta: "",
-    style: "",
-    content,
-  });
-});
 
-// Jalankan server
+// ==========================
+// 5. Jalankan server
+// ==========================
+
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });
