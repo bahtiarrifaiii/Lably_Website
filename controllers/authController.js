@@ -149,7 +149,7 @@ module.exports = {
 
                         // Render halaman dashboard (EJS dalam folder pages)
                         ejs.renderFile(
-                            path.join(__dirname, "../views/pages/dashboard.ejs"),
+                            path.join(__dirname, "../views/pages/admin/dashboard.ejs"),
                             contentData,
                             (err, content) => {
                                 if (err) throw err;
