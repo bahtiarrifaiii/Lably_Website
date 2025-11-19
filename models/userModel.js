@@ -9,6 +9,12 @@ const User = {
     findByEmail: (email, callback) => {
         const sql = "SELECT * FROM users WHERE email = ?";
         database.query(sql, [email], callback);
+    },
+
+    // Tambahan untuk dashboard
+    getAll: (callback) => {
+        const sql = "SELECT * FROM users";
+        database.query(sql, callback);
     }
 };
 

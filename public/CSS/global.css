@@ -270,7 +270,7 @@ a {
   color: var(--base-white);
 }
 
-.btn-primary-alt:hover {
+.btn-secondary:hover {
   background-color: var(--btn-hover-blue);
 }
 

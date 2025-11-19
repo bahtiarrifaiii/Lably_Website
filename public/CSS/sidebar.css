@@ -1,0 +1,66 @@
+/* ================================
+   SIDEBAR 
+================================ */
+.left {
+    grid-area: left;
+    background-color: #F6F5FD;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #3f96ff;
+    display: flex;
+    justify-content: center;
+}
+
+.logo span {
+    color: #0b4487;
+}
+
+.left-menu {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 40px;
+}
+
+.menu a,
+.logout a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.menu a i {
+    color: #818181;
+    font-size: 22px;
+}
+
+.menu a span {
+    margin-left: 15px;
+    font-size: 15px;
+    color: #818181;
+    font-weight: 500;
+}
+
+.logout {
+    margin-top: auto;
+    margin-left: 40px;
+}
+
+.logout a i {
+    color: #818181;
+    font-size: 28px;
+}
+
+.logout a span {
+    margin-left: 15px;
+    font-size: 20px;
+    color: #1a1a1a;
+    font-weight: 600;
+}

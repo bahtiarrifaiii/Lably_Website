@@ -3,21 +3,26 @@ const express = require("express");
 const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
+
+// Controller
 const authController = require("../controllers/authController");
 
-// Route GET untuk Home Page (URL: /)
+// ==========================
+// HOME PAGE
+// ==========================
 router.get("/", (req, res) => {
-  // Controller Logic: Ambil data (jika ada, misal: statistik alat)
   const dataHome = {
     title: "Sistem Peminjaman Alat Lab",
     message: "Selamat datang di sistem peminjaman alat laboratorium.",
   };
 
-  // View: Render template EJS
   res.render("index", dataHome);
 });
 
-// LOGIN PAGE (URL: /login)
+
+// ==========================
+// LOGIN PAGE
+// ==========================
 router.get("/login", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -38,7 +43,9 @@ router.get("/login", async (req, res) => {
 router.post("/login", authController.login);
 
 
-// REGISTER PAGE (URL: /register)
+// ==========================
+// REGISTER PAGE
+// ==========================
 router.get("/register", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -59,7 +66,9 @@ router.get("/register", async (req, res) => {
 router.post("/register", authController.register);
 
 
-// FORM PAGE (URL: /form)
+// ==========================
+// FORM PAGE
+// ==========================
 router.get("/form", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -77,22 +86,12 @@ router.get("/form", async (req, res) => {
   });
 });
 
-// DASHBOARD PAGE (URL: /dashboard)
-router.get("/dashboard", async (req, res) => {
-  const message = req.session.message || null;
-  req.session.message = null;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/dashboard.ejs"),
-    { message }
-  );
+// ==========================
+// DASHBOARD PAGE (ADMIN)
+// Ambil data dari controller
+// ==========================
+router.get("/dashboard", authController.dashboard);
 
-  res.render("layouts/admin", {
-    title: "Dashboard | Lably",
-    meta: "",
-    style: "",
-    content,
-  });
-});
 
 module.exports = router;
