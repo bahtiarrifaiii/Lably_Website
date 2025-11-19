@@ -1,6 +1,11 @@
+const Product = require("../models/productModel");
 const User = require("../models/userModel");
+const Order = require("../models/orderModel");
 const Admin = require("../models/adminModel");
 const bcrypt = require("bcrypt");
+const path = require("path");
+const ejs = require("ejs");
+
 
 module.exports = {
 
@@ -114,6 +119,54 @@ module.exports = {
                 return res.redirect("/login");
             });
         });
-    }
+    },
+    
+    dashboard: async (req, res) => {
+            if (!req.session.admin) {
+                return res.redirect("/login");
+            }
 
+            const admin = req.session.admin;
+
+            // Ambil data dari database
+            Product.getAll((err, products) => {
+                if (err) throw err;
+
+                User.getAll((err, users) => {
+                    if (err) throw err;
+
+                    Order.getAll((err, orders) => {
+                        if (err) throw err;
+
+                        const contentData = {
+                            admin,
+                            productsCount: products.length,
+                            customersCount: users.length,
+                            ordersCount: orders.length,
+                            customers: users,
+                            today: new Date()
+                        };
+
+                        // Render halaman dashboard (EJS dalam folder pages)
+                        ejs.renderFile(
+                            path.join(__dirname, "../views/pages/dashboard.ejs"),
+                            contentData,
+                            (err, content) => {
+                                if (err) throw err;
+
+                                res.render("layouts/admin", {
+                                    title: "Dashboard | Lably",
+                                    meta: "",
+                                    style: "",
+                                    content,  
+                                });
+                            }
+                        );
+                    });
+                });
+            });
+        }
 };
+
+
+
