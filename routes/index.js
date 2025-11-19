@@ -86,6 +86,29 @@ router.get("/form", async (req, res) => {
   });
 });
 
+// ==========================
+// LOGOUT
+// ==========================
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log("Logout error:", err);
+      return res.redirect("/dashboard");
+    }
+
+    // Regenerate session baru buat message
+    req.session = null;
+    req.sessionStore?.regenerate?.(req, () => {
+      req.session.message = {
+        type: "success",
+        text: "Selamat tinggal, Admin!"
+      };
+
+      res.redirect("/login");
+    });
+  });
+});
+
 
 // ==========================
 // DASHBOARD PAGE (ADMIN)
@@ -95,3 +118,5 @@ router.get("/dashboard", authController.dashboard);
 
 
 module.exports = router;
+
+

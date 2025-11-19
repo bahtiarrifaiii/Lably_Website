@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const ejs = require("ejs");
 
-
 module.exports = {
 
     // ========================
@@ -28,7 +27,11 @@ module.exports = {
                             type: "error",
                             text: "Password admin salah!"
                         };
-                        return res.redirect("/login");
+
+                        req.session.save(() => {
+                            return res.redirect("/login");
+                        });
+                        return;
                     }
 
                     // Login admin sukses
@@ -43,13 +46,15 @@ module.exports = {
                         text: "Selamat datang Admin!"
                     };
 
-                    return res.redirect("/dashboard"); // FIX
+                    req.session.save(() => {
+                        return res.redirect("/dashboard");
+                    });
                 });
 
                 return;
             }
 
-            // Kalau bukan admin cek user
+            // Kalau bukan admin, cek user
             User.findByEmail(email, (err, userResult) => {
                 if (err) throw err;
 
@@ -58,7 +63,11 @@ module.exports = {
                         type: "error",
                         text: "Email tidak terdaftar."
                     };
-                    return res.redirect("/login");
+
+                    req.session.save(() => {
+                        return res.redirect("/login");
+                    });
+                    return;
                 }
 
                 const user = userResult[0];
@@ -69,7 +78,11 @@ module.exports = {
                             type: "error",
                             text: "Password salah!"
                         };
-                        return res.redirect("/login");
+
+                        req.session.save(() => {
+                            return res.redirect("/login");
+                        });
+                        return;
                     }
 
                     // Login user sukses
@@ -84,11 +97,14 @@ module.exports = {
                         text: "Berhasil login!"
                     };
 
-                    return res.redirect("/");
+                    req.session.save(() => {
+                        return res.redirect("/");
+                    });
                 });
             });
         });
     },
+
 
 
     // ========================
@@ -108,7 +124,11 @@ module.exports = {
                         type: "error",
                         text: "Gagal register! Email sudah digunakan."
                     };
-                    return res.redirect("/register");
+
+                    req.session.save(() => {
+                        return res.redirect("/register");
+                    });
+                    return;
                 }
 
                 req.session.message = {
@@ -116,57 +136,64 @@ module.exports = {
                     text: "Registrasi berhasil! Silakan login."
                 };
 
-                return res.redirect("/login");
+                req.session.save(() => {
+                    return res.redirect("/login");
+                });
             });
         });
     },
-    
+
+
+
+    // ========================
+    // DASHBOARD ADMIN
+    // ========================
     dashboard: async (req, res) => {
-            if (!req.session.admin) {
-                return res.redirect("/login");
-            }
+    if (!req.session.admin) {
+        return res.redirect("/login");
+    }
 
-            const admin = req.session.admin;
+    const admin = req.session.admin;
 
-            // Ambil data dari database
-            Product.getAll((err, products) => {
+    // Ambil message untuk popup
+    const message = req.session.message || null;
+    req.session.message = null;
+
+    Product.getAll((err, products) => {
+        if (err) throw err;
+
+        User.getAll((err, users) => {
+            if (err) throw err;
+
+            Order.getAll((err, orders) => {
                 if (err) throw err;
 
-                User.getAll((err, users) => {
-                    if (err) throw err;
+                const contentData = {
+                    admin,
+                    productsCount: products.length,
+                    customersCount: users.length,
+                    ordersCount: orders.length,
+                    customers: users,
+                    today: new Date()
+                };
 
-                    Order.getAll((err, orders) => {
+                ejs.renderFile(
+                    path.join(__dirname, "../views/pages/admin/dashboard.ejs"),
+                    contentData,
+                    (err, content) => {
                         if (err) throw err;
 
-                        const contentData = {
-                            admin,
-                            productsCount: products.length,
-                            customersCount: users.length,
-                            ordersCount: orders.length,
-                            customers: users,
-                            today: new Date()
-                        };
-
-                        // Render halaman dashboard (EJS dalam folder pages)
-                        ejs.renderFile(
-                            path.join(__dirname, "../views/pages/admin/dashboard.ejs"),
-                            contentData,
-                            (err, content) => {
-                                if (err) throw err;
-
-                                res.render("layouts/admin", {
-                                    title: "Dashboard | Lably",
-                                    meta: "",
-                                    style: "",
-                                    content,  
-                                });
-                            }
-                        );
-                    });
-                });
+                        res.render("layouts/admin", {
+                            title: "Dashboard | Lably",
+                            meta: "",
+                            style: "",
+                            content,
+                            message   // <––– INI WAJIB BANGET
+                        });
+                    }
+                );
             });
-        }
+        });
+    });
+}
 };
-
-
-
