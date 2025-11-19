@@ -69,8 +69,26 @@ router.get("/form", async (req, res) => {
     { message }
   );
 
-  res.render("layouts/auth", {
+  res.render("layouts/forms", {
     title: "Form | Lably",
+    meta: "",
+    style: "",
+    content,
+  });
+});
+
+// DASHBOARD PAGE (URL: /dashboard)
+router.get("/dashboard", async (req, res) => {
+  const message = req.session.message || null;
+  req.session.message = null;
+
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/dashboard.ejs"),
+    { message }
+  );
+
+  res.render("layouts/admin", {
+    title: "Dashboard | Lably",
     meta: "",
     style: "",
     content,

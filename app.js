@@ -81,6 +81,25 @@ app.get("/catalogue", async (req, res) => {
 });
 
 // ==========================
+// 3. ROUTE DASHBOARD
+// ==========================
+
+app.get("/dashboard", async (req, res) => {
+    const content = await ejs.renderFile(
+        path.join(__dirname, "views/pages/dashboard.ejs"),
+        {}
+    );
+
+    res.render("layouts/admin", {
+        style: `<link rel="stylesheet" href="/CSS/dashboard.css" />`,
+        title: "Dashboard | LabLy",
+        meta: "",
+        style: "",
+        content
+    });
+});
+
+// ==========================
 // 3. ROUTE FORM
 // ==========================
 
