@@ -12,11 +12,13 @@ const path = require("path");
 app.use(express.urlencoded({ extended: true }));
 
 // Session
-app.use(session({
-  secret: "lably-secret-key",
-  resave: false,
-  saveUninitialized: true
-}));
+app.use(
+  session({
+    secret: "lably-secret-key",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 // Public folder (CSS, JS, Asset)
 app.use(express.static(path.join(__dirname, "public")));
@@ -24,7 +26,6 @@ app.use(express.static(path.join(__dirname, "public")));
 // Set view engine EJS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
 
 // ==========================
 // 2. ROUTE HOME
@@ -53,7 +54,6 @@ app.get("/", async (req, res) => {
   });
 });
 
-
 // ==========================
 // 3. ROUTE CATALOGUE
 // ==========================
@@ -70,6 +70,7 @@ app.get("/catalogue", async (req, res) => {
 
     meta: `
       <meta name="description" content="Katalog alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
 
     style: `
@@ -81,53 +82,59 @@ app.get("/catalogue", async (req, res) => {
 });
 
 // ==========================
-// 3. ROUTE DASHBOARD
+// 4. ROUTE PRODUCT
 // ==========================
 
-app.get("/dashboard", async (req, res) => {
-    const content = await ejs.renderFile(
-        path.join(__dirname, "views/pages/dashboard.ejs"),
-        {}
-    );
+app.get("/product", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/product.ejs"),
+    {}
+  );
 
-    res.render("layouts/admin", {
-        style: `<link rel="stylesheet" href="/CSS/dashboard.css" />`,
-        title: "Dashboard | LabLy",
-        meta: "",
-        style: "",
-        content
-    });
+  res.render("layouts/main", {
+    title: "Product | Lably Official Web",
+    showFooter: true,
+
+    meta: `
+      <meta name="description" content="Product alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/product.css" />
+    `,
+
+    content,
+  });
 });
 
 // ==========================
-// 3. ROUTE FORM
+// 5. ROUTE FORM
 // ==========================
 
 app.get("/form", async (req, res) => {
-    const content = await ejs.renderFile(
-        path.join(__dirname, "views/pages/form.ejs"),
-        {}
-    );
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/form.ejs"),
+    {}
+  );
 
-    res.render("layouts/forms", {
-        title: "Form | LabLy",
-        meta: "",
-        style: "",
-        content
-    });
+  res.render("layouts/forms", {
+    title: "Form | LabLy",
+    meta: "",
+    style: "",
+    content,
+  });
 });
 
-
 // ==========================
-// 4. ROUTES AUTENTIKASI (LOGIN, REGISTER)
+// 6. ROUTES AUTENTIKASI (LOGIN, REGISTER)
 // ==========================
 
 const routes = require("./routes/index");
 app.use("/", routes);
 
-
 // ==========================
-// 5. Jalankan server
+// 7. Jalankan server
 // ==========================
 
 app.listen(3000, () => {
