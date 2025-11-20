@@ -39,6 +39,7 @@ app.get("/", async (req, res) => {
 
   res.render("layouts/main", {
     title: "Home | Lably Official Web",
+    currentPage: "home",
     showFooter: true,
 
     meta: `
@@ -66,6 +67,7 @@ app.get("/catalogue", async (req, res) => {
 
   res.render("layouts/main", {
     title: "Catalogue | Lably Official Web",
+    currentPage: "catalogue",
     showFooter: true,
 
     meta: `
@@ -93,6 +95,7 @@ app.get("/product", async (req, res) => {
 
   res.render("layouts/main", {
     title: "Product | Lably Official Web",
+    currentPage: "product",
     showFooter: true,
 
     meta: `
@@ -127,14 +130,42 @@ app.get("/form", async (req, res) => {
 });
 
 // ==========================
-// 6. ROUTES AUTENTIKASI (LOGIN, REGISTER)
+// 6. ROUTE CART
+// ==========================
+
+app.get("/cart", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/cart.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Cart | Lably Official Web",
+    currentPage: "cart",
+    showFooter: false,
+
+    meta: `
+      <meta name="description" content="Keranjang alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/cart.css" />
+    `,
+
+    content,
+  });
+});
+
+// ==========================
+// 7. ROUTES AUTENTIKASI (LOGIN, REGISTER)
 // ==========================
 
 const routes = require("./routes/index");
 app.use("/", routes);
 
 // ==========================
-// 7. Jalankan server
+// 8. Jalankan server
 // ==========================
 
 app.listen(3000, () => {

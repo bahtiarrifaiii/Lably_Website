@@ -1,7 +1,7 @@
 :root {
   --primary: #0b4487;
   --secondary: #f37a1d;
-  --base-white: #fff;
+  --base-white: #fafafa;
   --base-black: #0a0a0a;
 
   --background-gradient: linear-gradient(to bottom, #a8e4fe 0%, #ffffff 65%);
@@ -113,6 +113,23 @@ a {
   color: var(--btn-hover-blue);
 }
 
+.sec-nav .logo {
+  margin-left: 1.8rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  font-weight: 600;
+  color: var(--primary);
+  transition: color 0.5s ease;
+}
+
+.back-btn:hover {
+  color: var(--btn-hover-blue);
+}
+
 .mobile-menu-wrapper {
   display: flex;
   justify-content: space-between;
@@ -137,9 +154,17 @@ a {
   transition: all 0.3s ease;
 }
 
+.sec-nav a {
+  font-size: 1.8rem;
+}
+
 .main-nav a:hover,
 .nav-icons a:hover {
   color: var(--btn-hover-blue);
+}
+
+.sec-nav a:not(.no-hover):hover {
+  color: inherit;
 }
 
 .nav-icons a {
@@ -444,6 +469,10 @@ a {
     padding: 0.8rem 1.5rem;
     font-size: 0.85rem;
   }
+
+  .sec-nav a {
+    font-size: 1.6rem;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -504,6 +533,10 @@ a {
 
   .footer-mid .icon-wrap .bi {
     font-size: 1.2rem;
+  }
+
+  .sec-nav .logo {
+    margin-left: 0;
   }
 }
 
