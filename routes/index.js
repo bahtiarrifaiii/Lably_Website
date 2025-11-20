@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
+const User = require("../models/userModel");
 
 // Controller
 const authController = require("../controllers/authController");
@@ -115,6 +116,39 @@ router.get("/logout", (req, res) => {
 // Ambil data dari controller
 // ==========================
 router.get("/dashboard", authController.dashboard);
+
+// ==========================
+// CUSTOMERS PAGE (ADMIN)
+// ==========================
+router.get("/customer", (req, res) => {
+    if (!req.session.admin) {
+        return res.redirect("/login");
+    }
+
+    User.getAll((err, users) => {
+        if (err) throw err;
+
+        const totalCustomers = users.length;  // <--- AMBIL JUMLAH USER
+
+        ejs.renderFile(
+            path.join(__dirname, "../views/pages/admin/customer.ejs"),
+            { users, totalCustomers }, // <--- KIRIM KE EJS
+            (err, content) => {
+                if (err) throw err;
+
+                res.render("layouts/customers", {
+                    title: "Customers | Lably",
+                    meta: "",
+                    style: `
+                        <link rel="stylesheet" href="/CSS/sidebar.css">
+                        <link rel="stylesheet" href="/CSS/customer.css">
+                    `,
+                    content
+                });
+            }
+        );
+    });
+});
 
 
 module.exports = router;

@@ -1,0 +1,50 @@
+<nav class="navbar">
+    <span>Customers</span>
+    <img src="/Assets/profile.jpg" alt="">
+</nav>
+<div class="filter">
+    <div class="search">
+        <input type="text" placeholder="Search Customers (Username, Email...)">
+        <form action="">
+            <button type="submit" class="btn-search">Search</button>
+        </form>
+    </div>
+</div>
+<div class="menu-option">
+    <div class="menu-options">
+        <span>Total Customers : <%= totalCustomers %></span>
+        <select name="" id="">
+            <option value="">All Status</option>
+            <option value="">Active</option>
+            <option value="">Inactive</option>
+        </select>
+    </div>
+    <div class="date">
+        <input type="datetime" placeholder="Date Start"/>
+        :
+        <input type="datetime" placeholder="Date end"/>
+    </div>
+</div>
+<div class="customer-table">
+    <table>
+        <thead>
+            <tr class="even">
+                <th>No</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Account Status</th>
+                <th>Date Joined</th>
+            </tr>
+            <tbody>
+                <% users.forEach((u, index) => { %>
+                    <tr class="<%= index % 2 === 1 ? 'even' : '' %>">
+                        <td><%= index + 1 %></td>
+                        <td><%= u.username %></td>
+                        <td><%= u.email %></td>
+                        <td><%= u.status || "Active" %></td>
+                        <td><%= u.created_at ? u.created_at.toISOString().split('T')[0] : "-" %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </thead>
+</div>
