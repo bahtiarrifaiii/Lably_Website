@@ -15,6 +15,22 @@ const User = {
     getAll: (callback) => {
         const sql = "SELECT * FROM users";
         database.query(sql, callback);
+    },
+
+    updateLastLogin: (id, callback) => {
+        const sql = "UPDATE users SET last_login = NOW() WHERE id = ?";
+        database.query(sql, [id], callback);
+    },
+
+    deactivateInactive: (callback) => {
+        const sql = `
+            UPDATE users
+            SET status = 'inactive'
+            WHERE (status = 'active' OR status IS NULL)
+            AND last_login IS NOT NULL
+            AND TIMESTAMPDIFF(DAY, last_login, NOW()) > 30
+        `;
+        database.query(sql, callback);
     }
 };
 

@@ -72,6 +72,14 @@ module.exports = {
 
                 const user = userResult[0];
 
+                if (user.status === "nonactive") {
+                    req.session.message = {
+                        type: "error",
+                        text: "Akun Anda nonaktif karena tidak login selama 30 hari."
+                    };
+                    return req.session.save(() => res.redirect("/login"));
+                }
+                
                 bcrypt.compare(password, user.password, (err, match) => {
                     if (!match) {
                         req.session.message = {
@@ -79,26 +87,28 @@ module.exports = {
                             text: "Password salah!"
                         };
 
-                        req.session.save(() => {
-                            return res.redirect("/login");
-                        });
-                        return;
+                        return req.session.save(() => res.redirect("/login"));
                     }
 
-                    // Login user sukses
-                    req.session.user = {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email
-                    };
+                    // UPDATE LAST LOGIN
+                    User.updateLastLogin(user.id, (err) => {
+                        if (err) throw err;
 
-                    req.session.message = {
-                        type: "success",
-                        text: "Berhasil login!"
-                    };
+                        // Setelah UPDATE selesai → baru login
+                        req.session.user = {
+                            id: user.id,
+                            username: user.username,
+                            email: user.email
+                        };
 
-                    req.session.save(() => {
-                        return res.redirect("/");
+                        req.session.message = {
+                            type: "success",
+                            text: "Berhasil login!"
+                        };
+
+                        req.session.save(() => {
+                            return res.redirect("/");
+                        });
                     });
                 });
             });

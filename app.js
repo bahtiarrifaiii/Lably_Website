@@ -3,6 +3,7 @@ const session = require("express-session");
 const app = express();
 const ejs = require("ejs");
 const path = require("path");
+const User = require("./models/userModel");
 
 // ==========================
 // 1. Middleware penting
@@ -163,6 +164,14 @@ app.get("/cart", async (req, res) => {
 
 const routes = require("./routes/index");
 app.use("/", routes);
+
+setInterval(() => {
+    console.log("=== CEK USER INACTIVE ===");
+    User.deactivateInactive((err, result) => {
+        if (err) return console.log("ERROR:", err);
+        console.log("HASIL UPDATE:", result);
+    });
+}, 60 * 1000); // cek tiap 1 menit
 
 // ==========================
 // 8. Jalankan server

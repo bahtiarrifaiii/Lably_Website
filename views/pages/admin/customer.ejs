@@ -41,7 +41,9 @@
                         <td><%= index + 1 %></td>
                         <td><%= u.username %></td>
                         <td><%= u.email %></td>
-                        <td><%= u.status || "Active" %></td>
+                        <td class="<%= u.status === 'inactive' ? 'status-inactive' : 'status-active' %>">
+                            <%= u.status === 'inactive' ? 'Inactive' : 'Active' %>
+                        </td>
                         <td><%= u.created_at ? u.created_at.toISOString().split('T')[0] : "-" %></td>
                     </tr>
                 <% }) %>

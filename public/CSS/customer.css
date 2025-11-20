@@ -133,3 +133,13 @@ th, td {
 .even{
     background-color: #f4f4f4;
 }
+
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+}
