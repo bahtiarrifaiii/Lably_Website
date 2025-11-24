@@ -159,22 +159,50 @@ app.get("/cart", async (req, res) => {
 });
 
 // ==========================
-// 7. ROUTES AUTENTIKASI (LOGIN, REGISTER)
+// 7. ROUTE Checkout
+// ==========================
+
+app.get("/checkout", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "views/pages/checkout.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Checkout | Lably Official Web",
+    currentPage: "checkout",
+    showFooter: false,
+
+    meta: `
+      <meta name="description" content="Keranjang chekcout alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/checkout.css" />
+    `,
+
+    content,
+  });
+});
+
+// ==========================
+// 8. ROUTES AUTENTIKASI (LOGIN, REGISTER)
 // ==========================
 
 const routes = require("./routes/index");
 app.use("/", routes);
 
 setInterval(() => {
-    console.log("=== CEK USER INACTIVE ===");
-    User.deactivateInactive((err, result) => {
-        if (err) return console.log("ERROR:", err);
-        console.log("HASIL UPDATE:", result);
-    });
+  console.log("=== CEK USER INACTIVE ===");
+  User.deactivateInactive((err, result) => {
+    if (err) return console.log("ERROR:", err);
+    console.log("HASIL UPDATE:", result);
+  });
 }, 60 * 1000); // cek tiap 1 menit
 
 // ==========================
-// 8. Jalankan server
+// 9. Jalankan server
 // ==========================
 
 app.listen(3000, () => {

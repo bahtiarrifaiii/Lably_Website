@@ -20,7 +20,6 @@ router.get("/", (req, res) => {
   res.render("index", dataHome);
 });
 
-
 // ==========================
 // LOGIN PAGE
 // ==========================
@@ -43,7 +42,6 @@ router.get("/login", async (req, res) => {
 
 router.post("/login", authController.login);
 
-
 // ==========================
 // REGISTER PAGE
 // ==========================
@@ -65,7 +63,6 @@ router.get("/register", async (req, res) => {
 });
 
 router.post("/register", authController.register);
-
 
 // ==========================
 // FORM PAGE
@@ -102,14 +99,13 @@ router.get("/logout", (req, res) => {
     req.sessionStore?.regenerate?.(req, () => {
       req.session.message = {
         type: "success",
-        text: "Selamat tinggal, Admin!"
+        text: "Selamat tinggal, Admin!",
       };
 
       res.redirect("/login");
     });
   });
 });
-
 
 // ==========================
 // DASHBOARD PAGE (ADMIN)
@@ -121,36 +117,33 @@ router.get("/dashboard", authController.dashboard);
 // CUSTOMERS PAGE (ADMIN)
 // ==========================
 router.get("/customer", (req, res) => {
-    if (!req.session.admin) {
-        return res.redirect("/login");
-    }
+  if (!req.session.admin) {
+    return res.redirect("/login");
+  }
 
-    User.getAll((err, users) => {
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length; // <--- AMBIL JUMLAH USER
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/customer.ejs"),
+      { users, totalCustomers }, // <--- KIRIM KE EJS
+      (err, content) => {
         if (err) throw err;
 
-        const totalCustomers = users.length;  // <--- AMBIL JUMLAH USER
-
-        ejs.renderFile(
-            path.join(__dirname, "../views/pages/admin/customer.ejs"),
-            { users, totalCustomers }, // <--- KIRIM KE EJS
-            (err, content) => {
-                if (err) throw err;
-
-                res.render("layouts/customers", {
-                    title: "Customers | Lably",
-                    meta: "",
-                    style: `
+        res.render("layouts/customers", {
+          title: "Customers | Lably",
+          meta: "",
+          style: `
                         <link rel="stylesheet" href="/CSS/sidebar.css">
                         <link rel="stylesheet" href="/CSS/customer.css">
                     `,
-                    content
-                });
-            }
-        );
-    });
+          content,
+        });
+      }
+    );
+  });
 });
 
-
 module.exports = router;
-
-
