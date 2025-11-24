@@ -193,12 +193,16 @@ module.exports = {
                     (err, content) => {
                         if (err) throw err;
 
-                        res.render("layouts/admin", {
+                        res.render("layouts/atmin", {
                             title: "Dashboard | Lably",
                             meta: "",
-                            style: "",
+                            style: `
+                                <link rel="stylesheet" href="/CSS/sidebar.css">
+                                <link rel="stylesheet" href="/CSS/dashboard.css">
+                            `,
                             content,
-                            message   // <––– INI WAJIB BANGET
+                            message, // <––– INI WAJIB BANGET
+                            showPopup: true
                         });
                     }
                 );

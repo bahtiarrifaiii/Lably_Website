@@ -132,7 +132,7 @@ router.get("/customer", (req, res) => {
       (err, content) => {
         if (err) throw err;
 
-        res.render("layouts/customers", {
+        res.render("layouts/atmin", {
           title: "Customers | Lably",
           meta: "",
           style: `
