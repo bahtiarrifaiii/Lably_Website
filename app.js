@@ -1,18 +1,16 @@
 const express = require("express");
 const session = require("express-session");
 const app = express();
-const ejs = require("ejs");
 const path = require("path");
+const routes = require("./routes/index");
 const User = require("./models/userModel");
 
 // ==========================
-// 1. Middleware penting
+// 1. Middleware
 // ==========================
 
-// Untuk membaca data POST dari form
 app.use(express.urlencoded({ extended: true }));
 
-// Session
 app.use(
   session({
     secret: "lably-secret-key",
@@ -21,177 +19,20 @@ app.use(
   })
 );
 
-// Public folder (CSS, JS, Asset)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Set view engine EJS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // ==========================
-// 2. ROUTE HOME
+// 2. ROUTER
 // ==========================
 
-app.get("/", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/home.ejs"),
-    {}
-  );
-
-  res.render("layouts/main", {
-    title: "Home | Lably Official Web",
-    currentPage: "home",
-    showFooter: true,
-
-    meta: `
-      <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/home.css" />
-    `,
-
-    content,
-  });
-});
-
-// ==========================
-// 3. ROUTE CATALOGUE
-// ==========================
-
-app.get("/catalogue", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/catalogue.ejs"),
-    {}
-  );
-
-  res.render("layouts/main", {
-    title: "Catalogue | Lably Official Web",
-    currentPage: "catalogue",
-    showFooter: true,
-
-    meta: `
-      <meta name="description" content="Katalog alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/catalogue.css" />
-    `,
-
-    content,
-  });
-});
-
-// ==========================
-// 4. ROUTE PRODUCT
-// ==========================
-
-app.get("/product", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/product.ejs"),
-    {}
-  );
-
-  res.render("layouts/main", {
-    title: "Product | Lably Official Web",
-    currentPage: "product",
-    showFooter: true,
-
-    meta: `
-      <meta name="description" content="Product alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/product.css" />
-    `,
-
-    content,
-  });
-});
-
-// ==========================
-// 5. ROUTE FORM
-// ==========================
-
-app.get("/form", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/form.ejs"),
-    {}
-  );
-
-  res.render("layouts/forms", {
-    title: "Form | LabLy",
-    meta: "",
-    style: "",
-    content,
-  });
-});
-
-// ==========================
-// 6. ROUTE CART
-// ==========================
-
-app.get("/cart", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/cart.ejs"),
-    {}
-  );
-
-  res.render("layouts/main", {
-    title: "Cart | Lably Official Web",
-    currentPage: "cart",
-    showFooter: false,
-
-    meta: `
-      <meta name="description" content="Keranjang alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/cart.css" />
-    `,
-
-    content,
-  });
-});
-
-// ==========================
-// 7. ROUTE Checkout
-// ==========================
-
-app.get("/checkout", async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "views/pages/checkout.ejs"),
-    {}
-  );
-
-  res.render("layouts/main", {
-    title: "Checkout | Lably Official Web",
-    currentPage: "checkout",
-    showFooter: false,
-
-    meta: `
-      <meta name="description" content="Keranjang chekcout alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/checkout.css" />
-    `,
-
-    content,
-  });
-});
-
-// ==========================
-// 8. ROUTES AUTENTIKASI (LOGIN, REGISTER)
-// ==========================
-
-const routes = require("./routes/index");
 app.use("/", routes);
+
+// ==========================
+// 3. CRON / CEK USER INACTIVE
+// ==========================
 
 setInterval(() => {
   console.log("=== CEK USER INACTIVE ===");
@@ -199,10 +40,10 @@ setInterval(() => {
     if (err) return console.log("ERROR:", err);
     console.log("HASIL UPDATE:", result);
   });
-}, 60 * 1000); // cek tiap 1 menit
+}, 60 * 1000);
 
 // ==========================
-// 9. Jalankan server
+// 4. Server
 // ==========================
 
 app.listen(3000, () => {

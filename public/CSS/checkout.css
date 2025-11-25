@@ -7,7 +7,7 @@
 }
 
 .section-title {
-  font-size: 2em;
+  font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--primary);
@@ -169,7 +169,7 @@
   border: 1px solid var(--base-white);
   cursor: pointer;
   font-weight: 500;
-  font-size: 0.95em;
+  font-size: 0.95rem;
   transition: background-color 0.5s ease, border-color 0.5s ease;
 }
 
@@ -192,4 +192,47 @@
   font-size: 1.1em;
   border-radius: 1rem;
   margin-top: auto;
+}
+
+@media screen and (max-width: 1200px) {
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .item-name {
+    font-size: 0.9rem;
+  }
+
+  .item-price,
+  .item-total {
+    font-size: 0.9rem;
+  }
+
+  .item-quantity .qty-btn,
+  .item-quantity .qty-display {
+    width: 25px;
+    height: 25px;
+    font-size: 0.9rem;
+  }
+
+  .item-remove-btn {
+    font-size: 1.1rem;
+  }
+
+  .payment-info h3 {
+    font-size: 1.5rem;
+  }
+
+  .payment-info span {
+    font-size: 0.85rem;
+  }
+
+  .method-btn {
+    font-size: 0.85rem;
+    padding: 1rem;
+  }
+
+  .checkout-btn {
+    font-size: 1rem;
+  }
 }

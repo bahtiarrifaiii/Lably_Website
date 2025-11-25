@@ -66,21 +66,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Checkout Method
 document.addEventListener("DOMContentLoaded", function () {
-  // 1. Dapatkan semua tombol metode pembayaran
   const methodButtons = document.querySelectorAll(".method-btn");
 
-  // 2. Tambahkan event listener ke setiap tombol
   methodButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      // 3. Hapus class 'active' dari SEMUA tombol
       methodButtons.forEach((btn) => {
         btn.classList.remove("active");
       });
-
-      // 4. Tambahkan class 'active' ke tombol yang baru saja diklik (this)
       this.classList.add("active");
-
-      // Opsional: Lakukan sesuatu yang lain di sini (misalnya, menyimpan metode pembayaran yang dipilih ke database/state)
       const selectedMethod = this.textContent.trim();
       console.log("Metode pembayaran dipilih:", selectedMethod);
     });

@@ -9,25 +9,17 @@ const User = require("../models/userModel");
 const authController = require("../controllers/authController");
 const categoryController = require("../controllers/categoryController");
 
-// ==========================
-// HOME PAGE
-// ==========================
-router.get("/", (req, res) => {
-  res.render("index", {
-    title: "Sistem Peminjaman Alat Lab",
-    message: "Selamat datang di sistem peminjaman alat laboratorium.",
-  });
-});
+// ==========================================================================
+// AUTH PAGE
+// ==========================================================================
 
-// ==========================
 // LOGIN PAGE
-// ==========================
 router.get("/login", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
 
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/login.ejs"),
+    path.join(__dirname, "../views/pages/auth/login.ejs"),
     { message }
   );
 
@@ -41,15 +33,13 @@ router.get("/login", async (req, res) => {
 
 router.post("/login", authController.login);
 
-// ==========================
 // REGISTER PAGE
-// ==========================
 router.get("/register", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
 
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/register.ejs"),
+    path.join(__dirname, "../views/pages/auth/register.ejs"),
     { message }
   );
 
@@ -63,15 +53,99 @@ router.get("/register", async (req, res) => {
 
 router.post("/register", authController.register);
 
-// ==========================
+// LOGOUT
+router.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+// ==========================================================================
+// USER PAGE
+// ==========================================================================
+
+// HOME PAGE
+router.get("/", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/home.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Home | Lably Official Web",
+    currentPage: "home",
+    showFooter: true,
+
+    meta: `
+      <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/home.css" />
+    `,
+
+    content,
+  });
+});
+
+// CATALOGUE PAGE
+router.get("/catalogue", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/catalogue.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Catalogue | Lably Official Web",
+    currentPage: "catalogue",
+    showFooter: true,
+
+    meta: `
+      <meta name="description" content="Katalog alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/catalogue.css" />
+    `,
+
+    content,
+  });
+});
+
+// PRODUCT PAGE
+router.get("/product", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/product.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Product | Lably Official Web",
+    currentPage: "product",
+    showFooter: true,
+
+    meta: `
+      <meta name="description" content="Product alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/product.css" />
+    `,
+
+    content,
+  });
+});
+
 // FORM PAGE
-// ==========================
 router.get("/form", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
 
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/form.ejs"),
+    path.join(__dirname, "../views/pages/user/form.ejs"),
     { message }
   );
 
@@ -83,23 +157,64 @@ router.get("/form", async (req, res) => {
   });
 });
 
-// ==========================
-// LOGOUT
-// ==========================
-router.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
+// CART PAGE
+router.get("/cart", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/cart.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Cart | Lably Official Web",
+    currentPage: "cart",
+    showFooter: false,
+
+    meta: `
+      <meta name="description" content="Keranjang alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/cart.css" />
+    `,
+
+    content,
   });
 });
 
-// ==========================
+// CHECKOUT PAGE
+router.get("/checkout", async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/checkout.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Checkout | Lably Official Web",
+    currentPage: "checkout",
+    showFooter: false,
+
+    meta: `
+      <meta name="description" content="Keranjang checkout alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/checkout.css" />
+    `,
+
+    content,
+  });
+});
+
+// ==========================================================================
+// ADMIN PAGE
+// ==========================================================================
+
 // DASHBOARD PAGE
-// ==========================
 router.get("/dashboard", authController.dashboard);
 
-// ==========================
 // CUSTOMERS PAGE
-// ==========================
 router.get("/customer", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
@@ -121,16 +236,14 @@ router.get("/customer", (req, res) => {
           `,
           content,
           message: null,
-          showPopup: false
+          showPopup: false,
         });
       }
     );
   });
 });
 
-// ==========================
 // ORDER PAGE
-// ==========================
 router.get("/order", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
@@ -152,16 +265,14 @@ router.get("/order", (req, res) => {
           `,
           content,
           message: null,
-          showPopup: false
+          showPopup: false,
         });
       }
     );
   });
 });
 
-// ==========================
 // ORDER COMPLETED PAGE
-// ==========================
 router.get("/order-completed", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
@@ -183,16 +294,14 @@ router.get("/order-completed", (req, res) => {
           `,
           content,
           message: null,
-          showPopup: false
+          showPopup: false,
         });
       }
     );
   });
 });
 
-// ==========================
-// CATEGORY 
-// ==========================
+// CATEGORY
 router.get("/category", categoryController.index);
 router.get("/category/create", categoryController.createPage);
 router.post("/category/create", categoryController.create);

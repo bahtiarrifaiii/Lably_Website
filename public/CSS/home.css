@@ -162,7 +162,8 @@
   gap: 1rem;
 }
 
-.catalogue-filter .filter a {
+.catalogue-filter .filter button {
+  background-color: transparent;
   color: var(--primary);
   font-weight: 600;
   padding: 0.5rem 1.5rem;
@@ -171,7 +172,7 @@
   transition: all 0.3s ease;
 }
 
-.catalogue-filter .filter a:hover {
+.catalogue-filter .filter button:hover {
   background-color: var(--primary);
   color: var(--base-white);
 }
