@@ -1,6 +1,6 @@
 
 <nav class="navbar">
-    <span>Customers</span>
+    <span>Orders</span>
     <img src="Assets/profile.jpg" alt="">
 </nav>
 <div class="order-info">
@@ -63,9 +63,11 @@
 </div>
 <div class="page-text">
     <span>List Of All Orders</span>
-    <form action="">
-            <button type="button" class="btn-search">Completed  <i class="bi bi-check-circle"></i></button>
-    </form>
+    <form action="/order-completed" method="GET">
+    <button type="submit" class="btn-search">
+        Completed <i class="bi bi-check-circle"></i>
+    </button>
+</form>
 </div>
 <div class="customer-table">
     <table>
@@ -114,7 +116,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>1</td>
+                    <td>3</td>
                     <td>Ruru Jenjen</td>
                     <td>Spektofotometer</td>
                     <td>12/11/25-19/11/25</td>

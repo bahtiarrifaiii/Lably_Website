@@ -44,15 +44,13 @@
 .order-info {
     margin: 0 30px 0 30px;
     display: flex;
-    justify-content: space-between;
-    box-sizing: border-box;
 }
 
 .order-info .box {
     display: flex;
-    background-color: #f4f4f4;
-    width: 330px;
     gap: 10px;
+    width: 100%;
+    background-color:   #f4f4f4;
     padding: 10px 25px 10px 20px;
     border-radius: 10px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
@@ -61,27 +59,20 @@
 .total {
     font-size: 32px;
     font-weight: 650;
-}
-
-.pending-total, .pending {
-    color: #f1930b;
-}
-
-.loan-total, .loan {
     color: #0b4487;
 }
 
-.overdue-total, .overdue{
-    color: #ff0000;
+.pending {
+    color: #0b4487;
 }
 
-.order-info .box .detail {
+.order-info .box .detail-pending {
     display: flex;
     flex-direction: column;
     justify-content: center;
     line-height: 16px;
     font-size: 12px;
-    font-weight: 650;
+    font-weight: 700;
     color: #b1b1b1;
     letter-spacing: 1.5px;
 }
@@ -101,8 +92,7 @@
     font-weight: 500;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
-    border: none;
-    box-shadow: 2px 1px 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid #b1b1b1;
 }
 
 ::placeholder{
@@ -110,7 +100,7 @@
 }
 
 .search .btn-search {
-    padding: 4.45px 20px;
+    padding: 4.5px 20px;
     background-color: #0b4487;
     color: #fff;
     border: none;
@@ -134,13 +124,13 @@
 }
 
 .menu-options button{
-    width: 100px;
+    width: 180px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 400;
     color: #b1b1b1;
     background-color: #eeeeee;
-    padding: 9px 12px;
+    padding: 9px 9px;
     border-radius: 40px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
     border: none;
@@ -178,18 +168,8 @@
     font-weight: 650;
 }
 
-.page-text button{
-    padding: 8px 10px;
-    font-size: 10px;
-    color: #ffffff;
-    border: none;
-    background-color: #3f96ff;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
 .customer-table {
-    margin: 0 30px 30px 30px;
+    margin: 0 30px 30px 30px;;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -208,48 +188,14 @@ th, td {
     color: #818181;
 }
 
-.actions{
-    width: 100px;
+.status-completed{
+    color: #00ff55;
+    font-weight: 600;
 }
 
-.action div{
-    display: flex;
-    gap: 8px;
-}
-
-.action button{
-    padding: 8px 20px;
-    border-radius: 5px;
-    width: 90px;
-}
-
-.action .btn-approve{
-    background-color: #00ff55;
-    border: none;
-}
-
-.action .btn-reject{
-    background-color: #ff0000;
-    border: none;
-}
-
-.action .btn{
-    width: 120px;
-    border: none;
-    color: #ffffff;
-}
-
-.action .check{
-    width: 60px;
-    border: none;
-    color: #ffffff;
-}
-
-.action .btn-use-reminder, .action .btn-use-check{
-    background-color: #0b4487;
-}
-.action .btn-overdue-reminder, .action .btn-overdue-check{
-    background-color: #f1930b;
+.status-completed-overdue{
+    color: #f1930b;
+    font-weight: 600;
 }
 
 .even{
