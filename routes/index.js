@@ -301,6 +301,35 @@ router.get("/order-completed", (req, res) => {
   });
 });
 
+// PRODUCT LIST
+router.get("/product-list", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/product/product_list.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Product | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/product-list.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+        });
+      }
+    );
+  });
+});
+
 // CATEGORY
 router.get("/category", categoryController.index);
 router.get("/category/create", categoryController.createPage);
