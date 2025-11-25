@@ -1,0 +1,256 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+.container {
+    display: grid;
+    height: 100vh;
+    grid-template-areas: "left right";
+    grid-template-columns: 1fr 4fr;
+    background: #f8f9ff;
+}
+
+.right {
+    grid-area: right;
+    background-color: #ffffff;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.navbar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 30px;
+}
+
+.navbar span {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.navbar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.order-info {
+    margin: 0 30px 0 30px;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.order-info .box {
+    display: flex;
+    background-color: #f4f4f4;
+    width: 330px;
+    gap: 10px;
+    padding: 10px 25px 10px 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.total {
+    font-size: 32px;
+    font-weight: 650;
+}
+
+.pending-total, .pending {
+    color: #f1930b;
+}
+
+.loan-total, .loan {
+    color: #0b4487;
+}
+
+.overdue-total, .overdue{
+    color: #ff0000;
+}
+
+.order-info .box .detail {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 16px;
+    font-size: 12px;
+    font-weight: 650;
+    color: #b1b1b1;
+    letter-spacing: 1.5px;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    margin: 20px 30px;
+    gap: 4px;
+}
+
+.search input {
+    width: 1200px;
+    padding: 6px 12px;
+    background-color: #eeeeee;
+    font-size: 18px;
+    font-weight: 500;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: none;
+    box-shadow: 2px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+::placeholder{
+    color: #b1b1b1;
+}
+
+.search .btn-search {
+    padding: 4.45px 20px;
+    background-color: #0b4487;
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.menu-option{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 30px;
+}
+
+.menu-options{
+    display: flex;
+    gap: 10px;
+}
+
+.menu-options button{
+    width: 100px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    color: #b1b1b1;
+    background-color: #eeeeee;
+    padding: 9px 12px;
+    border-radius: 40px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    transition: .2s;
+}
+
+/* action */
+.menu-options button.active{
+    background-color: #0b4487;
+    color: white;
+    transform: scale(1.05);
+}
+
+.date input{
+    font-size: 14px;
+    font-weight: 400;
+    color: #818181;
+    padding: 7.5px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.page-text{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 30px;
+}
+
+.page-text span{
+    color: #0b4487;
+    font-size: 30px;
+    font-weight: 650;
+}
+
+.page-text button{
+    padding: 8px 10px;
+    font-size: 10px;
+    color: #ffffff;
+    border: none;
+    background-color: #3f96ff;
+    border-radius: 15px;
+}
+
+.customer-table {
+    margin: 0 30px 30px 30px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.customer-table table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+th, td {
+    padding: 6px 15px;
+    text-align: left;
+    border: 1px solid #dddddd;
+    text-align: center;
+    color: #818181;
+}
+
+.actions{
+    width: 100px;
+}
+
+.action {
+    display: flex;
+    gap: 8px;
+}
+
+.action button{
+    padding: 4px 20px;
+    border-radius: 5px;
+    width: 90px;
+}
+
+.action .btn-approve{
+    background-color: #00ff55;
+    border: none;
+}
+
+.action .btn-reject{
+    background-color: #ff0000;
+    border: none;
+}
+
+.action .btn{
+    width: 120px;
+    border: none;
+    color: #ffffff;
+}
+
+.action .check{
+    width: 60px;
+    border: none;
+    color: #ffffff;
+}
+
+.action .btn-use-reminder, .action .btn-use-check{
+    background-color: #0b4487;
+}
+.action .btn-overdue-reminder, .action .btn-overdue-check{
+    background-color: #f1930b;
+}
+
+.even{
+    background-color: #f4f4f4;
+}

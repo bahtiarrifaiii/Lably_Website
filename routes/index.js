@@ -129,6 +129,37 @@ router.get("/customer", (req, res) => {
 });
 
 // ==========================
+// CUSTOMERS PAGE
+// ==========================
+router.get("/order", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/order/order.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Orders | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/order.css">
+          `,
+          content,
+          message: null,
+          showPopup: false
+        });
+      }
+    );
+  });
+});
+
+// ==========================
 // CATEGORY 
 // ==========================
 router.get("/category", categoryController.index);
