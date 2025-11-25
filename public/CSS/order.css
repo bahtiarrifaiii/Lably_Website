@@ -211,13 +211,13 @@ th, td {
     width: 100px;
 }
 
-.action {
+.action div{
     display: flex;
     gap: 8px;
 }
 
 .action button{
-    padding: 4px 20px;
+    padding: 8px 20px;
     border-radius: 5px;
     width: 90px;
 }
