@@ -237,6 +237,7 @@ router.get("/customer", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -266,6 +267,7 @@ router.get("/order", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -295,6 +297,7 @@ router.get("/order-completed", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -324,6 +327,7 @@ router.get("/product-list", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -353,6 +357,7 @@ router.get("/product-create", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -373,7 +378,7 @@ router.get("/product-detail", (req, res) => {
       { users, totalCustomers },
       (err, content) => {
         res.render("layouts/atmin", {
-          title: "Product Create | Lably",
+          title: "Product Detail | Lably",
           meta: "",
           style: `
             <link rel="stylesheet" href="/css/sidebar.css">
@@ -382,6 +387,7 @@ router.get("/product-detail", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
         });
       }
     );
@@ -411,6 +417,37 @@ router.get("/analytics", (req, res) => {
           content,
           message: null,
           showPopup: false,
+          currentPage: req.path,
+        });
+      }
+    );
+  });
+});
+
+// ANALYTICS PAGE
+router.get("/invoice", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/invoice.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Invoice | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/invoice.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+          currentPage: req.path,
         });
       }
     );

@@ -1,0 +1,237 @@
+:root {
+  --primary: #0b4487;
+  --secondary: #f37a1d;
+  --base-white: #f8f9ff;
+  --base-black: #333;
+
+  --background-gradient: linear-gradient(to bottom, #a8e4fe 0%, #ffffff 65%);
+  --button-gradient: linear-gradient(to right, #f37a1d, #f1930b);
+
+  --background-product: #f6f5fd;
+  --background-cancel: #ae0707;
+
+  --btn-hover-blue: #3f96ff;
+  --btn-hover-orange: #f06c06;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.container {
+  display: grid;
+  height: 100vh;
+  grid-template-areas: "left right";
+  grid-template-columns: 1fr 4fr;
+  background: var(--background-product);
+}
+
+.right {
+  grid-area: right;
+  background-color: var(--base-white);
+  overflow-y: auto;
+  padding: 0 2rem;
+}
+
+.navbar {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem 0;
+}
+
+.navbar span {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--base-black);
+}
+
+.navbar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ---------------------------------- */
+/* PRINT AND TOTAL
+/* ---------------------------------- */
+.controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.total-checkout {
+  display: flex;
+  align-items: center;
+  background-image: var(--button-gradient);
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  box-shadow: 2px 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+.total-checkout h2 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--base-white);
+}
+
+.total-checkout i {
+  font-size: 1.6rem;
+  color: var(--base-white);
+  margin-right: 2rem;
+}
+
+.print-button {
+  background-color: var(--primary);
+  color: var(--base-white);
+  text-decoration: none;
+  padding: 0.8rem 2rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  transition: background-color 0.5s;
+}
+
+.print-button i {
+  color: var(--base-white);
+  font-size: 1rem;
+}
+
+.print-button:hover {
+  background-color: var(--btn-hover-blue);
+}
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+table {
+  width: 100%;
+  position: relative;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0.7rem;
+}
+
+table thead {
+  position: sticky;
+  background-color: var(--base-white);
+  top: 0;
+  z-index: 10;
+}
+
+th,
+td {
+  padding: 0.8rem 1.1rem;
+  text-align: left;
+  border-bottom: 1px solid #eeeeee;
+  text-align: center;
+}
+
+thead th {
+  color: var(--primary);
+  font-weight: 600;
+  padding-bottom: 1rem;
+}
+
+table thead tr:first-child th:first-child {
+  border-top-left-radius: 10px;
+}
+table thead tr:first-child th:last-child {
+  border-top-right-radius: 10px;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.col-no {
+  width: 5%;
+  text-align: center;
+}
+
+.complete {
+  color: #78c841;
+}
+
+/* ---------------------------------- */
+/* Pagination */
+/* ---------------------------------- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.page-number,
+.page-next {
+  background-color: white;
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.page-number.active {
+  background-color: var(--primary);
+  color: var(--base-white);
+}
+
+.page-next {
+  background-color: transparent;
+  border: none;
+  color: var(--primary);
+  padding: 0.5rem 0.6rem;
+}
+
+.page-next i {
+  font-size: 0.7rem;
+  margin-left: 0.4rem;
+}
+
+@media print {
+  .left,
+  .dashboard-header,
+  .print-button,
+  .form-actions {
+    display: none !important;
+  }
+
+  .container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .right {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
