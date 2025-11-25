@@ -1,22 +1,29 @@
 <div class="category-container">
 
-    <!-- TOPBAR -->
-    <div class="admin-topbar">
-        <img src="/Assets/profile.jpg" class="admin-profile">
-    </div>
+    <nav class="navbar">
+        <span>Category</span>
+        <img src="Assets/profile.jpg" alt="" />
+    </nav>
 
-    <!-- CATEGORY CARD -->
-    <div class="category-card">
+    <section class="controls-section">
 
-        <div class="header-row">
-            <h2 class="category-title">Category</h2>
-
-            <a href="/category/create" class="btn-add-category">
-                Add Category
-            </a>
+        <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Search category...">
+            <button class="search-button" id="searchBtn">
+                <i class="bi bi-arrow-right"></i>
+            </button>
         </div>
 
-        <table class="category-table">
+        <a href="/category/create" class="add-category-button">
+            <i class="bi bi-plus-circle"></i>
+            Add Category
+        </a>
+
+    </section>
+
+    <div class="table-wrapper">
+        <table class="category-table" id="categoryTable">
             <thead>
                 <tr>
                     <th>No</th>
@@ -25,20 +32,123 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="tableBody">
                 <% categories.forEach((c, i) => { %>
-                    <tr>
-                        <td><%= i + 1 %></td>
-                        <td><%= c.name %></td>
-                        <td>
-                            <a href="/category/edit/<%= c.id %>" class="btn-edit">Update</a>
-                            <a href="/category/delete/<%= c.id %>" class="btn-delete">Delete</a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><%= i + 1 %></td>
+                    <td><%= c.name %></td>
+                    <td>
+                        <a href="/category/edit/<%= c.id %>" class="btn-edit">Update</a>
+
+                        <button 
+                            class="btn-delete"
+                            onclick="openDeletePopup('/category/delete/<%= c.id %>', '<%= c.name %>')">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
                 <% }) %>
             </tbody>
         </table>
-
     </div>
 
+    <div id="pagination" class="pagination"></div>
+
 </div>
+<div id="delete-popup" class="delete-popup-overlay" style="display:none;">
+    <div class="delete-popup-box">
+        <h3>Are you sure?</h3>
+        <p>Do you really want to delete <strong id="delete-item-name"></strong> category?</p>
+
+        <div class="delete-popup-actions">
+            <a id="confirm-delete-btn" href="#" class="popup-yes">Yes</a>
+            <button class="popup-no" onclick="closeDeletePopup()">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeletePopup(url, name) {
+        const popup = document.getElementById("delete-popup");
+        const confirmBtn = document.getElementById("confirm-delete-btn");
+        const namePlaceholder = document.getElementById("delete-item-name");
+
+        confirmBtn.href = url;
+        namePlaceholder.textContent = `"${name}"`; 
+        popup.style.display = "flex";
+    }
+
+    function closeDeletePopup() {
+        document.getElementById("delete-popup").style.display = "none";
+    }
+</script>
+
+<script>
+    const ROWS_PER_PAGE = 4;
+    let currentPage = 1;
+
+    const tableBody = document.getElementById("tableBody");
+    const searchInput = document.getElementById("searchInput");
+    const pagination = document.getElementById("pagination");
+
+    let rows = Array.from(tableBody.querySelectorAll("tr"));
+
+    function renderTable() {
+        const q = searchInput.value.toLowerCase();
+
+        const filtered = rows.filter(r => 
+            r.children[1].textContent.toLowerCase().includes(q)
+        );
+
+        const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+        if (currentPage > totalPages) currentPage = 1;
+
+        const start = (currentPage - 1) * ROWS_PER_PAGE;
+        const pageRows = filtered.slice(start, start + ROWS_PER_PAGE);
+
+        tableBody.innerHTML = "";
+        pageRows.forEach((r, i) => {
+            r.children[0].textContent = start + i + 1;
+            tableBody.appendChild(r);
+        });
+
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        pagination.innerHTML = "";
+
+        const prev = document.createElement("button");
+        prev.classList.add("page-next");
+        prev.innerHTML = `<i class="bi bi-chevron-left"></i>`;
+        prev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
+        pagination.appendChild(prev);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.classList.add("page-number");
+            btn.textContent = i;
+            if (i === currentPage) btn.classList.add("active");
+            btn.onclick = () => { currentPage = i; renderTable(); };
+            pagination.appendChild(btn);
+        }
+
+        const next = document.createElement("button");
+        next.classList.add("page-next");
+        next.innerHTML = `<i class="bi bi-chevron-right"></i>`;
+        next.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); } };
+        pagination.appendChild(next);
+    }
+
+    searchInput.addEventListener("keyup", () => {
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById("searchBtn").onclick = () => {
+        currentPage = 1;
+        renderTable();
+    };
+
+    renderTable();
+</script>
