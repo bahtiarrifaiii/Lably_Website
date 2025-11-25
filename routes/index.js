@@ -301,6 +301,35 @@ router.get("/order-completed", (req, res) => {
   });
 });
 
+// ANALYTICS PAGE
+router.get("/analytics", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/analytics.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Analytics | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/analytics.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+        });
+      }
+    );
+  });
+});
+
 // CATEGORY
 router.get("/category", categoryController.index);
 router.get("/category/create", categoryController.createPage);
