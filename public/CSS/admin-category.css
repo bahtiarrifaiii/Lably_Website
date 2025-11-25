@@ -1,0 +1,208 @@
+/* ============================================
+   MAIN LAYOUT WRAPPER (MILIK CATEGORY PAGE)
+   Agar layout mengikuti dashboard (horizontal)
+===============================================*/
+/* =====================================
+   GLOBAL ADMIN LAYOUT (WAJIB)
+   Agar sidebar dan content sejajar
+=====================================*/
+html, body {
+    overflow: hidden;   /* PAKSA GA BOLEH ADA SCROLL */
+    height: 100%;
+}
+
+.container {
+    display: grid;
+    grid-template-areas: "left right";
+    grid-template-columns: 1fr 4fr;
+    background: #f8f9ff;
+    width: 100%;             /* FIX sidebar geser */
+    height: 100vh;           /* FIX scroll */
+    overflow: hidden;
+}
+
+/* Pastikan sidebar di kiri */
+.left {
+    grid-area: left;
+}
+
+/* Pastikan konten di kanan */
+.right {
+    grid-area: right;
+    padding: 35px;
+    height: 100vh;
+    overflow-y: hidden;       /* HILANGKAN SCROLL BAR */
+    background: #f8f9ff;
+}
+
+
+.category-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 10px;
+    background: #f8f9ff;
+    width: 100%;
+}
+
+/* ============================================
+   TOPBAR
+===============================================*/
+.admin-topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 5px;
+}
+
+.admin-icon {
+    font-size: 20px;
+    color: #6e6e6e;
+    cursor: pointer;
+}
+
+.admin-profile {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ============================================
+   CATEGORY CARD WRAPPER
+===============================================*/
+.category-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+/* HEADER ROW */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* ============================================
+   ADD BUTTON
+===============================================*/
+.btn-add-category {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #4e73df;
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-add-category:hover {
+    background: #2e59d9;
+}
+
+/* ============================================
+   CATEGORY TABLE
+===============================================*/
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 10px;
+}
+
+.category-table thead {
+    background: #f7f7fc;
+}
+
+.category-table th,
+.category-table td {
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 15px;
+}
+
+/* ============================================
+   ACTION BUTTONS
+===============================================*/
+.btn-edit {
+    padding: 6px 15px;
+    background: #1cc88a;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-edit:hover {
+    background: #17a673;
+}
+
+.btn-delete {
+    padding: 6px 15px;
+    background: #e74a3b;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+/* ============================================
+   FORM INPUTS
+===============================================*/
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.btn-submit {
+    background: #1cc88a;
+    padding: 12px 25px;
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-back {
+    background: #858796;
+    padding: 12px 25px;
+    color: white;
+    border-radius: 8px;
+}
+
+/* ============================================
+   POPUP MESSAGE
+===============================================*/
+.popup {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    padding: 15px 22px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    animation: fadeIn 0.3s ease;
+    z-index: 9999;
+    display: flex;
+    gap: 10px;
+}
+
+.popup.success { border-left: 6px solid #1cc88a; }
+.popup.error { border-left: 6px solid #e74a3b; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

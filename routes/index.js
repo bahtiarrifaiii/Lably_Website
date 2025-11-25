@@ -5,19 +5,18 @@ const ejs = require("ejs");
 const path = require("path");
 const User = require("../models/userModel");
 
-// Controller
+// Controllers
 const authController = require("../controllers/authController");
+const categoryController = require("../controllers/categoryController");
 
 // ==========================
 // HOME PAGE
 // ==========================
 router.get("/", (req, res) => {
-  const dataHome = {
+  res.render("index", {
     title: "Sistem Peminjaman Alat Lab",
     message: "Selamat datang di sistem peminjaman alat laboratorium.",
-  };
-
-  res.render("index", dataHome);
+  });
 });
 
 // ==========================
@@ -88,62 +87,55 @@ router.get("/form", async (req, res) => {
 // LOGOUT
 // ==========================
 router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log("Logout error:", err);
-      return res.redirect("/dashboard");
-    }
-
-    // Regenerate session baru buat message
-    req.session = null;
-    req.sessionStore?.regenerate?.(req, () => {
-      req.session.message = {
-        type: "success",
-        text: "Selamat tinggal, Admin!",
-      };
-
-      res.redirect("/login");
-    });
+  req.session.destroy(() => {
+    res.redirect("/login");
   });
 });
 
 // ==========================
-// DASHBOARD PAGE (ADMIN)
-// Ambil data dari controller
+// DASHBOARD PAGE
 // ==========================
 router.get("/dashboard", authController.dashboard);
 
 // ==========================
-// CUSTOMERS PAGE (ADMIN)
+// CUSTOMERS PAGE
 // ==========================
 router.get("/customer", (req, res) => {
-  if (!req.session.admin) {
-    return res.redirect("/login");
-  }
+  if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
     if (err) throw err;
 
-    const totalCustomers = users.length; // <--- AMBIL JUMLAH USER
+    const totalCustomers = users.length;
 
     ejs.renderFile(
       path.join(__dirname, "../views/pages/admin/customer.ejs"),
-      { users, totalCustomers }, // <--- KIRIM KE EJS
+      { users, totalCustomers },
       (err, content) => {
-        if (err) throw err;
-
         res.render("layouts/atmin", {
           title: "Customers | Lably",
           meta: "",
           style: `
-                        <link rel="stylesheet" href="/CSS/sidebar.css">
-                        <link rel="stylesheet" href="/CSS/customer.css">
-                    `,
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/customer.css">
+          `,
           content,
+          message: null,
+          showPopup: false
         });
       }
     );
   });
 });
+
+// ==========================
+// CATEGORY 
+// ==========================
+router.get("/category", categoryController.index);
+router.get("/category/create", categoryController.createPage);
+router.post("/category/create", categoryController.create);
+router.get("/category/edit/:id", categoryController.editPage);
+router.post("/category/update/:id", categoryController.update);
+router.get("/category/delete/:id", categoryController.delete);
 
 module.exports = router;

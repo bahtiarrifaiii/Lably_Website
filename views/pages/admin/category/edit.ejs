@@ -1,0 +1,11 @@
+<div class="category-card">
+    <h2 class="category-title">Category Detail</h2>
+
+    <form method="POST" action="/category/update/<%= category.id %>">
+        <label>Name</label>
+        <input type="text" name="name" class="form-input" value="<%= category.name %>">
+
+        <button class="btn-submit">UPDATE CATEGORY</button>
+        <a href="/category" class="btn-back">BACK</a>
+    </form>
+</div>

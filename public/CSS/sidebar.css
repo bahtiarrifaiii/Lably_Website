@@ -9,6 +9,32 @@
     flex-direction: column;
 }
 
+.admin-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 25px;
+    height: 60px;
+}
+
+.admin-icon {
+    font-size: 18px;
+    color: #333;
+}
+
+.admin-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.page-content {
+    padding: 20px 25px;
+}
+
+
 .logo {
     font-size: 28px;
     font-weight: 700;
