@@ -117,12 +117,11 @@
 
 .add-product-button {
   background-color: var(--primary);
-  color: white;
-  border: none;
+  color: var(--base-white);
+  text-decoration: none;
   padding: 0.8rem 2rem;
   border-radius: 0.6rem;
   font-weight: 500;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -203,6 +202,7 @@ tbody tr:last-child td {
 
 .btn-action {
   border: none;
+  text-decoration: none;
   padding: 0.5rem 0.8rem;
   border-radius: 0.5rem;
   color: var(--base-white);

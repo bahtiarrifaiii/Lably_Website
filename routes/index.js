@@ -315,11 +315,98 @@ router.get("/product-list", (req, res) => {
       { users, totalCustomers },
       (err, content) => {
         res.render("layouts/atmin", {
-          title: "Product | Lably",
+          title: "Product List | Lably",
           meta: "",
           style: `
             <link rel="stylesheet" href="/css/sidebar.css">
             <link rel="stylesheet" href="/css/product-list.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+        });
+      }
+    );
+  });
+});
+
+// PRODUCT CREATE
+router.get("/product-create", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/product/product_create.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Product Create | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/product-create.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+        });
+      }
+    );
+  });
+});
+
+// PRODUCT CREATE
+router.get("/product-detail", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/product/product_detail.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Product Create | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/product-detail.css">
+          `,
+          content,
+          message: null,
+          showPopup: false,
+        });
+      }
+    );
+  });
+});
+
+// ANALYTICS PAGE
+router.get("/analytics", (req, res) => {
+  if (!req.session.admin) return res.redirect("/login");
+
+  User.getAll((err, users) => {
+    if (err) throw err;
+
+    const totalCustomers = users.length;
+
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/admin/analytics.ejs"),
+      { users, totalCustomers },
+      (err, content) => {
+        res.render("layouts/atmin", {
+          title: "Analytics | Lably",
+          meta: "",
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/analytics.css">
           `,
           content,
           message: null,
