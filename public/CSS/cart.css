@@ -6,7 +6,7 @@
 .cart-table-header,
 .cart-item {
   display: grid;
-  grid-template-columns: 3fr 1.5fr 1.5fr 1fr 1fr;
+  grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr;
   align-items: center;
   padding: 1rem 0;
   gap: 1rem;
@@ -68,6 +68,12 @@
 }
 
 .item-name {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.item-date {
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--primary);
 }

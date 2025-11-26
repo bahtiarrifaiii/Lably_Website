@@ -15,7 +15,7 @@
 
 .cart-item {
   display: grid;
-  grid-template-columns: 3fr 1.5fr 1.5fr 1fr 1fr;
+  grid-template-columns: 2.5fr 1fr 0.5fr 2fr 1fr 0.5fr;
   align-items: center;
   padding: 1rem 0;
   gap: 1rem;
@@ -34,6 +34,7 @@
   padding: 1rem;
   margin-bottom: 1.5rem;
   color: var(--base-black);
+  text-align: center;
 }
 
 .item-product {
@@ -57,6 +58,17 @@
 }
 
 .item-name {
+  font-weight: 600;
+  color: var(--primary);
+  text-align: left;
+}
+
+.item-quantity {
+  font-size: 0.9rem;
+}
+
+.item-date {
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--primary);
 }

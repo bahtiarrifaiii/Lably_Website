@@ -136,6 +136,10 @@ a {
   width: 45vw;
 }
 
+.user {
+  width: 47 vw;
+}
+
 .main-nav,
 .nav-icons {
   display: flex;
