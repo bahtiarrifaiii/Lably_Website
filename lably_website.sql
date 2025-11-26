@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2025 at 03:27 AM
+-- Generation Time: Nov 26, 2025 at 10:38 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -58,7 +58,10 @@ CREATE TABLE `category` (
 
 INSERT INTO `category` (`id`, `name`) VALUES
 (2, 'cihuyy'),
-(6, 'tehuyy');
+(11, 'test'),
+(16, 'ppw'),
+(17, 'dpbo'),
+(18, 'metnuki');
 
 -- --------------------------------------------------------
 
@@ -71,6 +74,7 @@ CREATE TABLE `peminjaman` (
   `id_admin` int(50) NOT NULL,
   `id_user` int(50) NOT NULL,
   `id_products` int(50) NOT NULL,
+  `price` varchar(255) NOT NULL,
   `tgl_pinjam` datetime NOT NULL,
   `tgl_kembali` datetime NOT NULL,
   `status` enum('pending','in use','completed','overdue') NOT NULL,
@@ -128,7 +132,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `status`, `created_at`, `last_login`) VALUES
 (8, 'Bima', 'bima@gmail.com', '$2b$10$FmCL.PkghfWzndZ5.QUwI.Kvopfbo8V9XEDPvPSiOQWqucrz6KKy6', 'inactive', '2025-11-20 15:52:39', '2025-11-20 23:02:33'),
-(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'active', '2025-11-20 16:01:38', '2025-11-20 23:01:44');
+(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'inactive', '2025-11-20 16:01:38', '2025-11-20 23:01:44');
 
 --
 -- Indexes for dumped tables
@@ -150,19 +154,24 @@ ALTER TABLE `category`
 -- Indexes for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_admin` (`id_admin`),
+  ADD KEY `id_products` (`id_products`),
+  ADD KEY `id_user` (`id_user`);
 
 --
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_category` (`id_category`);
 
 --
 -- Indexes for table `reminder`
 --
 ALTER TABLE `reminder`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_peminjaman` (`id_peminjaman`);
 
 --
 -- Indexes for table `users`
@@ -185,7 +194,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
@@ -210,6 +219,30 @@ ALTER TABLE `reminder`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `peminjaman`
+--
+ALTER TABLE `peminjaman`
+  ADD CONSTRAINT `peminjaman_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
+  ADD CONSTRAINT `peminjaman_ibfk_2` FOREIGN KEY (`id_products`) REFERENCES `products` (`id`),
+  ADD CONSTRAINT `peminjaman_ibfk_3` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`);
+
+--
+-- Constraints for table `reminder`
+--
+ALTER TABLE `reminder`
+  ADD CONSTRAINT `reminder_ibfk_1` FOREIGN KEY (`id_peminjaman`) REFERENCES `peminjaman` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
