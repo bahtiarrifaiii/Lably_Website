@@ -2,9 +2,13 @@ const database = require("../config/database");
 
 const User = {
     create: (data, callback) => {
-        const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        const sql = `
+            INSERT INTO users (username, email, password, status)
+            VALUES (?, ?, ?, 'active')
+        `;
         database.query(sql, [data.username, data.email, data.password], callback);
     },
+
 
     findByEmail: (email, callback) => {
         const sql = "SELECT * FROM users WHERE email = ?";
@@ -22,13 +26,19 @@ const User = {
         database.query(sql, [id], callback);
     },
 
+    reactivate: (id, callback) => {
+        const sql = "UPDATE users SET status = 'active' WHERE id = ?";
+        database.query(sql, [id], callback);
+    },
+
+
     deactivateInactive: (callback) => {
         const sql = `
             UPDATE users
             SET status = 'inactive'
             WHERE (status = 'active' OR status IS NULL)
             AND last_login IS NOT NULL
-            AND TIMESTAMPDIFF(DAY, last_login, NOW()) > 30
+            AND TIMESTAMPDIFF(MINUTE, last_login, NOW()) > 3
         `;
         database.query(sql, callback);
     }

@@ -71,44 +71,46 @@ module.exports = {
 
         const user = userResult[0];
 
-        if (user.status === "nonactive") {
-          req.session.message = {
-            type: "error",
-            text: "Akun Anda nonaktif karena tidak login selama 30 hari.",
-          };
-          return req.session.save(() => res.redirect("/login"));
-        }
-
         bcrypt.compare(password, user.password, (err, match) => {
-          if (!match) {
-            req.session.message = {
-              type: "error",
-              text: "Password salah!",
-            };
+            if (!match) {
+                req.session.message = {
+                    type: "error",
+                    text: "Password salah!"
+                };
 
-            return req.session.save(() => res.redirect("/login"));
-          }
+                req.session.save(() => {
+                    return res.redirect("/login");
+                });
+                return;
+            }
 
-          // UPDATE LAST LOGIN
-          User.updateLastLogin(user.id, (err) => {
-            if (err) throw err;
+            // Jika akun inactive → reaktifasi
+            if (user.status === "inactive") {
+                User.reactivate(user.id, (err) => {
+                    if (err) throw err;
+                });
+            }
 
-            // Setelah UPDATE selesai → baru login
+            // Update last login
+            User.updateLastLogin(user.id, (err) => {
+                if (err) throw err;
+            });
+
+            // Login user sukses
             req.session.user = {
-              id: user.id,
-              username: user.username,
-              email: user.email,
+                id: user.id,
+                username: user.username,
+                email: user.email
             };
 
             req.session.message = {
-              type: "success",
-              text: "Berhasil login!",
+                type: "success",
+                text: "Berhasil login!"
             };
 
             req.session.save(() => {
-              return res.redirect("/");
+                return res.redirect("/");
             });
-          });
         });
       });
     });
