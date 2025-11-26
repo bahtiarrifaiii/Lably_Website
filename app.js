@@ -4,6 +4,7 @@ const app = express();
 const path = require("path");
 const routes = require("./routes/index");
 const User = require("./models/userModel");
+const Customer = require("./models/customerModel");
 
 // ==========================
 // 1. Middleware

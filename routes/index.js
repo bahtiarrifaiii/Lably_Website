@@ -4,6 +4,7 @@ const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
 const User = require("../models/userModel");
+const Customer = require("../models/customerModel");
 
 // Controllers
 const authController = require("../controllers/authController");
@@ -218,31 +219,48 @@ router.get("/dashboard", authController.dashboard);
 router.get("/customer", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
-  User.getAll((err, users) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  Customer.getPaginated(limit, offset, (err, users) => {
     if (err) throw err;
 
-    const totalCustomers = users.length;
+    Customer.countAll((err, result) => {
+      if (err) throw err;
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/customer.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Customers | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/customer.css">
-          `,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
-        });
-      }
-    );
+      const totalCustomers = result[0].total;
+      const totalPages = Math.ceil(totalCustomers / limit);
+
+      ejs.renderFile(
+        path.join(__dirname, "../views/pages/admin/customer.ejs"),
+        {
+          users,
+          totalCustomers,
+          page,
+          totalPages
+        },
+        (err, content) => {
+          res.render("layouts/atmin", {
+            title: "Customers | Lably",
+            meta: "",
+            style: `
+                <link rel="stylesheet" href="/css/sidebar.css">
+                <link rel="stylesheet" href="/css/customer.css">
+            `,
+            content,
+            message: null,
+            showPopup: false,
+            currentPage: req.path,
+          });
+        }
+      );
+    });
   });
 });
+
+
+
 
 // ORDER PAGE
 router.get("/order", (req, res) => {
