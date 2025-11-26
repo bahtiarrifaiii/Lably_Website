@@ -215,52 +215,14 @@ router.get("/checkout", async (req, res) => {
 // DASHBOARD PAGE
 router.get("/dashboard", authController.dashboard);
 
-// CUSTOMERS PAGE
+// CUSTOMERS PAGE 
+const customerController = require("../controllers/customerController");
+
 router.get("/customer", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
-  const page = parseInt(req.query.page) || 1;
-  const limit = 10;
-  const offset = (page - 1) * limit;
-
-  Customer.getPaginated(limit, offset, (err, users) => {
-    if (err) throw err;
-
-    Customer.countAll((err, result) => {
-      if (err) throw err;
-
-      const totalCustomers = result[0].total;
-      const totalPages = Math.ceil(totalCustomers / limit);
-
-      ejs.renderFile(
-        path.join(__dirname, "../views/pages/admin/customer.ejs"),
-        {
-          users,
-          totalCustomers,
-          page,
-          totalPages
-        },
-        (err, content) => {
-          res.render("layouts/atmin", {
-            title: "Customers | Lably",
-            meta: "",
-            style: `
-                <link rel="stylesheet" href="/css/sidebar.css">
-                <link rel="stylesheet" href="/css/customer.css">
-            `,
-            content,
-            message: null,
-            showPopup: false,
-            currentPage: req.path,
-          });
-        }
-      );
-    });
-  });
+  return customerController.list(req, res);
 });
-
-
-
 
 // ORDER PAGE
 router.get("/order", (req, res) => {
