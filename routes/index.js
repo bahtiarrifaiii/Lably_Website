@@ -3,15 +3,37 @@ const express = require("express");
 const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
+const multer = require("multer");
+
+// Models
 const User = require("../models/userModel");
 const Customer = require("../models/customerModel");
 
 // Controllers
 const authController = require("../controllers/authController");
 const categoryController = require("../controllers/categoryController");
+const customerController = require("../controllers/customerController");
+const productController = require("../controllers/productController");
+
+// Middleware
+const {
+  isLoggedIn,
+  isAdmin,
+  passLoginStatus,
+} = require("../middlewares/authMiddleware");
 
 /* ============================================
-   AUTH PAGE
+    KONFIGURASI MIDDLEWARE UPLOAD (MULTER)
+============================================ */
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "./public/uploads"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+});
+const upload = multer({ storage });
+
+/* ============================================
+   AUTH PAGE (PUBLIC ACCESS)
 ============================================ */
 
 // LOGIN PAGE
@@ -31,7 +53,6 @@ router.get("/login", async (req, res) => {
     content,
   });
 });
-
 router.post("/login", authController.login);
 
 // REGISTER PAGE
@@ -51,7 +72,6 @@ router.get("/register", async (req, res) => {
     content,
   });
 });
-
 router.post("/register", authController.register);
 
 // LOGOUT
@@ -62,10 +82,10 @@ router.get("/logout", (req, res) => {
 });
 
 /* ============================================
-   USER PAGE (TIDAK DIUBAH)
+   USER PAGE (PUBLIC ACCESS)
 ============================================ */
 
-router.get("/", async (req, res) => {
+router.get("/", passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/home.ejs")
   );
@@ -83,7 +103,7 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.get("/catalogue", async (req, res) => {
+router.get("/catalogue", passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/catalogue.ejs")
   );
@@ -94,13 +114,14 @@ router.get("/catalogue", async (req, res) => {
     showFooter: true,
     meta: `
       <meta name="description" content="Katalog alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
     style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
     content,
   });
 });
 
-router.get("/product", async (req, res) => {
+router.get("/product", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/product.ejs")
   );
@@ -110,14 +131,15 @@ router.get("/product", async (req, res) => {
     currentPage: "product",
     showFooter: true,
     meta: `
-      <meta name="description" content="Product alat laboratorium LabLy." />
+      <meta name="description" content="Produk alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
     style: `<link rel="stylesheet" href="/CSS/product.css" />`,
     content,
   });
 });
 
-router.get("/form", async (req, res) => {
+router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
 
@@ -128,13 +150,16 @@ router.get("/form", async (req, res) => {
 
   res.render("layouts/forms", {
     title: "Form | Lably",
-    meta: "",
+    meta: `
+      <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
     style: "",
     content,
   });
 });
 
-router.get("/cart", async (req, res) => {
+router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/cart.ejs")
   );
@@ -143,13 +168,16 @@ router.get("/cart", async (req, res) => {
     title: "Cart | Lably",
     currentPage: "cart",
     showFooter: false,
-    meta: "",
+    meta: `
+      <meta name="description" content="Keranjang menyimpan alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
     style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
     content,
   });
 });
 
-router.get("/checkout", async (req, res) => {
+router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/checkout.ejs")
   );
@@ -158,14 +186,17 @@ router.get("/checkout", async (req, res) => {
     title: "Checkout | Lably",
     currentPage: "checkout",
     showFooter: false,
-    meta: "",
+    meta: `
+      <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
     style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
     content,
   });
 });
 
 // ORDER PAGE
-router.get("/order-user", async (req, res) => {
+router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
   const orderSpecificScript = "/JS/order-user.js";
 
   const content = await ejs.renderFile(
@@ -197,19 +228,17 @@ router.get("/order-user", async (req, res) => {
    ADMIN PAGE
 ============================================ */
 
-router.get("/dashboard", authController.dashboard);
+router.get("/dashboard", isAdmin, authController.dashboard);
 
 // CUSTOMERS PAGE
-const customerController = require("../controllers/customerController");
-
-router.get("/customer", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+router.get("/customer", isAdmin, (req, res) => {
+  // if (!req.session.admin) return res.redirect("/login");
   return customerController.list(req, res);
 });
 
 /* ORDER PAGES (tidak diubah) */
-router.get("/order", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+router.get("/order", isAdmin, (req, res) => {
+  // if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
     const totalCustomers = users.length;
@@ -231,8 +260,8 @@ router.get("/order", (req, res) => {
   });
 });
 
-router.get("/order-completed", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+router.get("/order-completed", isAdmin, (req, res) => {
+  // if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
     const totalCustomers = users.length;
@@ -258,47 +287,40 @@ router.get("/order-completed", (req, res) => {
    PRODUCT ADMIN — CLEAN & FIXED
 ============================================ */
 
-const productController = require("../controllers/productController");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./public/uploads"),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
-});
-const upload = multer({ storage });
-
 // LIST
-router.get("/product-list", productController.list);
+router.get("/product-list", isAdmin, productController.list);
 
 // CREATE PAGE
-router.get("/product-create", productController.createPage);
+router.get("/product-create", isAdmin, productController.createPage);
 
 // CREATE ACTION
 router.post(
   "/product/create",
+  isAdmin,
   upload.single("image"),
   productController.create
 );
 
 // DETAIL PAGE
-router.get("/product-detail/:id", productController.detailPage);
+router.get("/product-detail/:id", isAdmin, productController.detailPage);
 
 // UPDATE ACTION
 router.post(
   "/product/update/:id",
+  isAdmin,
   upload.single("image"),
   productController.update
 );
 
 // DELETE
-router.get("/product/delete/:id", productController.delete);
+router.get("/product/delete/:id", isAdmin, productController.delete);
 
 /* ============================================
    ANALYTICS / INVOICE (tidak diubah)
 ============================================ */
 
-router.get("/analytics", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+router.get("/analytics", isAdmin, (req, res) => {
+  // if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
     const totalCustomers = users.length;
@@ -320,8 +342,8 @@ router.get("/analytics", (req, res) => {
   });
 });
 
-router.get("/invoice", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+router.get("/invoice", isAdmin, (req, res) => {
+  // if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
     const totalCustomers = users.length;
@@ -347,11 +369,11 @@ router.get("/invoice", (req, res) => {
    CATEGORY
 ============================================ */
 
-router.get("/category", categoryController.index);
-router.get("/category/create", categoryController.createPage);
-router.post("/category/create", categoryController.create);
-router.get("/category/edit/:id", categoryController.editPage);
-router.post("/category/update/:id", categoryController.update);
-router.get("/category/delete/:id", categoryController.delete);
+router.get("/category", isAdmin, categoryController.index);
+router.get("/category/create", isAdmin, categoryController.createPage);
+router.post("/category/create", isAdmin, categoryController.create);
+router.get("/category/edit/:id", isAdmin, categoryController.editPage);
+router.post("/category/update/:id", isAdmin, categoryController.update);
+router.get("/category/delete/:id", isAdmin, categoryController.delete);
 
 module.exports = router;

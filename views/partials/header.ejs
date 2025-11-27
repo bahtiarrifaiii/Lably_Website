@@ -1,35 +1,12 @@
 <% const headerOnePages = ['home', 'catalogue', 'order-user']; const
 headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
-(headerOnePages.includes(currentPage)){ %>
-
-<!-- Header Non-User -->
-<!-- <header class="main-header">
-  <div class="header-content">
-    <a href="/" class="logo"> <span>Lab</span>Ly </a>
-
-    <div id="mobile-menu-wrapper" class="mobile-menu-wrapper">
-      <nav class="main-nav" id="main-nav">
-        <a href="/">Home</a>
-        <a href="/catalogue">Catalogue</a>
-      </nav>
-      <div class="nav-icons" id="nav-icons">
-        <a href="/cart"><i class="bi bi-bag-fill"></i></a>
-        <a href="/login"><i class="bi bi-person-fill"></i></a>
-      </div>
-    </div>
-
-    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
-      <i class="bi bi-list"></i>
-    </button>
-  </div>
-</header> -->
-
+(headerOnePages.includes(currentPage)){ %> <% if (isLoggedIn) { %>
 <!-- Header User -->
 <header class="main-header">
   <div class="header-content">
     <a href="/" class="logo"> <span>Lab</span>Ly </a>
 
-    <div id="mobile-menu-wrapper" class="mobile-menu-wrapper user">
+    <div id="mobile-menu-wrapper" class="mobile-menu-wrapper">
       <nav class="main-nav" id="main-nav">
         <a href="/">Home</a>
         <a href="/catalogue">Catalogue</a>
@@ -48,8 +25,29 @@ headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
     </button>
   </div>
 </header>
+<% } else { %>
+<!-- Header User -->
+<header class="main-header">
+  <div class="header-content">
+    <a href="/" class="logo"> <span>Lab</span>Ly </a>
 
-<% } else if (headerTwoPages.includes(currentPage)) { %>
+    <div id="mobile-menu-wrapper" class="mobile-menu-wrapper user">
+      <nav class="main-nav" id="main-nav">
+        <a href="/">Home</a>
+        <a href="/catalogue">Catalogue</a>
+      </nav>
+      <div class="nav-icons" id="nav-icons">
+        <a href="/cart"><i class="bi bi-bag-fill"></i></a>
+        <a href="/login"><i class="bi bi-person-fill"></i></a>
+      </div>
+    </div>
+
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+</header>
+<% } %> <% } else if (headerTwoPages.includes(currentPage)) { %>
 <header class="main-header">
   <div class="header-content">
     <a href="/catalogue" class="back-btn">
@@ -72,5 +70,4 @@ headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
     </button>
   </div>
 </header>
-
 <% } %>

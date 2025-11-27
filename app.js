@@ -5,6 +5,7 @@ const path = require("path");
 const routes = require("./routes/index");
 const User = require("./models/userModel");
 const Customer = require("./models/customerModel");
+const { passLoginStatus } = require("./middlewares/authMiddleware");
 
 // ==========================
 // 1. Middleware
@@ -24,6 +25,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(passLoginStatus);
 
 // ==========================
 // 2. ROUTER
