@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2025 at 10:38 PM
+-- Generation Time: Nov 27, 2025 at 01:01 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -92,11 +92,18 @@ CREATE TABLE `products` (
   `name` varchar(255) NOT NULL,
   `id_category` int(50) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `stok` int(50) NOT NULL,
+  `stock` int(50) NOT NULL,
   `kondisi` varchar(250) NOT NULL,
   `price` int(50) NOT NULL,
   `image` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `id_category`, `description`, `stock`, `kondisi`, `price`, `image`) VALUES
+(2, 'tet', 18, 'gtau', 5, 'baikk', 500000, '1764241951129-basdat10-logis.drawio.png');
 
 -- --------------------------------------------------------
 
@@ -206,7 +213,7 @@ ALTER TABLE `peminjaman`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `reminder`
