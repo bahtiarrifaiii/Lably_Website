@@ -208,6 +208,35 @@ router.get("/checkout", async (req, res) => {
   });
 });
 
+// ORDER PAGE
+router.get("/order-user", async (req, res) => {
+  const orderSpecificScript = "/JS/order-user.js";
+
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/order-user.ejs"),
+    {}
+  );
+
+  res.render("layouts/main", {
+    title: "Order | Lably Official Web",
+    currentPage: "order-user",
+    showFooter: false,
+
+    meta: `
+      <meta name="description" content="List Order alat laboratorium LabLy." />
+      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+    `,
+
+    style: `
+      <link rel="stylesheet" href="/CSS/order-user.css" />
+    `,
+
+    scriptFile: orderSpecificScript,
+
+    content,
+  });
+});
+
 // ==========================================================================
 // ADMIN PAGE
 // ==========================================================================
@@ -215,7 +244,7 @@ router.get("/checkout", async (req, res) => {
 // DASHBOARD PAGE
 router.get("/dashboard", authController.dashboard);
 
-// CUSTOMERS PAGE 
+// CUSTOMERS PAGE
 const customerController = require("../controllers/customerController");
 
 router.get("/customer", (req, res) => {

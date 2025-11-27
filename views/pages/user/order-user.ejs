@@ -1,0 +1,163 @@
+<div class="container main-content" id="main-content">
+  <div class="top-section">
+    <h1 class="order-title">YOUR ORDERS</h1>
+    <div class="filters">
+      <button class="filter-btn active" id="filter-all">ALL ORDERS</button>
+      <button class="filter-btn inactive" id="filter-loaned">LOANED</button>
+      <button class="filter-btn inactive" id="filter-completed">
+        COMPLETED
+      </button>
+    </div>
+  </div>
+
+  <div class="order-card-list">
+    <div class="order-card" data-status="paid">
+      <img
+        src="./Assets/Mickroscope.png"
+        alt="Mikroskop Cahaya"
+        class="product-image"
+      />
+      <div class="order-details">
+        <div class="detail-item">
+          <span class="detail-label">NAMA PRODUCT :</span>
+          <span class="detail-value product-name">Mikroskop Cahaya</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">QUANTITY PRODUCT :</span>
+          <span class="detail-value">1x</span>
+        </div>
+
+        <div class="detail-item detail-all-orders">
+          <span class="detail-label">TOTAL PRODUCT :</span>
+          <span class="detail-value">Rp.400.000</span>
+        </div>
+        <div class="detail-item detail-all-orders">
+          <span class="detail-label">LOAN DATE :</span>
+          <span class="detail-value">11/12/25 - 12/12/25</span>
+        </div>
+
+        <div class="detail-item status-col">
+          <span class="detail-label">STATUS :</span>
+          <span class="status-badge paid">Paid</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-status="in-use">
+      <img
+        src="./Assets/Mickroscope.png"
+        alt="Mikroskop Cahaya"
+        class="product-image"
+      />
+      <div class="order-details">
+        <div class="detail-item">
+          <span class="detail-label">NAMA PRODUCT :</span>
+          <span class="detail-value product-name">Mikroskop Cahaya</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">QUANTITY PRODUCT :</span>
+          <span class="detail-value">1x</span>
+        </div>
+
+        <div class="detail-item detail-all-orders">
+          <span class="detail-label">TOTAL PRODUCT :</span>
+          <span class="detail-value">Rp.400.000</span>
+        </div>
+
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN FROM :</span>
+          <span class="detail-value">11/12/25</span>
+        </div>
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN UNTIL :</span>
+          <span class="detail-value">12/12/25</span>
+        </div>
+
+        <div class="detail-item status-col">
+          <span class="detail-label">STATUS :</span>
+          <span class="status-badge in-use">IN USE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-status="overdue">
+      <img
+        src="./Assets/Mickroscope.png"
+        alt="Mikroskop Cahaya"
+        class="product-image"
+      />
+      <div class="order-details">
+        <div class="detail-item">
+          <span class="detail-label">NAMA PRODUCT :</span>
+          <span class="detail-value product-name">Mikroskop Cahaya</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">QUANTITY PRODUCT :</span>
+          <span class="detail-value">1x</span>
+        </div>
+
+        <div class="detail-item detail-all-orders">
+          <span class="detail-label">TOTAL PRODUCT :</span>
+          <span class="detail-value">Rp.400.000</span>
+        </div>
+
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN FROM :</span>
+          <span class="detail-value">11/12/25</span>
+        </div>
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN UNTIL :</span>
+          <span class="detail-value">12/12/25</span>
+        </div>
+
+        <div class="detail-item status-col">
+          <span class="detail-label">STATUS :</span>
+          <span class="status-badge overdue">Overdue</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-status="complete">
+      <img
+        src="./Assets/Mickroscope.png"
+        alt="Mikroskop Cahaya"
+        class="product-image"
+      />
+      <div class="order-details">
+        <div class="detail-item">
+          <span class="detail-label">NAMA PRODUCT :</span>
+          <span class="detail-value product-name">Mikroskop Cahaya</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">QUANTITY PRODUCT :</span>
+          <span class="detail-value">1x</span>
+        </div>
+
+        <div class="detail-item detail-all-orders">
+          <span class="detail-label">TOTAL PRODUCT :</span>
+          <span class="detail-value">Rp.400.000</span>
+        </div>
+
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN FROM :</span>
+          <span class="detail-value">11/12/25</span>
+        </div>
+        <div class="detail-item detail-loaned">
+          <span class="detail-label">LOAN UNTIL :</span>
+          <span class="detail-value">12/12/25</span>
+        </div>
+
+        <div class="detail-item status-col">
+          <span class="detail-label">STATUS :</span>
+          <span class="status-badge complete">RETURNED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button class="page-number active">1</button>
+    <button class="page-number">2</button>
+    <button class="page-next">NEXT <i class="bi bi-chevron-right"></i></button>
+  </div>
+</div>

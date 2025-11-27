@@ -43,7 +43,14 @@
     <% if (showFooter !== false) { %> <%- include('../partials/footer') %> <% }
     %>
 
-    <!-- JS Tambahan -->
+    <!-- JS Global -->
     <script src="/JS/script.js"></script>
+
+    <!-- JS Tambahan -->
+    <% // CEK APAKAH VARIABEL 'scriptFile' ADA, jika tidak, gunakan null. const
+    scriptPath = (typeof scriptFile !== 'undefined') ? scriptFile : null; %> <%
+    if (scriptPath) { %>
+    <script src="<%= scriptPath %>"></script>
+    <% } %>
   </body>
 </html>

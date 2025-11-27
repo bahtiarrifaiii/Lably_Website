@@ -180,6 +180,22 @@ a {
   font-size: 1.6rem;
 }
 
+.logout-icon {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  transition: all 0.4s ease;
+}
+
+.nav-icons .bi-box-arrow-right {
+  font-size: 1.4rem;
+}
+
+.nav-icons span {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .menu-toggle {
   display: none;
   background: none;

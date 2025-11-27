@@ -1,9 +1,9 @@
-<% const headerOnePages = ['home', 'catalogue']; const headerTwoPages =
-['product', 'cart', 'checkout']; %> <% if
+<% const headerOnePages = ['home', 'catalogue', 'order-user']; const
+headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
 (headerOnePages.includes(currentPage)){ %>
 
 <!-- Header Non-User -->
-<header class="main-header">
+<!-- <header class="main-header">
   <div class="header-content">
     <a href="/" class="logo"> <span>Lab</span>Ly </a>
 
@@ -22,10 +22,10 @@
       <i class="bi bi-list"></i>
     </button>
   </div>
-</header>
+</header> -->
 
 <!-- Header User -->
-<!-- <header class="main-header">
+<header class="main-header">
   <div class="header-content">
     <a href="/" class="logo"> <span>Lab</span>Ly </a>
 
@@ -33,11 +33,13 @@
       <nav class="main-nav" id="main-nav">
         <a href="/">Home</a>
         <a href="/catalogue">Catalogue</a>
-        <a href="">Order</a>
+        <a href="/order-user">Order</a>
       </nav>
       <div class="nav-icons" id="nav-icons">
         <a href="/cart"><i class="bi bi-bag-fill"></i></a>
-        <a href="/login"><i class="bi bi-person-fill"></i></a>
+        <a href="/logout" class="logout-icon"
+          ><i class="bi bi-box-arrow-right"></i> <span>Logout</span></a
+        >
       </div>
     </div>
 
@@ -45,7 +47,7 @@
       <i class="bi bi-list"></i>
     </button>
   </div>
-</header> -->
+</header>
 
 <% } else if (headerTwoPages.includes(currentPage)) { %>
 <header class="main-header">
