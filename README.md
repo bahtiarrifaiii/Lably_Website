@@ -10,4 +10,5 @@ USE WEB :
 1. Open XAMPP -> on apache and mysql -> use lably_website 
 2. npm install express-session
 3. npm install bcrypt
-4. node app.js
+4. npm install multer
+5. node app.js

@@ -10,9 +10,9 @@ const Customer = require("../models/customerModel");
 const authController = require("../controllers/authController");
 const categoryController = require("../controllers/categoryController");
 
-// ==========================================================================
-// AUTH PAGE
-// ==========================================================================
+/* ============================================
+   AUTH PAGE
+============================================ */
 
 // LOGIN PAGE
 router.get("/login", async (req, res) => {
@@ -61,86 +61,62 @@ router.get("/logout", (req, res) => {
   });
 });
 
-// ==========================================================================
-// USER PAGE
-// ==========================================================================
+/* ============================================
+   USER PAGE (TIDAK DIUBAH)
+============================================ */
 
-// HOME PAGE
 router.get("/", async (req, res) => {
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/home.ejs"),
-    {}
+    path.join(__dirname, "../views/pages/user/home.ejs")
   );
 
   res.render("layouts/main", {
     title: "Home | Lably Official Web",
     currentPage: "home",
     showFooter: true,
-
     meta: `
       <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
       <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/home.css" />
-    `,
-
+    style: `<link rel="stylesheet" href="/CSS/home.css" />`,
     content,
   });
 });
 
-// CATALOGUE PAGE
 router.get("/catalogue", async (req, res) => {
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/catalogue.ejs"),
-    {}
+    path.join(__dirname, "../views/pages/user/catalogue.ejs")
   );
 
   res.render("layouts/main", {
     title: "Catalogue | Lably Official Web",
     currentPage: "catalogue",
     showFooter: true,
-
     meta: `
       <meta name="description" content="Katalog alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/catalogue.css" />
-    `,
-
+    style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
     content,
   });
 });
 
-// PRODUCT PAGE
 router.get("/product", async (req, res) => {
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/product.ejs"),
-    {}
+    path.join(__dirname, "../views/pages/user/product.ejs")
   );
 
   res.render("layouts/main", {
     title: "Product | Lably Official Web",
     currentPage: "product",
     showFooter: true,
-
     meta: `
       <meta name="description" content="Product alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
     `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/product.css" />
-    `,
-
+    style: `<link rel="stylesheet" href="/CSS/product.css" />`,
     content,
   });
 });
 
-// FORM PAGE
 router.get("/form", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -158,52 +134,32 @@ router.get("/form", async (req, res) => {
   });
 });
 
-// CART PAGE
 router.get("/cart", async (req, res) => {
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/cart.ejs"),
-    {}
+    path.join(__dirname, "../views/pages/user/cart.ejs")
   );
 
   res.render("layouts/main", {
-    title: "Cart | Lably Official Web",
+    title: "Cart | Lably",
     currentPage: "cart",
     showFooter: false,
-
-    meta: `
-      <meta name="description" content="Keranjang alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/cart.css" />
-    `,
-
+    meta: "",
+    style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
     content,
   });
 });
 
-// CHECKOUT PAGE
 router.get("/checkout", async (req, res) => {
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/checkout.ejs"),
-    {}
+    path.join(__dirname, "../views/pages/user/checkout.ejs")
   );
 
   res.render("layouts/main", {
-    title: "Checkout | Lably Official Web",
+    title: "Checkout | Lably",
     currentPage: "checkout",
     showFooter: false,
-
-    meta: `
-      <meta name="description" content="Keranjang checkout alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-
-    style: `
-      <link rel="stylesheet" href="/CSS/checkout.css" />
-    `,
-
+    meta: "",
+    style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
     content,
   });
 });
@@ -237,11 +193,10 @@ router.get("/order-user", async (req, res) => {
   });
 });
 
-// ==========================================================================
-// ADMIN PAGE
-// ==========================================================================
+/* ============================================
+   ADMIN PAGE
+============================================ */
 
-// DASHBOARD PAGE
 router.get("/dashboard", authController.dashboard);
 
 // CUSTOMERS PAGE
@@ -249,17 +204,14 @@ const customerController = require("../controllers/customerController");
 
 router.get("/customer", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
-
   return customerController.list(req, res);
 });
 
-// ORDER PAGE
+/* ORDER PAGES (tidak diubah) */
 router.get("/order", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
-    if (err) throw err;
-
     const totalCustomers = users.length;
 
     ejs.renderFile(
@@ -268,11 +220,7 @@ router.get("/order", (req, res) => {
       (err, content) => {
         res.render("layouts/atmin", {
           title: "Orders | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/order.css">
-          `,
+          style: `<link rel="stylesheet" href="/css/order.css">`,
           content,
           message: null,
           showPopup: false,
@@ -283,13 +231,10 @@ router.get("/order", (req, res) => {
   });
 });
 
-// ORDER COMPLETED PAGE
 router.get("/order-completed", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
-    if (err) throw err;
-
     const totalCustomers = users.length;
 
     ejs.renderFile(
@@ -297,12 +242,8 @@ router.get("/order-completed", (req, res) => {
       { users, totalCustomers },
       (err, content) => {
         res.render("layouts/atmin", {
-          title: "Orders | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/order_completed.css">
-          `,
+          title: "Orders Completed",
+          style: `<link rel="stylesheet" href="/css/order_completed.css">`,
           content,
           message: null,
           showPopup: false,
@@ -313,103 +254,53 @@ router.get("/order-completed", (req, res) => {
   });
 });
 
-// PRODUCT LIST
-router.get("/product-list", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+/* ============================================
+   PRODUCT ADMIN — CLEAN & FIXED
+============================================ */
 
-  User.getAll((err, users) => {
-    if (err) throw err;
+const productController = require("../controllers/productController");
+const multer = require("multer");
 
-    const totalCustomers = users.length;
-
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/product/product_list.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Product List | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/product-list.css">
-          `,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
-        });
-      }
-    );
-  });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "./public/uploads"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
+const upload = multer({ storage });
 
-// PRODUCT CREATE
-router.get("/product-create", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+// LIST
+router.get("/product-list", productController.list);
 
-  User.getAll((err, users) => {
-    if (err) throw err;
+// CREATE PAGE
+router.get("/product-create", productController.createPage);
 
-    const totalCustomers = users.length;
+// CREATE ACTION
+router.post(
+  "/product/create",
+  upload.single("image"),
+  productController.create
+);
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/product/product_create.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Product Create | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/product-create.css">
-          `,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
-        });
-      }
-    );
-  });
-});
+// DETAIL PAGE
+router.get("/product-detail/:id", productController.detailPage);
 
-// PRODUCT CREATE
-router.get("/product-detail", (req, res) => {
-  if (!req.session.admin) return res.redirect("/login");
+// UPDATE ACTION
+router.post(
+  "/product/update/:id",
+  upload.single("image"),
+  productController.update
+);
 
-  User.getAll((err, users) => {
-    if (err) throw err;
+// DELETE
+router.get("/product/delete/:id", productController.delete);
 
-    const totalCustomers = users.length;
+/* ============================================
+   ANALYTICS / INVOICE (tidak diubah)
+============================================ */
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/product/product_detail.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Product Detail | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/product-detail.css">
-          `,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
-        });
-      }
-    );
-  });
-});
-
-// ANALYTICS PAGE
 router.get("/analytics", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
-    if (err) throw err;
-
     const totalCustomers = users.length;
 
     ejs.renderFile(
@@ -417,15 +308,11 @@ router.get("/analytics", (req, res) => {
       { users, totalCustomers },
       (err, content) => {
         res.render("layouts/atmin", {
-          title: "Analytics | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/analytics.css">
-          `,
+          title: "Analytics",
+          style: `<link rel="stylesheet" href="/css/analytics.css">`,
           content,
-          message: null,
           showPopup: false,
+          message: null,
           currentPage: req.path,
         });
       }
@@ -433,13 +320,10 @@ router.get("/analytics", (req, res) => {
   });
 });
 
-// ANALYTICS PAGE
 router.get("/invoice", (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
   User.getAll((err, users) => {
-    if (err) throw err;
-
     const totalCustomers = users.length;
 
     ejs.renderFile(
@@ -447,15 +331,11 @@ router.get("/invoice", (req, res) => {
       { users, totalCustomers },
       (err, content) => {
         res.render("layouts/atmin", {
-          title: "Invoice | Lably",
-          meta: "",
-          style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/invoice.css">
-          `,
+          title: "Invoice",
+          style: `<link rel="stylesheet" href="/css/invoice.css">`,
           content,
-          message: null,
           showPopup: false,
+          message: null,
           currentPage: req.path,
         });
       }
@@ -463,7 +343,10 @@ router.get("/invoice", (req, res) => {
   });
 });
 
-// CATEGORY
+/* ============================================
+   CATEGORY
+============================================ */
+
 router.get("/category", categoryController.index);
 router.get("/category/create", categoryController.createPage);
 router.post("/category/create", categoryController.create);

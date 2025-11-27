@@ -1,16 +1,23 @@
 <nav class="navbar">
   <span>Product List</span>
-  <img src="Assets/profile.jpg" alt="" />
+  <img src="/Assets/profile.jpg" alt="" />
 </nav>
 
 <section class="controls-section">
   <div class="search-bar">
     <i class="bi bi-search"></i>
-    <input type="text" placeholder="Search Products" />
-    <button class="search-button">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search Products"
+      autocomplete="off"
+      value="<%= search || '' %>"
+    />
+    <button class="search-button" type="button" id="searchButton">
       <i class="bi bi-arrow-right"></i>
     </button>
   </div>
+
   <a href="/product-create" class="add-product-button">
     <i class="bi bi-plus-circle"></i>
     Add Product
@@ -23,129 +30,151 @@
       <tr>
         <th class="col-no">No</th>
         <th class="col-name">Name</th>
-        <th>Quantity</th>
+        <th>Stock</th>
         <th>Price</th>
         <th>Category</th>
         <th class="col-action">Action</th>
       </tr>
     </thead>
+
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>anu anu</td>
-        <td>5</td>
-        <td>Rp.200.000,00</td>
-        <td>blabla</td>
-        <td class="btn">
-          <a href="/product-detail" class="btn-action update">Update</a>
-          <button class="btn-action delete">Delete</button>
-        </td>
-      </tr>
+      <% if (!products || products.length === 0) { %>
+        <tr>
+          <td colspan="6" style="text-align:center; padding:20px;">No products found</td>
+        </tr>
+      <% } else { %>
+
+        <% products.forEach((p, i) => { %>
+          <tr>
+            <td><%= (currentPage - 1) * limit + (i + 1) %></td>
+            <td><%= p.name %></td>
+            <td><%= p.stock %></td>
+            <td>Rp <%= Number(p.price).toLocaleString("id-ID") %></td>
+            <td><%= p.category_name %></td>
+
+            <td class="btn">
+              <a href="/product-detail/<%= p.id %>" class="btn-action update">Update</a>
+
+              <button 
+                type="button" 
+                class="btn-action delete"
+                onclick="openDeleteModal('<%= p.id %>', '<%= p.name.replace(/'/g, "\\'") %>')"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+
+      <% } %>
     </tbody>
   </table>
 </div>
 
+<!-- Pagination -->
 <div class="pagination">
-  <button class="page-number active">1</button>
-  <button class="page-number">2</button>
-  <button class="page-next">NEXT <i class="bi bi-chevron-right"></i></button>
+  <% if (totalPages > 1) { %>
+    <% for (let p = 1; p <= totalPages; p++) { %>
+      <button 
+        class="page-number <%= p === currentPage ? 'active' : '' %>"
+        onclick="changePage(<%= p %>)"
+      >
+        <%= p %>
+      </button>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+      <button 
+        class="page-next"
+        onclick="changePage(<%= currentPage + 1 %>)"
+      >
+        NEXT <i class="bi bi-chevron-right"></i>
+      </button>
+    <% } %>
+  <% } %>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="delete-modal-overlay">
+  <div class="delete-modal">
+    <div class="delete-modal-header">
+      <span>⚠️ Confirm Delete</span>
+    </div>
+    <div class="delete-modal-body">
+      <p>Are you sure you want to delete product "<span id="deleteProductName"></span>"?</p>
+      <p>This action cannot be undone.</p>
+    </div>
+    <div class="delete-modal-actions">
+      <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button type="button" class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ============================
+        LIVE SEARCH FIXED
+  ============================ */
+
+  const searchInput = document.getElementById("searchInput");
+  const searchButton = document.getElementById("searchButton");
+
+  let searchTimeout = null;
+
+  function applySearch() {
+    const value = searchInput.value.trim();
+    const params = new URLSearchParams(window.location.search);
+
+    if (value.length > 0) params.set("search", value);
+    else params.delete("search");
+
+    params.set("page", "1");
+
+    window.location.href = "/product-list?" + params.toString();
+  }
+
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(applySearch, 300); // debounce
+  });
+
+  searchButton.addEventListener("click", applySearch);
+
+  /* ============================
+          PAGINATION FIXED
+  ============================ */
+  function changePage(page) {
+    const params = new URLSearchParams(window.location.search);
+    const search = searchInput.value.trim();
+
+    if (search.length > 0) params.set("search", search);
+    else params.delete("search");
+
+    params.set("page", page);
+
+    window.location.href = "/product-list?" + params.toString();
+  }
+
+  /* ============================
+          DELETE MODAL FIXED
+  ============================ */
+  let deleteProductId = null;
+
+  function openDeleteModal(id, name) {
+    deleteProductId = id;
+
+    document.getElementById("deleteProductName").textContent = name;
+    document.querySelector(".delete-modal-overlay").classList.add("show");
+  }
+
+  function closeDeleteModal() {
+    document.querySelector(".delete-modal-overlay").classList.remove("show");
+    deleteProductId = null;
+  }
+
+  function confirmDelete() {
+    if (deleteProductId) {
+      window.location.href = "/product/delete/" + deleteProductId;
+    }
+  }
+</script>
