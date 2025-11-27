@@ -21,7 +21,7 @@
   overflow-y: auto; 
   padding-bottom: 3rem;
   min-width: 0;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .navbar {
@@ -45,10 +45,13 @@
   object-fit: cover;
 }
 
+.filter{
+  margin: 10px 30px;
+}
+
 .search {
   display: flex;
   align-items: center;
-  margin: 10px 30px;
   gap: 0;
   width: 100%;
 }
@@ -141,7 +144,7 @@
 
 th,
 td {
-  padding: 10px 15px;
+  padding: 8px 15px;
   border: 1px solid #dddddd;
   text-align: center;
   color: #444;
@@ -170,7 +173,7 @@ th {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1.5rem 0;
+  margin: 1.3rem 0;
   gap: 0.5rem;
 }
 
