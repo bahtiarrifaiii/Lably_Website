@@ -134,11 +134,12 @@
 
 /* Table */
 .table-wrapper {
-  overflow-x: auto;
-  max-height: 50vh;
-  overflow-y: auto;
-  margin-bottom: 2rem;
-  position: relative;
+  width: 100%;
+  overflow-x: hidden;      
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-top: 20px;
 }
 
 table {

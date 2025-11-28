@@ -29,7 +29,7 @@
     <thead>
       <tr>
         <th class="col-no">No</th>
-        <th class="col-name">Name</th>
+        <th>Name</th>
         <th>Stock</th>
         <th>Price</th>
         <th>Category</th>
@@ -55,11 +55,10 @@
             <td class="btn">
               <a href="/product-detail/<%= p.id %>" class="btn-action update">Update</a>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn-action delete"
-                onclick="openDeleteModal('<%= p.id %>', '<%= p.name.replace(/'/g, "\\'") %>')"
-              >
+                onclick='openDeleteModal(<%= p.id %>, <%- JSON.stringify(p.name) %>)'>
                 Delete
               </button>
             </td>
@@ -74,20 +73,18 @@
 <!-- Pagination -->
 <div class="pagination">
   <% if (totalPages > 1) { %>
-    <% for (let p = 1; p <= totalPages; p++) { %>
-      <button 
-        class="page-number <%= p === currentPage ? 'active' : '' %>"
-        onclick="changePage(<%= p %>)"
-      >
-        <%= p %>
+    <% for (let page = 1; page <= totalPages; page++) { %>
+      <button
+        class="page-number <%= page === currentPage ? "active" : "" %>"
+        onclick="changePage(<%= page %>)">
+        <%= page %>
       </button>
     <% } %>
 
     <% if (currentPage < totalPages) { %>
-      <button 
+      <button
         class="page-next"
-        onclick="changePage(<%= currentPage + 1 %>)"
-      >
+        onclick="changePage(<%= currentPage + 1 %>)">
         NEXT <i class="bi bi-chevron-right"></i>
       </button>
     <% } %>
@@ -112,57 +109,129 @@
 </div>
 
 <script>
-  /* ============================
-        LIVE SEARCH FIXED
-  ============================ */
-
+  // =====================================
+  // AMBIL ELEMENT
+  // =====================================
   const searchInput = document.getElementById("searchInput");
   const searchButton = document.getElementById("searchButton");
+  const tableBody = document.querySelector("tbody");
+  const pagination = document.querySelector(".pagination");
 
-  let searchTimeout = null;
+  const ROWS_PER_PAGE = 5;
+  let currentPage = 1;
 
-  function applySearch() {
-    const value = searchInput.value.trim();
-    const params = new URLSearchParams(window.location.search);
+  // Simpan semua row asli
+  let rows = Array.from(tableBody.querySelectorAll("tr"))
+    .filter(r => !r.querySelector("td[colspan]")); 
 
-    if (value.length > 0) params.set("search", value);
-    else params.delete("search");
+  // =====================================
+  // RENDER TABLE
+  // =====================================
+  function renderTable() {
+    const q = searchInput.value.toLowerCase();
 
-    params.set("page", "1");
+    // Filter berdasarkan name, category, price, stock
+    const filtered = rows.filter(r => {
+      return (
+        r.children[1].textContent.toLowerCase().includes(q) ||
+        r.children[2].textContent.toLowerCase().includes(q) ||
+        r.children[3].textContent.toLowerCase().includes(q) ||
+        r.children[4].textContent.toLowerCase().includes(q)
+      );
+    });
 
-    window.location.href = "/product-list?" + params.toString();
+    const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+
+    if (currentPage > totalPages) currentPage = 1;
+
+    const start = (currentPage - 1) * ROWS_PER_PAGE;
+    const pageRows = filtered.slice(start, start + ROWS_PER_PAGE);
+
+    // Clear table
+    tableBody.innerHTML = "";
+
+    if (pageRows.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:20px;">No products found</td>
+        </tr>`;
+    } else {
+      pageRows.forEach((row, i) => {
+        row.children[0].textContent = start + i + 1; // urutkan ulang
+        tableBody.appendChild(row);
+      });
+    }
+
+    renderPagination(totalPages);
+  }
+
+  // =====================================
+  // RENDER PAGINATION
+  // =====================================
+  function renderPagination(totalPages) {
+    pagination.innerHTML = "";
+
+    if (totalPages <= 1) return;
+
+    for (let page = 1; page <= totalPages; page++) {
+      const btn = document.createElement("button");
+      btn.classList.add("page-number");
+      btn.textContent = page;
+
+      if (page === currentPage) btn.classList.add("active");
+
+      btn.onclick = () => {
+        currentPage = page;
+        renderTable();
+      };
+
+      pagination.appendChild(btn);
+    }
+
+    if (currentPage < totalPages) {
+      const next = document.createElement("button");
+      next.classList.add("page-next");
+      next.innerHTML = `NEXT <i class="bi bi-chevron-right"></i>`;
+      next.onclick = () => {
+        currentPage++;
+        renderTable();
+      };
+      pagination.appendChild(next);
+    }
+  }
+
+  // =====================================
+  // SEARCH (LIVE)
+  // =====================================
+  let typingTimer;
+  const delay = 300;
+
+  function applySearchFilter() {
+    currentPage = 1;
+    renderTable();
   }
 
   searchInput.addEventListener("input", () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(applySearch, 300); // debounce
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(applySearchFilter, delay);
   });
 
-  searchButton.addEventListener("click", applySearch);
+  searchButton.addEventListener("click", applySearchFilter);
 
-  /* ============================
-          PAGINATION FIXED
-  ============================ */
-  function changePage(page) {
-    const params = new URLSearchParams(window.location.search);
-    const search = searchInput.value.trim();
+  searchInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      applySearchFilter();
+    }
+  });
 
-    if (search.length > 0) params.set("search", search);
-    else params.delete("search");
-
-    params.set("page", page);
-
-    window.location.href = "/product-list?" + params.toString();
-  }
-
-  /* ============================
-          DELETE MODAL FIXED
-  ============================ */
+  // =====================================
+  // DELETE MODAL (tetap sama)
+  // =====================================
   let deleteProductId = null;
 
   function openDeleteModal(id, name) {
     deleteProductId = id;
-
     document.getElementById("deleteProductName").textContent = name;
     document.querySelector(".delete-modal-overlay").classList.add("show");
   }
@@ -177,4 +246,8 @@
       window.location.href = "/product/delete/" + deleteProductId;
     }
   }
+
+  // Render awal
+  renderTable();
 </script>
+

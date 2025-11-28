@@ -1,3 +1,4 @@
+// models/productModel.js
 const database = require("../config/database");
 
 const Product = {
@@ -21,7 +22,7 @@ const Product = {
     database.query(query, [id], callback);
   },
 
-  // Untuk LIST + SEARCH + PAGINATION
+  // LIST + SEARCH + PAGINATION — FIXED VERSION
   getPaginated: (search, limit, offset, callback) => {
     let query = `
       SELECT p.*, c.name AS category_name
@@ -30,13 +31,15 @@ const Product = {
     `;
     const params = [];
 
-    if (search) {
+    if (search && search.trim() !== "") {
       query += `
-        WHERE p.name LIKE ?
-           OR CAST(p.stock AS CHAR) LIKE ?
-           OR p.kondisi LIKE ?
-           OR CAST(p.price AS CHAR) LIKE ?
-           OR c.name LIKE ?
+        WHERE (
+             p.name LIKE ?
+          OR CAST(p.stock AS CHAR) LIKE ?
+          OR p.kondisi LIKE ?
+          OR CAST(p.price AS CHAR) LIKE ?
+          OR c.name LIKE ?
+        )
       `;
       const like = `%${search}%`;
       params.push(like, like, like, like, like);
@@ -52,6 +55,7 @@ const Product = {
     database.query(query, params, callback);
   },
 
+  // COUNT — FIXED VERSION
   count: (search, callback) => {
     let query = `
       SELECT COUNT(*) AS total
@@ -60,13 +64,15 @@ const Product = {
     `;
     const params = [];
 
-    if (search) {
+    if (search && search.trim() !== "") {
       query += `
-        WHERE p.name LIKE ?
-           OR CAST(p.stock AS CHAR) LIKE ?
-           OR p.kondisi LIKE ?
-           OR CAST(p.price AS CHAR) LIKE ?
-           OR c.name LIKE ?
+        WHERE (
+             p.name LIKE ?
+          OR CAST(p.stock AS CHAR) LIKE ?
+          OR p.kondisi LIKE ?
+          OR CAST(p.price AS CHAR) LIKE ?
+          OR c.name LIKE ?
+        )
       `;
       const like = `%${search}%`;
       params.push(like, like, like, like, like);
@@ -75,13 +81,11 @@ const Product = {
     database.query(query, params, callback);
   },
 
-  // Cek duplikat nama (untuk CREATE)
   findByName: (name, callback) => {
     const query = `SELECT * FROM products WHERE name = ?`;
     database.query(query, [name], callback);
   },
 
-  // Cek duplikat nama tapi exclude id tertentu (untuk UPDATE)
   findByNameExcludingId: (name, id, callback) => {
     const query = `SELECT * FROM products WHERE name = ? AND id != ?`;
     database.query(query, [name, id], callback);
@@ -92,7 +96,6 @@ const Product = {
       INSERT INTO products (name, description, id_category, stock, kondisi, price, image)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-
     database.query(
       query,
       [
@@ -111,8 +114,8 @@ const Product = {
   update: (id, data, callback) => {
     const query = `
       UPDATE products
-      SET name=?, description=?, id_category=?, stock=?, kondisi=?, price=?, image=?
-      WHERE id=?
+      SET name = ?, description = ?, id_category = ?, stock = ?, kondisi = ?, price = ?, image = ?
+      WHERE id = ?
     `;
 
     database.query(
@@ -136,5 +139,16 @@ const Product = {
     database.query(query, [id], callback);
   },
 };
+
+Product.getAllWithCategory = (callback) => {
+  const query = `
+    SELECT p.*, c.name AS category_name
+    FROM products p
+    LEFT JOIN category c ON p.id_category = c.id
+    ORDER BY p.id DESC
+  `;
+  database.query(query, callback);
+};
+
 
 module.exports = Product;

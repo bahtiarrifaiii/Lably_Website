@@ -1,63 +1,60 @@
+// controllers/productController.js
 const ejs = require("ejs");
 const path = require("path");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 
 /* ============================================================
-    LIST + SEARCH + PAGINATION
+   LIST – FRONTEND SEARCH + FRONTEND PAGINATION
 ============================================================ */
 exports.list = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
-  const limit = 5;
-  const page = parseInt(req.query.page) || 1;
-  const search = req.query.search ? req.query.search.trim() : "";
-
   const popupMessage = req.session.message || null;
   req.session.message = null;
 
-  Product.count(search, (err, resultCount) => {
+  // Ambil SEMUA data produk (tidak ada pagination backend)
+  Product.getAllWithCategory((err, products) => {
     if (err) throw err;
 
-    const totalItems = resultCount[0].total;
-    const totalPages = totalItems > 0 ? Math.ceil(totalItems / limit) : 1;
-    const currentPage = Math.min(Math.max(page, 1), totalPages);
-    const offset = (currentPage - 1) * limit;
+    const filePath = path.join(
+      __dirname,
+      "../views/pages/admin/product/product_list.ejs"
+    );
 
-    Product.getPaginated(search, limit, offset, (err, products) => {
-      if (err) throw err;
+    ejs.renderFile(
+      filePath,
+      {
+        products,
+        search: "",         // frontend search
+        currentPage: 1,     // dummy
+        totalPages: 1,      // dummy
+        limit: products.length, // dummy
+      },
+      (err2, content) => {
+        if (err2) throw err2;
 
-      const filePath = path.join(
-        __dirname,
-        "../views/pages/admin/product/product_list.ejs"
-      );
+        res.render("layouts/atmin", {
+          title: "Product List | Lably",
+          currentPage: "/product-list",
 
-      ejs.renderFile(
-        filePath,
-        { products, currentPage, totalPages, search, limit },
-        (err, content) => {
-          if (err) throw err;
+          style: `
+            <link rel="stylesheet" href="/css/sidebar.css">
+            <link rel="stylesheet" href="/css/product-list.css">
+          `,
+          meta: "",
 
-          res.render("layouts/atmin", {
-            title: "Product List | Lably",
-            meta: "",
-            style: `
-              <link rel="stylesheet" href="/css/sidebar.css">
-              <link rel="stylesheet" href="/css/product-list.css">
-            `,
-            content,
-            message: popupMessage,
-            showPopup: !!popupMessage,
-            currentPage: "/product-list",
-          });
-        }
-      );
-    });
+          content,
+          message: popupMessage,
+          showPopup: !!popupMessage,
+        });
+      }
+    );
   });
 };
 
 /* ============================================================
-    CREATE PAGE
+   CREATE PAGE
 ============================================================ */
 exports.createPage = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
@@ -73,39 +70,40 @@ exports.createPage = (req, res) => {
       "../views/pages/admin/product/product_create.ejs"
     );
 
-    ejs.renderFile(filePath, { categories }, (err, content) => {
-      if (err) throw err;
+    ejs.renderFile(filePath, { categories }, (err2, content) => {
+      if (err2) throw err2;
 
       res.render("layouts/atmin", {
         title: "Product Create | Lably",
-        meta: "",
+        currentPage: "/product-create",
+
         style: `
           <link rel="stylesheet" href="/css/sidebar.css">
           <link rel="stylesheet" href="/css/product-create.css">
         `,
+        meta: "",
+
         content,
         message: popupMessage,
         showPopup: !!popupMessage,
-        currentPage: "/product-create",
       });
     });
   });
 };
 
 /* ============================================================
-    CREATE ACTION
+   CREATE ACTION
 ============================================================ */
 exports.create = (req, res) => {
   const { name, description, id_category, stock, kondisi, price } = req.body;
 
-  // Cek nama duplikat
   Product.findByName(name, (err, rows) => {
     if (err) throw err;
 
     if (rows.length > 0) {
       req.session.message = {
         type: "error",
-        text: `Product "${name}" already exists and cannot be added.`,
+        text: `Product "${name}" already exists.`,
       };
       return res.redirect("/product-create");
     }
@@ -121,24 +119,17 @@ exports.create = (req, res) => {
     };
 
     Product.create(newProduct, (err2) => {
-      if (err2) {
-        req.session.message = {
-          type: "error",
-          text: `Product "${name}" failed to be added.`,
-        };
-      } else {
-        req.session.message = {
-          type: "success",
-          text: `Product "${name}" successfully added.`,
-        };
-      }
-      return res.redirect("/product-list");
+      req.session.message = err2
+        ? { type: "error", text: `Failed to add "${name}".` }
+        : { type: "success", text: `"${name}" added successfully.` };
+
+      res.redirect("/product-list");
     });
   });
 };
 
 /* ============================================================
-    DETAIL PAGE
+   DETAIL PAGE
 ============================================================ */
 exports.detailPage = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
@@ -149,7 +140,6 @@ exports.detailPage = (req, res) => {
 
   Product.getById(id, (err, product) => {
     if (err) throw err;
-
     if (!product || product.length === 0) {
       req.session.message = {
         type: "error",
@@ -158,8 +148,8 @@ exports.detailPage = (req, res) => {
       return res.redirect("/product-list");
     }
 
-    Category.getAll((err, categories) => {
-      if (err) throw err;
+    Category.getAll((err2, categories) => {
+      if (err2) throw err2;
 
       const filePath = path.join(
         __dirname,
@@ -169,20 +159,22 @@ exports.detailPage = (req, res) => {
       ejs.renderFile(
         filePath,
         { product: product[0], categories },
-        (err, content) => {
-          if (err) throw err;
+        (err3, content) => {
+          if (err3) throw err3;
 
           res.render("layouts/atmin", {
             title: "Product Detail | Lably",
-            meta: "",
+            currentPage: "/product-detail",
+
             style: `
               <link rel="stylesheet" href="/css/sidebar.css">
               <link rel="stylesheet" href="/css/product-detail.css">
             `,
+            meta: "",
+
             content,
             message: popupMessage,
             showPopup: !!popupMessage,
-            currentPage: "/product-detail",
           });
         }
       );
@@ -191,20 +183,19 @@ exports.detailPage = (req, res) => {
 };
 
 /* ============================================================
-    UPDATE ACTION
+   UPDATE ACTION
 ============================================================ */
 exports.update = (req, res) => {
   const id = req.params.id;
   const { name, description, id_category, stock, kondisi, price } = req.body;
 
-  // Cek duplikat nama kecuali dirinya sendiri
   Product.findByNameExcludingId(name, id, (err, rows) => {
     if (err) throw err;
 
     if (rows.length > 0) {
       req.session.message = {
         type: "error",
-        text: `Product "${name}" already exists and cannot be updated.`,
+        text: `Product "${name}" already exists.`,
       };
       return res.redirect(`/product-detail/${id}`);
     }
@@ -220,24 +211,17 @@ exports.update = (req, res) => {
     };
 
     Product.update(id, updatedProduct, (err2) => {
-      if (err2) {
-        req.session.message = {
-          type: "error",
-          text: `Product "${name}" failed to be updated.`,
-        };
-      } else {
-        req.session.message = {
-          type: "success",
-          text: `Product "${name}" successfully updated.`,
-        };
-      }
-      return res.redirect("/product-list");
+      req.session.message = err2
+        ? { type: "error", text: `Failed to update "${name}".` }
+        : { type: "success", text: `"${name}" updated successfully.` };
+
+      res.redirect("/product-list");
     });
   });
 };
 
 /* ============================================================
-    DELETE ACTION
+   DELETE ACTION
 ============================================================ */
 exports.delete = (req, res) => {
   const id = req.params.id;
@@ -245,22 +229,14 @@ exports.delete = (req, res) => {
   Product.getById(id, (err, product) => {
     if (err) throw err;
 
-    const name = product && product[0] ? product[0].name : "";
+    const name = product?.[0]?.name || "(unknown)";
 
     Product.delete(id, (err2) => {
-      if (err2) {
-        req.session.message = {
-          type: "error",
-          text: `Product "${name}" failed to be deleted.`,
-        };
-      } else {
-        req.session.message = {
-          type: "success",
-          text: `Product "${name}" successfully deleted.`,
-        };
-      }
+      req.session.message = err2
+        ? { type: "error", text: `Failed to delete "${name}".` }
+        : { type: "success", text: `"${name}" deleted successfully.` };
 
-      return res.redirect("/product-list");
+      res.redirect("/product-list");
     });
   });
 };
