@@ -4,6 +4,8 @@ const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
 const multer = require("multer");
+const Product = require("../models/productModel");
+const db = require("../config/database")
 
 // Models
 const User = require("../models/userModel");
@@ -103,39 +105,62 @@ router.get("/", passLoginStatus, async (req, res) => {
   });
 });
 
-router.get("/catalogue", passLoginStatus, async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/catalogue.ejs")
-  );
+router.get("/catalogue", async (req, res) => {
+  Product.getAll((err, products) => {
+    if (err) return res.status(500).send("Error fetching products");
 
-  res.render("layouts/main", {
-    title: "Catalogue | Lably Official Web",
-    currentPage: "catalogue",
-    showFooter: true,
-    meta: `
-      <meta name="description" content="Katalog alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
-    content,
+    ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/catalogue.ejs"),
+      { products },
+      (err, content) => {
+        if (err) return res.status(500).send("EJS render error");
+
+        res.render("layouts/main", {
+          title: "Catalogue | Lably Official Web",
+          currentPage: "catalogue",
+          showFooter: true,
+          meta: `
+            <meta name="description" content="Katalog alat laboratorium LabLy." />
+            <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+          `,
+          style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
+          content,
+        });
+      }
+    );
   });
 });
 
-router.get("/product", isLoggedIn, passLoginStatus, async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/product.ejs")
-  );
+router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
+  const productId = req.params.id;
 
-  res.render("layouts/main", {
-    title: "Product | Lably Official Web",
-    currentPage: "product",
-    showFooter: true,
-    meta: `
-      <meta name="description" content="Produk alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/product.css" />`,
-    content,
+  const sql = `
+    SELECT p.*, c.name AS category_name
+    FROM products p
+    LEFT JOIN category c ON p.id_category = c.id
+    WHERE p.id = ?
+  `;
+
+  db.query(sql, [productId], async (err, results) => {
+    if (err) throw err;
+
+    const product = results[0];
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/product.ejs"),
+      { product }
+    );
+
+    res.render("layouts/main", {
+      title: `${product.name} | Lably Web`,
+      currentPage: "product",
+      showFooter: true,
+      meta: `
+        <meta name="description" content="${product.name}"/>
+      `,
+      style: `<link rel="stylesheet" href="/CSS/product.css" />`,
+      content,
+    });
   });
 });
 

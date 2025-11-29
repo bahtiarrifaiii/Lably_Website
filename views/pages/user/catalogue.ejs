@@ -49,87 +49,17 @@
 
   <div class="container catalogue-content">
     <div class="catalogue-grid">
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
+      <% products.forEach(p => { %>
+        <a href="/product/<%= p.id %>">
+          <div class="catalogue-item">
+            <div class="item-img">
+              <img src="/uploads/<%= p.image %>" alt="<%= p.name %>" />
+            </div>
+              <p class="item-name"><%= p.name %></p>
+              <p class="item-price">IDR <%= Number(p.price).toLocaleString("id-ID") %></p>
           </div>
-          <p class="item-name">Binokuler</p>
-          <p class="item-price">IDR 1.000.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Lysis</p>
-          <p class="item-price">IDR 650.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Reaktor</p>
-          <p class="item-price">IDR 2.000.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Binokuler Pro</p>
-          <p class="item-price">IDR 1.500.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Razor</p>
-          <p class="item-price">IDR 900.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
+        </a>
+      <% }) %>
     </div>
   </div>
 
