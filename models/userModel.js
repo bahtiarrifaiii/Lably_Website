@@ -41,6 +41,11 @@ const User = {
             AND TIMESTAMPDIFF(MINUTE, last_login, NOW()) > 3
         `;
         database.query(sql, callback);
+    },
+
+    getById: (id, callback) => {
+        const sql = "SELECT * FROM users WHERE id = ?";
+        database.query(sql, [id], callback);
     }
 };
 

@@ -1,53 +1,76 @@
-<div class="container">
-  <div class="left">
-    <div class="left-back">
-      <i class="bi bi-chevron-left"></i>
-      <a href="/product">Back</a>
-    </div>
-    <div class="left-detail">
-      <div>
-        <p class="left-detail-main-text">Detail</p>
-        <p class="left-detail-main-text">Pemesanan</p>
-        <p class="left-detail-text">
-          Lorem ipsum dolor sit amet, You're the preatiest person i've ever met.
-          aseeeek
-        </p>
+<div class="form-wrapper" data-qty="<%= qty %>">
+  <div class="container">
+    <div class="left">
+      <div class="left-back">
+        <i class="bi bi-chevron-left"></i>
+        <a href="/product">Back</a>
       </div>
-    </div>
-  </div>
-  <div class="right">
-    <div class="logo">Lab<span>Ly</span></div>
-
-    <div class="form-section">
-      <h3>Product Detail</h3>
-      <div class="grid">
-        <input type="text" placeholder="Nama Product" />
-      </div>
-      <div class="grid">
-        <input type="number" placeholder="Jumlah Product" />
-        <input type="text" placeholder="Harga" />
-      </div>
-      <div class="grid">
-        <input type="date" placeholder="Tanggal Peminjaman" />
-        <input type="date" placeholder="Tanggal Pengembalian" />
+      <div class="left-detail">
+        <div>
+          <p class="left-detail-main-text">Detail</p>
+          <p class="left-detail-main-text">Pemesanan</p>
+          <p class="left-detail-text">
+            Lorem ipsum dolor sit amet, You're the preatiest person i've ever met.
+            aseeeek
+          </p>
+        </div>
       </div>
     </div>
 
-    <div class="form-section">
-      <h3>User Data</h3>
+    <div class="right">
+      <div class="logo">Lab<span>Ly</span></div>
 
-      <div class="grid">
-        <input type="text" placeholder="Nama Lengkap" />
-        <input type="text" placeholder="Nomor Telephone" />
+      <div class="form-section">
+        <h3>Product Detail</h3>
+
+        <!-- Nama Produk -->
+        <div class="grid">
+          <input type="text" value="<%= product.name %>" readonly />
+        </div>
+
+        <!-- Qty & Harga -->
+        <div class="grid">
+          <input type="number" id="qty" value="<%= qty %>" readonly />
+          <input
+            type="text"
+            id="price"
+            data-price="<%= product.price %>"
+            value="Rp<%= product.price.toLocaleString() %> / Item - Total: Rp<%= priceTotal.toLocaleString() %>"
+            readonly
+          />
+        </div>
+
+        <!-- Tambahkan ini: -->
+        <input type="hidden" id="priceRaw" value="<%= product.price %>">
+        <input type="hidden" id="qtyRaw" value="<%= qty %>">
+
+        <!-- Tanggal -->
+        <div class="grid">
+          <input type="date" id="borrowDate" name="borrow_date" required />
+          <input type="date" id="returnDate" name="return_date" required />
+        </div>
+
+        <div class="grid-2">
+          <input type="text" id="allTotal" name="all_total" placeholder="ALL Total" readonly />
+        </div>
       </div>
 
-      <div class="grid-2">
-        <input type="text" placeholder="Alamat" />
+      <div class="form-section">
+        <h3>User Data</h3>
+
+        <div class="grid">
+          <input type="text" value="<%= user.username %>" readonly />
+          <input type="text" name="phone" placeholder="Nomor Telephone" required />
+        </div>
+
+        <div class="grid-2">
+          <input type="text" name="address" placeholder="Alamat" required />
+        </div>
       </div>
+
+      <button class="btn-next">
+        Selanjutnya <span><i class="bi bi-arrow-right-circle-fill"></i></span>
+      </button>
     </div>
-
-    <button class="btn-next">
-      Selanjutnya <span><i class="bi bi-arrow-right-circle-fill"></i></span>
-    </button>
   </div>
 </div>

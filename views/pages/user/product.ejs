@@ -33,14 +33,14 @@
         </button>
       </div>
 
-      <form action="/form" method="get">
-        <button type="submit" class="btn btn-primary add-to-cart">
-          Add to Cart
-        </button>
-        <button type="submit" class="btn btn-secondary loan-now">
-          Loan Now
-        </button>
+      <form id="productForm" action="/form" method="get">
+        <input type="hidden" name="product_id" value="<%= product.id %>">
+        <input type="hidden" name="qty" class="qty-hidden">
+
+        <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+        <button type="submit" class="btn btn-secondary loan-now">Loan Now</button>
       </form>
+
     </div>
   </div>
 </div>

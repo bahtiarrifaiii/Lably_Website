@@ -229,3 +229,67 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inisialisasi: Pastikan tampilan awal sesuai 'ALL ORDERS'
   applyFilter("all");
 });
+
+// Quantity Input
+document.addEventListener("DOMContentLoaded", function () {
+
+  // ===============================
+  //  SCRIPT HALAMAN PRODUCT
+  // ===============================
+  const qtyDisplay = document.querySelector(".qty-display");
+  const qtyHidden = document.querySelector(".qty-hidden");
+  const plus = document.querySelector(".plus-btn");
+  const minus = document.querySelector(".minus-btn");
+  const form = document.getElementById("productForm");
+
+  if (qtyDisplay && plus && minus && form) {
+
+    plus.addEventListener("click", () => {
+      qtyDisplay.value = parseInt(qtyDisplay.value) + 1;
+    });
+
+    minus.addEventListener("click", () => {
+      if (parseInt(qtyDisplay.value) > 1) {
+        qtyDisplay.value = parseInt(qtyDisplay.value) - 1;
+      }
+    });
+
+    form.addEventListener("submit", () => {
+      qtyHidden.value = qtyDisplay.value;
+    });
+  }
+
+  // ===============================
+  //  SCRIPT HALAMAN FORM
+  // ===============================
+  document.addEventListener("DOMContentLoaded", () => {
+    const borrowDate = document.getElementById("borrowDate");
+    const returnDate = document.getElementById("returnDate");
+    const allTotal = document.getElementById("allTotal");
+
+    const price = Number(document.getElementById("price").dataset.price);
+    const qty = Number(document.getElementById("qty").value);
+
+    function hitungTotal() {
+      if (!borrowDate.value || !returnDate.value) return;
+
+      const start = new Date(borrowDate.value);
+      const end = new Date(returnDate.value);
+
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const selisih = Math.ceil((end - start) / msPerDay);
+
+      if (selisih <= 0) {
+        allTotal.value = "Tanggal salah";
+        return;
+      }
+
+      const total = price * qty * selisih;
+
+      allTotal.value = "Rp" + total.toLocaleString("id-ID");
+    }
+
+    borrowDate.addEventListener("change", hitungTotal);
+    returnDate.addEventListener("change", hitungTotal);
+  });
+});

@@ -168,21 +168,47 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/form.ejs"),
-    { message }
-  );
+  const productId = req.query.product_id;
+  const qty = parseInt(req.query.qty) || 1;
 
-  res.render("layouts/forms", {
-    title: "Form | Lably",
-    meta: `
-      <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: "",
-    content,
+  if (!productId) return res.redirect("/product");
+
+  Product.getById(productId, async (err, rows) => {
+    if (err || rows.length === 0) return res.redirect("/product");
+
+    const product = rows[0]; // ⬅⬅⬅ FIX PALING PENTING !!!
+
+    const priceTotal = product.price * qty;
+
+    User.getById(req.session.user.id, async (err, userRows) => {
+      if (err || userRows.length === 0) return res.redirect("/product");
+
+      const user = userRows[0]; // ⬅ User juga array, FIX juga!
+
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/form.ejs"),
+        {
+          message,
+          product,
+          qty,
+          priceTotal,
+          user,
+        }
+      );
+
+      res.render("layouts/forms", {
+        title: "Form | Lably",
+        meta: `
+          <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
+          <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+        `,
+        style: "",
+        content,
+      });
+    });
   });
 });
+
 
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
