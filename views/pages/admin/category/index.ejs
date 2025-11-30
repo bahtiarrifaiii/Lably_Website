@@ -1,10 +1,24 @@
 <div class="category-container">
 
+    <% if (message) { %>
+        <div class="popup <%= message.type %>">
+            <%= message.text %>
+        </div>
+
+        <script>
+            setTimeout(() => {
+                document.querySelector(".popup").style.display = "none";
+            }, 2600);
+        </script>
+    <% } %>
+
+    <!-- NAVBAR -->
     <nav class="navbar">
         <span>Category</span>
-        <img src="Assets/profile.jpg" alt="" />
+        <img src="/Assets/profile.jpg" alt="" />
     </nav>
 
+    <!-- CONTROLS -->
     <section class="controls-section">
 
         <div class="search-bar">
@@ -22,6 +36,7 @@
 
     </section>
 
+    <!-- TABLE -->
     <div class="table-wrapper">
         <table class="category-table" id="categoryTable">
             <thead>
@@ -55,6 +70,9 @@
     <div id="pagination" class="pagination"></div>
 
 </div>
+
+
+<!-- DELETE POPUP -->
 <div id="delete-popup" class="delete-popup-overlay" style="display:none;">
     <div class="delete-popup-box">
         <h3>Are you sure?</h3>
@@ -68,21 +86,19 @@
 </div>
 
 <script>
-    function openDeletePopup(url, name) {
-        const popup = document.getElementById("delete-popup");
-        const confirmBtn = document.getElementById("confirm-delete-btn");
-        const namePlaceholder = document.getElementById("delete-item-name");
+function openDeletePopup(url, name) {
+    const popup = document.getElementById("delete-popup");
+    document.getElementById("confirm-delete-btn").href = url;
+    document.getElementById("delete-item-name").textContent = name;
+    popup.style.display = "flex";
+}
 
-        confirmBtn.href = url;
-        namePlaceholder.textContent = `"${name}"`; 
-        popup.style.display = "flex";
-    }
-
-    function closeDeletePopup() {
-        document.getElementById("delete-popup").style.display = "none";
-    }
+function closeDeletePopup() {
+    document.getElementById("delete-popup").style.display = "none";
+}
 </script>
 
+<!-- SEARCH + PAGINATION SCRIPT (masih sama) -->
 <script>
     const ROWS_PER_PAGE = 4;
     let currentPage = 1;

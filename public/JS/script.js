@@ -1,30 +1,33 @@
-// Navbar Scroll
 document.addEventListener("DOMContentLoaded", function () {
+
+  /* =========================================================
+      NAVBAR SCROLL
+  ========================================================= */
   const header = document.querySelector(".main-header");
   const footer = document.querySelector(".main-footer");
 
-  const viewportHeight = window.innerHeight;
-  const threshold = viewportHeight * 0.25;
+  if (header && footer) {
+    const viewportHeight = window.innerHeight;
+    const threshold = viewportHeight * 0.25;
 
-  function checkFooterVisibility() {
-    const footerTop = footer.getBoundingClientRect().top;
+    function checkFooterVisibility() {
+      const footerTop = footer.getBoundingClientRect().top;
 
-    if (footerTop <= threshold) {
-      header.classList.add("header-hidden");
-    } else {
-      header.classList.remove("header-hidden");
+      if (footerTop <= threshold) {
+        header.classList.add("header-hidden");
+      } else {
+        header.classList.remove("header-hidden");
+      }
     }
+
+    checkFooterVisibility();
+    window.addEventListener("scroll", checkFooterVisibility);
+    window.addEventListener("resize", checkFooterVisibility);
   }
 
-  checkFooterVisibility();
-
-  window.addEventListener("scroll", checkFooterVisibility);
-
-  window.addEventListener("resize", checkFooterVisibility);
-});
-
-// Burger Menu
-document.addEventListener("DOMContentLoaded", function () {
+  /* =========================================================
+      BURGER MENU
+  ========================================================= */
   const toggleButton = document.getElementById("menu-toggle");
   const navMenu = document.getElementById("main-nav");
   const navIcons = document.querySelector(".nav-icons");
@@ -42,15 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setTimeout(() => {
           const navHeight = navMenu.offsetHeight;
-
-          const navMarginBottom = parseFloat(
-            getComputedStyle(navMenu).marginBottom
-          );
-
-          const iconsMarginTop = parseFloat(
-            getComputedStyle(navIcons).marginTop
-          );
-
+          const navMarginBottom = parseFloat(getComputedStyle(navMenu).marginBottom);
+          const iconsMarginTop = parseFloat(getComputedStyle(navIcons).marginTop);
           const totalOffset = navHeight + navMarginBottom + iconsMarginTop;
 
           navIcons.style.top = `calc(100% + ${totalOffset}px)`;
@@ -62,180 +58,137 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-});
 
-// Checkout Method
-document.addEventListener("DOMContentLoaded", function () {
+  /* =========================================================
+      CHECKOUT METHOD
+  ========================================================= */
   const methodButtons = document.querySelectorAll(".method-btn");
 
   methodButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      methodButtons.forEach((btn) => {
-        btn.classList.remove("active");
-      });
+      methodButtons.forEach((btn) => btn.classList.remove("active"));
       this.classList.add("active");
-      const selectedMethod = this.textContent.trim();
-      console.log("Metode pembayaran dipilih:", selectedMethod);
+      console.log("Metode pembayaran dipilih:", this.textContent.trim());
     });
   });
-});
 
-// Pagination Order
-document.addEventListener("DOMContentLoaded", () => {
+  /* =========================================================
+      PAGINATION ORDER
+  ========================================================= */
   const rowsPerPage = 5;
   const maxPageButtons = 3;
   const cardListContainer = document.querySelector(".order-card-list");
 
-  if (!cardListContainer) {
-    console.error("Container '.order-card-list' tidak ditemukan.");
-    return;
-  }
+  if (cardListContainer) {
+    const allCards = Array.from(cardListContainer.querySelectorAll(".order-card"));
+    const totalRows = allCards.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const paginationContainer = document.querySelector(".pagination");
+    let currentPage = 1;
 
-  const allCards = Array.from(
-    cardListContainer.querySelectorAll(".order-card")
-  );
-  const totalRows = allCards.length;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-  const paginationContainer = document.querySelector(".pagination");
-  let currentPage = 1;
+    function displayCards(page) {
+      const startIndex = (page - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
 
-  function displayCards(page) {
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    allCards.forEach((card, index) => {
-      if (index >= startIndex && index < endIndex) {
-        card.style.display = "flex";
-      } else {
-        card.style.display = "none";
-      }
-    });
-  }
-
-  function renderPaginationButtons() {
-    paginationContainer.innerHTML = "";
-    const startWindow =
-      Math.floor((currentPage - 1) / maxPageButtons) * maxPageButtons + 1;
-    const endWindow = Math.min(startWindow + maxPageButtons - 1, totalPages);
-
-    if (currentPage > maxPageButtons && startWindow > 1) {
-      const prevGroupPage = startWindow - 1;
-      const prevButton = createButton("PREV", "&#x276E; PREV", prevGroupPage);
-      prevButton.classList.add("page-arrow");
-      paginationContainer.appendChild(prevButton);
+      allCards.forEach((card, index) => {
+        card.style.display = index >= startIndex && index < endIndex ? "flex" : "none";
+      });
     }
 
-    for (let i = startWindow; i <= endWindow; i++) {
-      const button = createButton(i, i, i);
-      if (i === currentPage) {
-        button.classList.add("active");
-      }
-      button.classList.add("page-number");
-      paginationContainer.appendChild(button);
+    function createButton(value, innerHTML, targetPage) {
+      const button = document.createElement("button");
+      button.innerHTML = innerHTML;
+      button.classList.add("page-item");
+
+      button.addEventListener("click", () => {
+        if (targetPage >= 1 && targetPage <= totalPages) {
+          currentPage = targetPage;
+          displayCards(currentPage);
+          renderPaginationButtons();
+        }
+      });
+      return button;
     }
 
-    if (endWindow < totalPages) {
-      const nextGroupPage = endWindow + 1;
-      const nextButton = createButton("NEXT", `NEXT &#x276F;`);
-      nextButton.classList.add("page-next");
-      paginationContainer.appendChild(nextButton);
+    function renderPaginationButtons() {
+      paginationContainer.innerHTML = "";
+      const startWindow = Math.floor((currentPage - 1) / maxPageButtons) * maxPageButtons + 1;
+      const endWindow = Math.min(startWindow + maxPageButtons - 1, totalPages);
+
+      if (currentPage > maxPageButtons && startWindow > 1) {
+        const prevGroupPage = startWindow - 1;
+        const prevButton = createButton("PREV", "&#x276E; PREV", prevGroupPage);
+        prevButton.classList.add("page-arrow");
+        paginationContainer.appendChild(prevButton);
+      }
+
+      for (let i = startWindow; i <= endWindow; i++) {
+        const button = createButton(i, i, i);
+        if (i === currentPage) button.classList.add("active");
+        button.classList.add("page-number");
+        paginationContainer.appendChild(button);
+      }
+
+      if (endWindow < totalPages) {
+        const nextGroupPage = endWindow + 1;
+        const nextButton = createButton("NEXT", `NEXT &#x276F;`, nextGroupPage);
+        nextButton.classList.add("page-next");
+        paginationContainer.appendChild(nextButton);
+      }
+    }
+
+    if (totalPages > 0) {
+      displayCards(currentPage);
+      renderPaginationButtons();
     }
   }
 
-  function createButton(value, innerHTML, targetPage) {
-    const button = document.createElement("button");
-    button.innerHTML = innerHTML;
-    button.classList.add("page-item");
-
-    button.addEventListener("click", () => {
-      if (targetPage >= 1 && targetPage <= totalPages) {
-        currentPage = targetPage;
-        displayCards(currentPage);
-        renderPaginationButtons();
-      }
-    });
-    return button;
-  }
-
-  if (totalPages > 0) {
-    displayCards(currentPage);
-    renderPaginationButtons();
-  }
-});
-
-// Filter Order
-document.addEventListener("DOMContentLoaded", () => {
-  // Selektor utama
+  /* =========================================================
+      FILTER ORDER
+  ========================================================= */
   const filterButtons = document.querySelectorAll(".filter-btn");
   const orderCards = document.querySelectorAll(".order-card");
   const mainContent = document.getElementById("main-content");
 
-  // Status yang valid untuk setiap filter (harus sesuai dengan data-status di HTML)
   const filterMap = {
     all: ["paid", "in-use", "overdue", "complete"],
     loaned: ["in-use", "overdue"],
-    completed: ["complete"], // Menggunakan 'complete' sesuai ID tombol
+    completed: ["complete"],
   };
 
-  /**
-   * Fungsi utama untuk menerapkan filter dan mengganti tampilan kolom.
-   * @param {string} filterName - Nama filter: 'all', 'loaned', atau 'completed'.
-   */
   function applyFilter(filterName) {
     const validStatuses = filterMap[filterName];
 
-    // LOGIKA 1: Mengganti Tampilan Kolom (CSS)
-    if (filterName === "all") {
-      // Tampilan All Orders (Total Product & Loan Date gabungan)
-      mainContent.classList.remove("view-loaned");
-    } else {
-      // Tampilan Loaned/Complete (Loan From & Loan Until terpisah)
-      mainContent.classList.add("view-loaned");
+    if (mainContent) {
+      if (filterName === "all") {
+        mainContent.classList.remove("view-loaned");
+      } else {
+        mainContent.classList.add("view-loaned");
+      }
     }
 
-    // LOGIKA 2: Menampilkan/Menyembunyikan Kartu (Filtering)
     orderCards.forEach((card) => {
       const cardStatus = card.getAttribute("data-status");
-      let shouldDisplay = false;
-
-      // Jika filter 'all', tampilkan semua kartu.
-      // Jika filter spesifik, cek apakah status kartu ada di array validStatuses.
-      if (filterName === "all" || validStatuses.includes(cardStatus)) {
-        shouldDisplay = true;
-      }
-
-      // Terapkan display: flex (terlihat) atau display: none (tersembunyi)
+      const shouldDisplay = filterName === "all" || validStatuses.includes(cardStatus);
       card.style.display = shouldDisplay ? "flex" : "none";
     });
-
-    // Catatan: Jika Anda mengintegrasikan paginasi, fungsi paginasi harus
-    // dipanggil ulang di sini, bekerja pada subset kartu yang terlihat.
   }
 
-  // Event Listener untuk tombol filter
   filterButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      // 1. Kelola Kelas Active pada tombol
       filterButtons.forEach((btn) => btn.classList.remove("active"));
       this.classList.add("active");
 
-      // 2. Terapkan Filter
-      // Ambil nama filter dari ID tombol (misalnya, 'filter-loaned' -> 'loaned')
       const filterName = this.id.split("-")[1];
       applyFilter(filterName);
     });
   });
 
-  // Inisialisasi: Pastikan tampilan awal sesuai 'ALL ORDERS'
   applyFilter("all");
-});
 
-// Quantity Input
-document.addEventListener("DOMContentLoaded", function () {
-
-  // ===============================
-  //  SCRIPT HALAMAN PRODUCT
-  // ===============================
+  /* =========================================================
+      PRODUCT PAGE — QTY INPUT
+  ========================================================= */
   const qtyDisplay = document.querySelector(".qty-display");
   const qtyHidden = document.querySelector(".qty-hidden");
   const plus = document.querySelector(".plus-btn");
@@ -243,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("productForm");
 
   if (qtyDisplay && plus && minus && form) {
-
     plus.addEventListener("click", () => {
       qtyDisplay.value = parseInt(qtyDisplay.value) + 1;
     });
@@ -259,14 +211,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===============================
-  //  SCRIPT HALAMAN FORM
-  // ===============================
-  document.addEventListener("DOMContentLoaded", () => {
-    const borrowDate = document.getElementById("borrowDate");
-    const returnDate = document.getElementById("returnDate");
-    const allTotal = document.getElementById("allTotal");
+  /* =========================================================
+      FORM PAGE — AUTO TOTAL HARGA
+  ========================================================= */
+  const borrowDate = document.getElementById("borrowDate");
+  const returnDate = document.getElementById("returnDate");
+  const allTotal = document.getElementById("allTotal");
 
+  if (borrowDate && returnDate && allTotal) {
     const price = Number(document.getElementById("price").dataset.price);
     const qty = Number(document.getElementById("qty").value);
 
@@ -285,11 +237,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const total = price * qty * selisih;
-
       allTotal.value = "Rp" + total.toLocaleString("id-ID");
     }
 
     borrowDate.addEventListener("change", hitungTotal);
     returnDate.addEventListener("change", hitungTotal);
-  });
+  }
+
 });

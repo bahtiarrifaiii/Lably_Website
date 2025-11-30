@@ -1,5 +1,3 @@
-// ./middlewares/authMiddleware.js (REVISI)
-
 // 1. Middleware Otentikasi Umum (Admin atau Customer)
 const isLoggedIn = (req, res, next) => {
   // Cek apakah sesi user ATAU sesi admin ada

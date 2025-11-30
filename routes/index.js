@@ -105,29 +105,40 @@ router.get("/", passLoginStatus, async (req, res) => {
   });
 });
 
-router.get("/catalogue", async (req, res) => {
-  Product.getAll((err, products) => {
+router.get("/catalogue", (req, res) => {
+
+  const qProducts = "SELECT * FROM products";
+  const qCategories = "SELECT * FROM category";
+
+  db.query(qProducts, (err, products) => {
     if (err) return res.status(500).send("Error fetching products");
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/catalogue.ejs"),
-      { products },
-      (err, content) => {
-        if (err) return res.status(500).send("EJS render error");
+    db.query(qCategories, (err2, categories) => {
+      if (err2) return res.status(500).send("Error fetching categories");
 
-        res.render("layouts/main", {
-          title: "Catalogue | Lably Official Web",
-          currentPage: "catalogue",
-          showFooter: true,
-          meta: `
-            <meta name="description" content="Katalog alat laboratorium LabLy." />
-            <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-          `,
-          style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
-          content,
-        });
-      }
-    );
+      ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/catalogue.ejs"),
+        { products, categories },
+        (err3, content) => {
+          if (err3) {
+            console.log("EJS ERROR:", err3);   // <-- biar tau baris error
+            return res.status(500).send("EJS render error");
+          }
+
+          res.render("layouts/main", {
+            title: "Catalogue | Lably Official Web",
+            currentPage: "catalogue",
+            showFooter: true,
+            meta: `
+              <meta name="description" content="Katalog alat laboratorium LabLy." />
+              <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+            `,
+            style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
+            content,
+          });
+        }
+      );
+    });
   });
 });
 
