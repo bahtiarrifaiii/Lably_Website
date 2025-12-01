@@ -46,8 +46,13 @@
       </div>
     </div>
 
-    <button class="btn-next">
-      Selanjutnya <span><i class="bi bi-arrow-right-circle-fill"></i></span>
-    </button>
+    <form action="/submit-data" method="post">
+      <input type="hidden" name="action_type" value="<%= action %>" />
+      <input type="hidden" name="quantity" value="<%= qty %>" />
+
+      <button type="submit" class="btn-next">
+        Selanjutnya <span><i class="bi bi-arrow-right-circle-fill"></i></span>
+      </button>
+    </form>
   </div>
 </div>

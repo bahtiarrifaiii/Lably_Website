@@ -140,12 +140,15 @@ router.get("/product", isLoggedIn, passLoginStatus, async (req, res) => {
 });
 
 router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
+  const { action, qty } = req.query;
+  const formSpecificScript = "/JS/form-user.js";
+
   const message = req.session.message || null;
   req.session.message = null;
 
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/form.ejs"),
-    { message }
+    { message, action: action, qty: qty }
   );
 
   res.render("layouts/forms", {
@@ -156,7 +159,22 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
     `,
     style: "",
     content,
+    scriptFile: formSpecificScript,
   });
+});
+
+router.post("/submit-data", isLoggedIn, (req, res) => {
+  const { action_type, quantity } = req.body;
+
+  if (action_type === "cart") {
+    console.log("Produk ditambahkan ke Keranjang");
+    res.redirect("/cart");
+  } else if (action_type === "loan") {
+    console.log("Langsung ke proses Peminjaman");
+    res.redirect("/checkout");
+  } else {
+    res.status(400).send("Aksi tidak valid.");
+  }
 });
 
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
@@ -197,7 +215,7 @@ router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
 
 // ORDER PAGE
 router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
-  const orderSpecificScript = "/JS/order-user.js";
+  const orderSpecificScript = "/JS/user/order-user.js";
 
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/order-user.ejs"),

@@ -24,6 +24,10 @@
   </a>
 </section>
 
+<script id="product-data-json" type="application/json">
+    <%- JSON.stringify(ALL_PRODUCTS) %>
+</script>
+
 <div class="table-wrapper">
   <table>
     <thead>
@@ -109,145 +113,180 @@
 </div>
 
 <script>
-  // =====================================
-  // AMBIL ELEMENT
-  // =====================================
-  const searchInput = document.getElementById("searchInput");
-  const searchButton = document.getElementById("searchButton");
-  const tableBody = document.querySelector("tbody");
-  const pagination = document.querySelector(".pagination");
+    // =====================================
+    // INIT & AMBIL DATA MENTAH
+    // =====================================
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const tableBody = document.querySelector("tbody");
+    const pagination = document.querySelector(".pagination");
 
-  const ROWS_PER_PAGE = 5;
-  let currentPage = 1;
+    // 💡 AMBIL SEMUA DATA PRODUK DARI JSON YANG DISEDIKAN EJS
+    const productDataJson = document.getElementById("product-data-json").textContent; 
+    const productsData = JSON.parse(productDataJson); 
 
-  // Simpan semua row asli
-  let rows = Array.from(tableBody.querySelectorAll("tr"))
-    .filter(r => !r.querySelector("td[colspan]")); 
+    const ROWS_PER_PAGE = 5;
+    let currentPage = 1;
 
-  // =====================================
-  // RENDER TABLE
-  // =====================================
-  function renderTable() {
-    const q = searchInput.value.toLowerCase();
+    // =====================================
+    // HELPER: CREATE ROW
+    // =====================================
 
-    // Filter berdasarkan name, category, price, stock
-    const filtered = rows.filter(r => {
-      return (
-        r.children[1].textContent.toLowerCase().includes(q) ||
-        r.children[2].textContent.toLowerCase().includes(q) ||
-        r.children[3].textContent.toLowerCase().includes(q) ||
-        r.children[4].textContent.toLowerCase().includes(q)
-      );
+    // Fungsi untuk membuat baris TR dari objek produk mentah
+    function createRow(p, index) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${index}</td>
+            <td>${p.name}</td>
+            <td>${p.stock}</td>
+            <td>Rp ${Number(p.price).toLocaleString("id-ID")}</td>
+            <td>${p.category_name}</td>
+            <td class="btn">
+                <a href="/product-detail/${p.id}" class="btn-action update">Update</a>
+                <button
+                    type="button"
+                    class="btn-action delete"
+                    onclick='openDeleteModal(${p.id}, "${p.name.replace(/"/g, '\\"')}")'>
+                    Delete
+                </button>
+            </td>
+        `;
+        return tr;
+    }
+
+    // =====================================
+    // RENDER TABLE (PAGING & FILTERING LOGIC)
+    // =====================================
+    function renderTable() {
+        const q = searchInput.value.toLowerCase().trim();
+
+        // 1. FILTERING
+        const filteredProducts = productsData.filter(p => {
+            // Membersihkan teks harga agar pencarian angka berhasil
+            const priceClean = String(p.price).replace(/\./g, '').toLowerCase(); 
+
+            return (
+                p.name.toLowerCase().includes(q) ||
+                String(p.stock).includes(q) ||
+                priceClean.includes(q) ||
+                p.category_name.toLowerCase().includes(q)
+            );
+        });
+
+        const totalProducts = filteredProducts.length;
+        const totalPages = Math.ceil(totalProducts / ROWS_PER_PAGE);
+
+        if (currentPage > totalPages) currentPage = 1;
+        if (currentPage < 1 && totalProducts > 0) currentPage = 1;
+
+        const start = (currentPage - 1) * ROWS_PER_PAGE;
+        const pageRowsData = filteredProducts.slice(start, start + ROWS_PER_PAGE);
+
+        // 2. Clear table dan render baris
+        tableBody.innerHTML = "";
+
+        if (totalProducts === 0) {
+            tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; padding:20px;">No products found</td>
+            </tr>`;
+        } else {
+            pageRowsData.forEach((p, i) => {
+                // Urutan nomor baris (start + i + 1)
+                const row = createRow(p, start + i + 1); 
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 3. Render Pagination
+        renderPagination(totalPages);
+    }
+
+    // =====================================
+    // RENDER PAGINATION
+    // =====================================
+    function renderPagination(totalPages) {
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        for (let page = 1; page <= totalPages; page++) {
+            const btn = document.createElement("button");
+            btn.classList.add("page-number");
+            btn.textContent = page;
+
+            if (page === currentPage) btn.classList.add("active");
+
+            btn.onclick = () => {
+                currentPage = page;
+                renderTable();
+            };
+
+            pagination.appendChild(btn);
+        }
+
+        if (currentPage < totalPages) {
+            const next = document.createElement("button");
+            next.classList.add("page-next");
+            next.innerHTML = `NEXT <i class="bi bi-chevron-right"></i>`;
+            next.onclick = () => {
+                currentPage++;
+                renderTable();
+            };
+            pagination.appendChild(next);
+        }
+    }
+
+    // =====================================
+    // SEARCH (EVENT LISTENERS)
+    // =====================================
+    let typingTimer;
+    const delay = 300;
+
+    function applySearchFilter() {
+        currentPage = 1;
+        renderTable();
+    }
+
+    searchInput.addEventListener("input", () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(applySearchFilter, delay);
     });
 
-    const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+    searchButton.addEventListener("click", applySearchFilter);
 
-    if (currentPage > totalPages) currentPage = 1;
+    searchInput.addEventListener("keypress", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            applySearchFilter();
+        }
+    });
 
-    const start = (currentPage - 1) * ROWS_PER_PAGE;
-    const pageRows = filtered.slice(start, start + ROWS_PER_PAGE);
+    // =====================================
+    // DELETE MODAL (GLOBAL FUNCTIONS)
+    // =====================================
+    let deleteProductId = null;
 
-    // Clear table
-    tableBody.innerHTML = "";
-
-    if (pageRows.length === 0) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="6" style="text-align:center; padding:20px;">No products found</td>
-        </tr>`;
-    } else {
-      pageRows.forEach((row, i) => {
-        row.children[0].textContent = start + i + 1; // urutkan ulang
-        tableBody.appendChild(row);
-      });
+    // 💡 Definisikan di scope global agar bisa dipanggil dari onclick=""
+    window.openDeleteModal = function(id, name) {
+        deleteProductId = id;
+        document.getElementById("deleteProductName").textContent = name;
+        document.querySelector(".delete-modal-overlay").classList.add("show");
     }
 
-    renderPagination(totalPages);
-  }
-
-  // =====================================
-  // RENDER PAGINATION
-  // =====================================
-  function renderPagination(totalPages) {
-    pagination.innerHTML = "";
-
-    if (totalPages <= 1) return;
-
-    for (let page = 1; page <= totalPages; page++) {
-      const btn = document.createElement("button");
-      btn.classList.add("page-number");
-      btn.textContent = page;
-
-      if (page === currentPage) btn.classList.add("active");
-
-      btn.onclick = () => {
-        currentPage = page;
-        renderTable();
-      };
-
-      pagination.appendChild(btn);
+    // 💡 Definisikan di scope global
+    window.closeDeleteModal = function() {
+        document.querySelector(".delete-modal-overlay").classList.remove("show");
+        deleteProductId = null;
     }
 
-    if (currentPage < totalPages) {
-      const next = document.createElement("button");
-      next.classList.add("page-next");
-      next.innerHTML = `NEXT <i class="bi bi-chevron-right"></i>`;
-      next.onclick = () => {
-        currentPage++;
-        renderTable();
-      };
-      pagination.appendChild(next);
+    // 💡 Definisikan di scope global
+    window.confirmDelete = function() {
+        if (deleteProductId) {
+            window.location.href = "/product/delete/" + deleteProductId;
+        }
     }
-  }
 
-  // =====================================
-  // SEARCH (LIVE)
-  // =====================================
-  let typingTimer;
-  const delay = 300;
-
-  function applySearchFilter() {
-    currentPage = 1;
+    // Render awal
     renderTable();
-  }
-
-  searchInput.addEventListener("input", () => {
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(applySearchFilter, delay);
-  });
-
-  searchButton.addEventListener("click", applySearchFilter);
-
-  searchInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      applySearchFilter();
-    }
-  });
-
-  // =====================================
-  // DELETE MODAL (tetap sama)
-  // =====================================
-  let deleteProductId = null;
-
-  function openDeleteModal(id, name) {
-    deleteProductId = id;
-    document.getElementById("deleteProductName").textContent = name;
-    document.querySelector(".delete-modal-overlay").classList.add("show");
-  }
-
-  function closeDeleteModal() {
-    document.querySelector(".delete-modal-overlay").classList.remove("show");
-    deleteProductId = null;
-  }
-
-  function confirmDelete() {
-    if (deleteProductId) {
-      window.location.href = "/product/delete/" + deleteProductId;
-    }
-  }
-
-  // Render awal
-  renderTable();
 </script>
-

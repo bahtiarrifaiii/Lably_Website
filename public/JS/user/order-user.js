@@ -1,4 +1,4 @@
-// Filtering
+// Filtering;
 document.addEventListener("DOMContentLoaded", () => {
   const filterButtons = document.querySelectorAll(".filter-btn");
   const orderCards = document.querySelectorAll(".order-card");
