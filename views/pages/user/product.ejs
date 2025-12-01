@@ -1,21 +1,19 @@
 <div class="container product-detail">
   <div class="item-img-wrap">
-    <img src="./Assets/Mickroscope.png" alt="Mickroscope" />
+    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" />
   </div>
 
   <div class="item-content-wrap">
-    <p class="category">Product</p>
-    <h1>Mikroskop Cahaya</h1>
+    <p class="category"><%= product.category_name %></p>
+    <h1><%= product.name %></h1>
+
     <div class="price">
-      <h2>Rp200.000</h2>
+      <h2>Rp<%= product.price.toLocaleString() %></h2>
       <h2>/ Hari</h2>
     </div>
-    <p>
-      Mikroskop cahaya adalah jenis mikroskop yang paling umum dan fundamental
-      yang digunakan di laboratorium, sekolah, dan penelitian dasar. Fungsinya
-      adalah untuk menghasilkan gambar objek yang diperbesar dengan menggunakan
-      cahaya tampak (visible light) dan satu set lensa.
-    </p>
+
+    <p><%= product.description %></p>
+
     <div class="action-group">
       <div class="quantity-input">
         <button
@@ -36,6 +34,7 @@
       </div>
 
       <form id="cart-form" action="/form" method="get" style="display: inline">
+        <input type="hidden" name="product_id" value="<%= product.id %>" />
         <input type="hidden" name="action" value="cart" />
         <input type="hidden" name="qty" id="cart-qty-input" />
         <button type="submit" class="btn btn-primary add-to-cart">
@@ -44,6 +43,7 @@
       </form>
 
       <form id="loan-form" action="/form" method="get" style="display: inline">
+        <input type="hidden" name="product_id" value="<%= product.id %>" />
         <input type="hidden" name="action" value="loan" />
         <input type="hidden" name="qty" id="loan-qty-input" />
         <button type="submit" class="btn btn-secondary loan-now">

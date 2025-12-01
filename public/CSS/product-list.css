@@ -135,10 +135,10 @@
 /* Table */
 .table-wrapper {
   width: 100%;
-  overflow-x: hidden;      
+  overflow-x: hidden;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
   margin-top: 20px;
 }
 
@@ -185,6 +185,7 @@ thead th {
 
 .btn-action {
   border: none;
+  text-decoration: none;
   padding: 0.5rem 0.8rem;
   border-radius: 0.5rem;
   color: var(--base-white);
@@ -219,7 +220,8 @@ thead th {
 }
 
 .page-number,
-.page-next {
+.page-next,
+.page-prev {
   background-color: white;
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
@@ -227,6 +229,18 @@ thead th {
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
+  transition: all 0.4s ease;
+}
+
+.page-next:hover,
+.page-prev:hover {
+  color: var(--btn-hover-blue);
+}
+
+.page-number:hover {
+  color: var(--base-white);
+  background-color: var(--btn-hover-blue);
+  border-color: var(--btn-hover-blue);
 }
 
 .page-number.active {
@@ -234,13 +248,15 @@ thead th {
   color: var(--base-white);
 }
 
-.page-next {
+.page-next,
+.page-prev {
   border: none;
   background: transparent;
   color: var(--primary);
 }
 
-.page-next i {
+.page-next i,
+.page-prev i {
   font-size: 0.7rem;
 }
 
@@ -254,7 +270,7 @@ thead th {
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 999999 !important;   /* FIX TERBESAR */
+  z-index: 999999 !important; /* FIX TERBESAR */
   pointer-events: auto !important;
 }
 

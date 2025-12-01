@@ -18,7 +18,7 @@
   grid-area: right;
   background-color: #ffffff;
   min-height: 100vh;
-  overflow-y: auto; 
+  overflow-y: auto;
   padding-bottom: 3rem;
   min-width: 0;
   overflow: hidden;
@@ -45,7 +45,7 @@
   object-fit: cover;
 }
 
-.filter{
+.filter {
   margin: 10px 30px;
 }
 
@@ -181,36 +181,42 @@ th {
 .page-next,
 .page-prev {
   background-color: white;
-  border: 1px solid #0b4487;
+  border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  color: #0b4487;
+  transition: all 0.4s ease;
+}
+
+.page-next:hover,
+.page-prev:hover {
+  color: var(--btn-hover-blue);
+}
+
+.page-number:hover {
+  color: var(--base-white);
+  background-color: var(--btn-hover-blue);
+  border-color: var(--btn-hover-blue);
 }
 
 .page-number.active {
-  background-color: #0b4487;
-  color: #ffffff;
+  background-color: var(--primary);
+  color: var(--base-white);
 }
 
-.page-next, 
+.page-next,
 .page-prev {
   border: none;
-  color: #004870;
-  padding: 0.5rem 0.6rem;
+  background: transparent;
+  color: var(--primary);
 }
 
-.page-next i {
-  font-size: 0.7rem;
-  margin-left: 0.4rem;
-}
-
+.page-next i,
 .page-prev i {
   font-size: 0.7rem;
-  margin-right: 0.4rem;
 }
 
 .btn-filter {

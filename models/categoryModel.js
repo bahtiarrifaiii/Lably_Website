@@ -10,7 +10,6 @@ const Category = {
         database.query("SELECT * FROM category WHERE id = ?", [id], callback);
     },
 
-    // 🔍 Cek apakah nama kategori sudah ada
     findByName: (name, callback) => {
         database.query("SELECT * FROM category WHERE name = ?", [name], callback);
     },
@@ -35,5 +34,8 @@ const Category = {
         database.query("DELETE FROM category WHERE id = ?", [id], callback);
     }
 };
+
+// agar controller bisa query manual cek-relasi
+Category.db = database;
 
 module.exports = Category;

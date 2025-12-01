@@ -4,6 +4,8 @@ const router = express.Router();
 const ejs = require("ejs");
 const path = require("path");
 const multer = require("multer");
+const Product = require("../models/productModel");
+const db = require("../config/database");
 
 // Models
 const User = require("../models/userModel");
@@ -36,7 +38,7 @@ const upload = multer({ storage });
    AUTH PAGE (PUBLIC ACCESS)
 ============================================ */
 
-// LOGIN PAGE
+// ROUTE LOGIN
 router.get("/login", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -55,7 +57,7 @@ router.get("/login", async (req, res) => {
 });
 router.post("/login", authController.login);
 
-// REGISTER PAGE
+// ROUTE REGISTER
 router.get("/register", async (req, res) => {
   const message = req.session.message || null;
   req.session.message = null;
@@ -74,7 +76,7 @@ router.get("/register", async (req, res) => {
 });
 router.post("/register", authController.register);
 
-// LOGOUT
+// ROUTE LOGOUT
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
@@ -85,6 +87,7 @@ router.get("/logout", (req, res) => {
    USER PAGE (PUBLIC ACCESS)
 ============================================ */
 
+// ROUTE HOME
 router.get("/", passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/home.ejs")
@@ -103,63 +106,179 @@ router.get("/", passLoginStatus, async (req, res) => {
   });
 });
 
-router.get("/catalogue", passLoginStatus, async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/catalogue.ejs")
-  );
+// ROUTE CATALOGUE
+router.get("/catalogue", (req, res) => {
+  const page = parseInt(req.query.page) || 1; // default page 1
+  const limit = 9; // 9 produk per halaman
+  const offset = (page - 1) * limit;
 
-  res.render("layouts/main", {
-    title: "Catalogue | Lably Official Web",
-    currentPage: "catalogue",
-    showFooter: true,
-    meta: `
-      <meta name="description" content="Katalog alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
-    content,
+  const search = req.query.search || ""; // kalau nanti mau tambahin search server-side
+
+  // Ambil data produk (paginated)
+  Product.getPaginated(search, limit, offset, (err, products) => {
+    if (err) return res.status(500).send("Error fetching products");
+
+    // Hitung total produk untuk pagination
+    Product.count(search, (err2, result) => {
+      if (err2) return res.status(500).send("Error counting products");
+
+      const totalProducts = result[0].total;
+      const totalPages = Math.ceil(totalProducts / limit);
+
+      // Ambil kategori
+      db.query("SELECT * FROM category", (err3, categories) => {
+        if (err3) return res.status(500).send("Error fetching categories");
+
+        ejs.renderFile(
+          path.join(__dirname, "../views/pages/user/catalogue.ejs"),
+          {
+            products,
+            categories,
+            currentPage: page,
+            totalPages,
+          },
+          (err4, content) => {
+            if (err4) {
+              console.log("EJS ERROR:", err4);
+              return res.status(500).send("EJS render error");
+            }
+
+            res.render("layouts/main", {
+              title: "Catalogue | Lably Official Web",
+              currentPage: "catalogue",
+              showFooter: true,
+              meta: `
+                <meta name="description" content="Katalog alat laboratorium LabLy." />
+                <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+              `,
+              style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
+              content,
+            });
+          }
+        );
+      });
+    });
   });
 });
 
-router.get("/product", isLoggedIn, passLoginStatus, async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/product.ejs")
-  );
+// ROUTE PRODUCT
+router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
+  const productId = req.params.id;
 
-  res.render("layouts/main", {
-    title: "Product | Lably Official Web",
-    currentPage: "product",
-    showFooter: true,
-    meta: `
-      <meta name="description" content="Produk alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/product.css" />`,
-    content,
+  const sql = `
+    SELECT p.*, c.name AS category_name
+    FROM products p
+    LEFT JOIN category c ON p.id_category = c.id
+    WHERE p.id = ?
+  `;
+
+  db.query(sql, [productId], async (err, results) => {
+    if (err) throw err;
+    if (results.length === 0) return res.redirect("/catalogue");
+
+    const product = results[0];
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/product.ejs"),
+      { product }
+    );
+
+    res.render("layouts/main", {
+      title: `${product.name} | Lably Web`,
+      currentPage: "product",
+      showFooter: true,
+      meta: `
+        <meta name="description" content="${product.name}"/>
+      `,
+      style: `<link rel="stylesheet" href="/CSS/product.css" />`,
+      content,
+    });
   });
 });
 
+// ROUTE FORM
 router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
-  const { action, qty } = req.query;
   const formSpecificScript = "/JS/form-user.js";
-
   const message = req.session.message || null;
   req.session.message = null;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/form.ejs"),
-    { message, action: action, qty: qty }
-  );
+  const productId = req.query.product_id;
+  const qty = parseInt(req.query.qty) || 1;
+  const action = req.query.action;
 
-  res.render("layouts/forms", {
-    title: "Form | Lably",
-    meta: `
-      <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: "",
-    content,
-    scriptFile: formSpecificScript,
+  if (!productId) {
+    req.session.message = "ID Produk tidak ditemukan.";
+    return res.redirect("/catalogue");
+  }
+
+  if (!action) {
+    req.session.message = "Aksi pemesanan tidak valid.";
+    return res.redirect("/catalogue");
+  }
+
+  Product.getById(productId, (err, productRows) => {
+    if (err) {
+      console.error("Database Error (Product):", err);
+      req.session.message =
+        "Terjadi kesalahan server saat mengambil data produk.";
+      return res.redirect("/catalogue");
+    }
+
+    if (!productRows || productRows.length === 0) {
+      req.session.message = "Produk tidak ditemukan.";
+      return res.redirect("/catalogue");
+    }
+
+    const product = productRows[0];
+    const priceTotal = product.price * qty;
+
+    User.getById(req.session.user.id, (err, userRows) => {
+      if (err) {
+        console.error("Database Error (User):", err);
+        req.session.message =
+          "Terjadi kesalahan server saat mengambil data pengguna.";
+        return res.redirect("/login");
+      }
+
+      if (!userRows || userRows.length === 0) {
+        req.session.message =
+          "Sesi pengguna tidak valid. Silakan login kembali.";
+        return res.redirect("/login");
+      }
+
+      const user = userRows[0];
+
+      ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/form.ejs"),
+        {
+          message,
+          product,
+          qty,
+          priceTotal,
+          user,
+          action,
+        },
+        (err, content) => {
+          if (err) {
+            console.error("EJS Render Error:", err);
+            req.session.message =
+              "Terjadi kesalahan saat membuat tampilan formulir.";
+            return res.redirect("/catalogue");
+          }
+
+          res.render("layouts/forms", {
+            title: "Form | Lably",
+            meta: `
+              <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
+              <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+            `,
+            style: "",
+            content,
+            scriptFile: formSpecificScript,
+          });
+        }
+      );
+    });
   });
 });
 
@@ -177,6 +296,11 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
   }
 });
 
+/* ============================================
+  PAGES (LOGIN REQUIRED)
+============================================ */
+
+// CART PAGE
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/cart.ejs")
@@ -195,6 +319,7 @@ router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   });
 });
 
+// CHECKOUT PAGE
 router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
   const content = await ejs.renderFile(
     path.join(__dirname, "../views/pages/user/checkout.ejs")

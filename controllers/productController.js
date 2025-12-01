@@ -240,3 +240,13 @@ exports.delete = (req, res) => {
     });
   });
 };
+
+/* ============================================================
+    AMBIL DATA DARI CATALOGUE
+============================================================ */
+exports.getAllForCatalogue = (req, res) => {
+  Product.getAll((err, products) => {
+    if (err) return res.status(500).send("Database error");
+    res.render("pages/user/catalogue", { products });
+  });
+};

@@ -13,20 +13,33 @@
 <!-- Catalogue Section -->
 <section class="catalogue">
   <div class="container filter-container">
+    <!-- FILTER WRAP -->
     <div class="filter-wrap">
+      <!-- CATEGORY FILTER -->
       <div class="filter-group">
-        <select class="custom-select" aria-label="Filter by Category">
-          <option selected disabled>Categories</option>
-          <option value="mikroskop">Mikroskop</option>
-          <option value="sentrifuga">Sentrifuga</option>
-          <option value="inkubator">Inkubator</option>
-          <option value="reaktor">Reaktor</option>
+        <select
+          class="custom-select"
+          id="filterCategory"
+          aria-label="Filter by Category"
+        >
+          <option value="all" selected>Categories</option>
+
+          <!-- kategori otomatis dari database -->
+          <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>"><%= cat.name %></option>
+          <% }) %>
         </select>
         <i class="bi bi-chevron-down"></i>
       </div>
+
+      <!-- PRICE FILTER -->
       <div class="filter-group">
-        <select class="custom-select" aria-label="Filter by Price">
-          <option selected disabled>Price</option>
+        <select
+          class="custom-select"
+          id="filterPrice"
+          aria-label="Filter by Price"
+        >
+          <option value="all" selected>Price</option>
           <option value="0-500000">IDR 0 - 500rb</option>
           <option value="500001-1000000">IDR 500rb - 1jt</option>
           <option value="1000001-2000000">IDR 1jt - 2jt</option>
@@ -36,116 +49,120 @@
       </div>
     </div>
 
+    <!-- SEARCH -->
     <div class="search-group">
       <i class="bi bi-search search-icon"></i>
       <input
         type="text"
         class="search-input"
+        id="filterSearch"
         placeholder="Search"
         aria-label="Search items"
       />
     </div>
   </div>
 
+  <!-- PRODUCT LIST -->
   <div class="container catalogue-content">
-    <div class="catalogue-grid">
-      <a href="/product"
-        ><div class="catalogue-item">
+    <div class="catalogue-grid" id="catalogueList">
+      <% products.forEach(p => { %>
+      <a href="/product/<%= p.id %>" class="catalogue-link">
+        <div
+          class="catalogue-item"
+          data-category="<%= p.id_category %>"
+          data-price="<%= p.price %>"
+          data-name="<%= p.name.toLowerCase() %>"
+        >
           <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
+            <img src="/uploads/<%= p.image %>" alt="<%= p.name %>" />
           </div>
-          <p class="item-name">Binokuler</p>
-          <p class="item-price">IDR 1.000.000</p>
+
+          <p class="item-name"><%= p.name %></p>
+          <p class="item-price">
+            IDR <%= Number(p.price).toLocaleString("id-ID") %>
+          </p>
         </div>
       </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Lysis</p>
-          <p class="item-price">IDR 650.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Reaktor</p>
-          <p class="item-price">IDR 2.000.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Binokuler Pro</p>
-          <p class="item-price">IDR 1.500.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Razor</p>
-          <p class="item-price">IDR 900.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
+      <% }) %>
     </div>
   </div>
 
-  <nav aria-label="Page navigation">
-    <ul class="pagination">
-      <li>
-        <a href="#" class="page-link active" aria-current="page">1</a>
-      </li>
-      <li>
-        <a href="#" class="page-link">2</a>
-      </li>
-      <li>
-        <a href="#" class="page-link next-page" aria-label="Next">
-          <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <!-- PREV -->
+    <% if (currentPage > 1) { %>
+    <a href="/catalogue?page=<%= currentPage - 1 %>" class="page-prev">
+      <i class="bi bi-chevron-left"></i> Prev
+    </a>
+    <% } %>
+
+    <!-- PAGES -->
+    <% for (let i = 1; i <= totalPages; i++) { %>
+    <a
+      href="/catalogue?page=<%= i %>"
+      class="page-number <%= currentPage === i ? 'active' : '' %>"
+    >
+      <%= i %>
+    </a>
+    <% } %>
+
+    <!-- NEXT -->
+    <% if (currentPage < totalPages) { %>
+    <a href="/catalogue?page=<%= currentPage + 1 %>" class="page-next">
+      Next <i class="bi bi-chevron-right"></i>
+    </a>
+    <% } %>
+  </div>
 </section>
+
+<!-- FILTER SCRIPT -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const categorySelect = document.getElementById("filterCategory");
+    const priceSelect = document.getElementById("filterPrice");
+    const searchInput = document.getElementById("filterSearch");
+    const items = document.querySelectorAll(".catalogue-item");
+
+    function applyFilters() {
+      const category = categorySelect.value;
+      const priceRange = priceSelect.value;
+      const searchTerm = searchInput.value.toLowerCase();
+
+      items.forEach((item) => {
+        const itemCategory = item.dataset.category;
+        const itemPrice = Number(item.dataset.price);
+        const itemName = item.dataset.name;
+
+        let show = true;
+
+        /* CATEGORY */
+        if (category !== "all") {
+          show = show && itemCategory === category;
+        }
+
+        /* PRICE */
+        if (priceRange !== "all") {
+          const [min, max] = priceRange.split("-");
+
+          if (max === "above") {
+            show = show && itemPrice >= Number(min);
+          } else {
+            show = show && itemPrice >= Number(min) && itemPrice <= Number(max);
+          }
+        }
+
+        /* SEARCH */
+        if (searchTerm.trim() !== "") {
+          show = show && itemName.includes(searchTerm);
+        }
+
+        /* SHOW / HIDE */
+        item.parentElement.style.display = show ? "block" : "none";
+      });
+    }
+
+    categorySelect.addEventListener("change", applyFilters);
+    priceSelect.addEventListener("change", applyFilters);
+    searchInput.addEventListener("keyup", applyFilters);
+  });
+</script>
