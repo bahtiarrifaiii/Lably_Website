@@ -11,6 +11,7 @@ const db = require("../config/database");
 const User = require("../models/userModel");
 const Customer = require("../models/customerModel");
 const Order = require("../models/orderModel");
+const Draft = require("../models/draftModel"); // <— pakai draft
 
 // Controllers
 const authController = require("../controllers/authController");
@@ -284,17 +285,27 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
 });
 
 router.post("/submit-data", isLoggedIn, (req, res) => {
-  const { action_type, quantity, product_id, borrow_date, return_date, all_total, all_total_raw, phone, address } = req.body;
+  const {
+    action_type,
+    quantity,
+    product_id,
+    borrow_date,
+    return_date,
+    all_total,
+    all_total_raw,
+    phone,
+    address,
+  } = req.body;
+
+  const userId = req.session.user && req.session.user.id;
 
   // helper to parse formatted currency like "Rp1.234.000" or "1234000" into number
   function parseCurrency(value) {
     if (value == null) return null;
     if (typeof value === "number") return value;
-    // Prefer raw numeric value if available
     if (all_total_raw && !isNaN(all_total_raw)) {
       return Number(all_total_raw);
     }
-    // Otherwise parse formatted string: remove "Rp" prefix and spaces, keep only digits
     const cleaned = String(value).replace(/[^\d]/g, "");
     if (cleaned === "") return null;
     return Number(cleaned);
@@ -302,10 +313,13 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
 
   const allTotalNumber = parseCurrency(all_total);
 
-  if (action_type === "cart") {
-    // Tambahkan item ke session cart, lalu redirect ke halaman /cart
-    req.session.cart = req.session.cart || [];
+  if (!userId) {
+    req.session.message = "User tidak valid.";
+    return res.redirect("/login");
+  }
 
+  if (action_type === "cart") {
+    // ⬇⬇ Simpan ke d_peminjaman sebagai draft (keranjang)
     Product.getById(product_id, (err, productRows) => {
       if (err) {
         console.error("Database Error (Product):", err);
@@ -319,24 +333,29 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return res.redirect("/catalogue");
       }
 
-      req.session.cart.push({
+      const draftData = {
         product_id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: Number(quantity) || 1,
+        price: product.price, // simpan harga satuan
         borrow_date: borrow_date || null,
         return_date: return_date || null,
-        all_total: allTotalNumber,
-        all_total_raw: all_total || null,
+        quantity: Number(quantity) || 1,
         phone: phone || "",
         address: address || "",
-      });
+      };
 
-      console.log("Produk ditambahkan ke Keranjang:", product.name);
-      return res.redirect("/cart");
+      Draft.add(userId, draftData, (err2) => {
+        if (err2) {
+          console.error("Gagal simpan draft:", err2);
+          req.session.message = "Gagal menyimpan ke keranjang.";
+          return res.redirect("/catalogue");
+        }
+
+        console.log("Draft cart tersimpan untuk user:", userId);
+        return res.redirect("/cart");
+      });
     });
   } else if (action_type === "loan") {
-    // Simpan sementara data checkout di session lalu redirect ke /checkout
+    // ⬇⬇ Loan now: bersihkan draft lama, simpan 1 item, lalu ke checkout
     Product.getById(product_id, (err, productRows) => {
       if (err) {
         console.error("Database Error (Product):", err);
@@ -350,21 +369,33 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return res.redirect("/catalogue");
       }
 
-      req.session.checkout = {
+      const draftData = {
         product_id: product.id,
-        name: product.name,
         price: product.price,
-        quantity: Number(quantity) || 1,
         borrow_date: borrow_date || null,
         return_date: return_date || null,
-        all_total: allTotalNumber,
-        all_total_raw: all_total || null,
+        quantity: Number(quantity) || 1,
         phone: phone || "",
         address: address || "",
       };
 
-      console.log("Langsung ke proses Peminjaman:", product.name);
-      return res.redirect("/checkout");
+      // hapus semua draft lama user (supaya loan now hanya item ini)
+      Draft.deleteByUser(userId, (errDel) => {
+        if (errDel) {
+          console.error("Gagal menghapus draft lama:", errDel);
+        }
+
+        Draft.add(userId, draftData, (err2) => {
+          if (err2) {
+            console.error("Gagal simpan draft loan:", err2);
+            req.session.message = "Gagal menyimpan peminjaman.";
+            return res.redirect("/catalogue");
+          }
+
+          console.log("Draft loan tersimpan untuk user:", userId);
+          return res.redirect("/checkout");
+        });
+      });
     });
   } else {
     res.status(400).send("Aksi tidak valid.");
@@ -377,111 +408,148 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
 
 // CART PAGE
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
-  const cartItems = req.session.cart || [];
+  const userId = req.session.user && req.session.user.id;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/cart.ejs"),
-    { cartItems }
-  );
+  Draft.getByUser(userId, async (err, rows) => {
+    if (err) {
+      console.error("Error get draft cart:", err);
+      return res.status(500).send("Error loading cart.");
+    }
 
-  res.render("layouts/main", {
-    title: "Cart | Lably",
-    currentPage: "cart",
-    showFooter: false,
-    meta: `
-      <meta name="description" content="Keranjang menyimpan alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
-    content,
+    // mapping ke bentuk yang cocok dengan cart.ejs lama
+    const cartItems = (rows || []).map((r) => ({
+      product_id: r.id_products,
+      name: r.product_name || "Produk",
+      price: Number(r.price) || 0,
+      quantity: Number(r.qty) || 1,
+
+      // 🔥 format tanggal (HANYA YYYY-MM-DD)
+      borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+      return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
+
+      all_total: null,
+      all_total_raw: null,
+    }));
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/cart.ejs"),
+      { cartItems }
+    );
+
+    res.render("layouts/main", {
+      title: "Cart | Lably",
+      currentPage: "cart",
+      showFooter: false,
+      meta: `
+        <meta name="description" content="Keranjang menyimpan alat laboratorium LabLy." />
+        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+      `,
+      style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
+      content,
+    });
   });
 });
 
 // Remove a single item from cart (by product_id)
 router.post("/cart/remove", isLoggedIn, (req, res) => {
   const { product_id } = req.body;
-  if (!req.session.cart || !Array.isArray(req.session.cart)) {
+  const userId = req.session.user && req.session.user.id;
+
+  if (!userId || !product_id) {
     return res.redirect("/cart");
   }
 
-  // Remove all items matching product_id
-  req.session.cart = req.session.cart.filter(
-    (item) => String(item.product_id) !== String(product_id)
-  );
-
-  req.session.message = { type: "success", text: "Item removed from cart." };
-  return res.redirect("/cart");
+  const sql = `
+    DELETE FROM d_peminjaman
+    WHERE id_user = ? AND id_products = ?
+  `;
+  db.query(sql, [userId, product_id], (err) => {
+    if (err) {
+      console.error("Gagal hapus draft cart:", err);
+    }
+    return res.redirect("/cart");
+  });
 });
 
 // Clear entire cart
 router.post("/cart/clear", isLoggedIn, (req, res) => {
-  req.session.cart = [];
-  req.session.message = { type: "success", text: "Cart cleared." };
-  return res.redirect("/cart");
+  const userId = req.session.user && req.session.user.id;
+
+  Draft.deleteByUser(userId, (err) => {
+    if (err) {
+      console.error("Gagal clear draft cart:", err);
+    }
+    return res.redirect("/cart");
+  });
 });
 
 // CHECKOUT PAGE
 router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
-  // Build checkout items from either single-item checkout (loan now) or session cart
-  const sessionCheckout = req.session.checkout || null;
-  const sessionCart = req.session.cart || [];
+  const userId = req.session.user && req.session.user.id;
 
-  // choose source: prefer sessionCheckout (single loan-now), otherwise use cart
-  const sourceItems = sessionCheckout ? [sessionCheckout] : sessionCart;
-
-  function computeDays(borrow, ret) {
-    try {
-      if (!borrow || !ret) return 1;
-      const a = new Date(borrow);
-      const b = new Date(ret);
-      const diffMs = b - a;
-      const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      return days > 0 ? days : 1;
-    } catch (e) {
-      return 1;
+  Draft.getByUser(userId, async (err, rows) => {
+    if (err) {
+      console.error("Error get draft for checkout:", err);
+      return res.status(500).send("Error loading checkout.");
     }
-  }
 
-  const items = (sourceItems || []).map((it) => {
-    const price = Number(it.price) || 0;
-    const qty = Number(it.quantity) || 1;
-    const days = computeDays(it.borrow_date, it.return_date);
-    const itemTotal = Number(it.all_total) || price * qty * days;
-    return {
-      product_id: it.product_id,
-      name: it.name,
-      price,
-      quantity: qty,
-      borrow_date: it.borrow_date || null,
-      return_date: it.return_date || null,
-      days,
-      itemTotal,
-    };
-  });
+    function computeDays(borrow, ret) {
+      try {
+        if (!borrow || !ret) return 1;
+        const a = new Date(borrow);
+        const b = new Date(ret);
+        const diffMs = b - a;
+        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        return days > 0 ? days : 1;
+      } catch (e) {
+        return 1;
+      }
+    }
 
-  const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
+    const items = (rows || []).map((r) => {
+      const price = Number(r.price) || 0; // harga satuan
+      const qty = Number(r.qty) || 1;
+      const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
+      const itemTotal = price * qty * days;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/checkout.ejs"),
-    { items, subtotal }
-  );
+      return {
+        product_id: r.id_products,
+        name: r.product_name || "Produk",
+        price,
+        quantity: qty,
 
-  res.render("layouts/main", {
-    title: "Checkout | Lably",
-    currentPage: "checkout",
-    showFooter: false,
-    meta: `
-      <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
-    content,
+        // 🔥 format tanggal
+        borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+        return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
+
+        days,
+        itemTotal,
+      };
+    });
+
+    const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/checkout.ejs"),
+      { items, subtotal }
+    );
+
+    res.render("layouts/main", {
+      title: "Checkout | Lably",
+      currentPage: "checkout",
+      showFooter: false,
+      meta: `
+        <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
+        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+      `,
+      style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
+      content,
+    });
   });
 });
 
-// Cancel checkout (clear session.checkout) and redirect back
+// Cancel checkout (tidak hapus draft, cuma balik katalog)
 router.post("/checkout/cancel", isLoggedIn, (req, res) => {
-  req.session.checkout = null;
   req.session.message = { type: "info", text: "Checkout cancelled." };
   return res.redirect("/catalogue");
 });
@@ -495,44 +563,70 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
     return res.redirect("/login");
   }
 
-  const sessionCheckout = req.session.checkout || null;
-  const sessionCart = req.session.cart || [];
-  const sourceItems = sessionCheckout ? [sessionCheckout] : sessionCart;
-
-  if (!sourceItems || sourceItems.length === 0) {
-    req.session.message = { type: "error", text: "Tidak ada item untuk checkout." };
-    return res.redirect("/cart");
-  }
-
-  // prepare items for insertion
-  const itemsToInsert = sourceItems.map((it) => {
-    return {
-      product_id: it.product_id,
-      quantity: Number(it.quantity) || 1,
-      borrow_date: it.borrow_date || null,
-      return_date: it.return_date || null,
-      // prefer itemTotal, then all_total, then price
-      itemTotal: it.itemTotal || it.all_total || null,
-      price: it.price || null,
-      // use phone/address from session item (set during form submission)
-      phone: it.phone || "",
-      address: it.address || "",
-    };
-  });
-
-  Order.createOrders(userId, itemsToInsert, (err, result) => {
+  Draft.getByUser(userId, (err, rows) => {
     if (err) {
-      console.error("ERROR creating orders:", err);
-      req.session.message = { type: "error", text: "Gagal menyimpan pesanan." };
+      console.error("ERROR get draft for complete:", err);
+      req.session.message = { type: "error", text: "Gagal memproses checkout." };
       return res.redirect("/checkout");
     }
 
-    // clear checkout/cart
-    req.session.checkout = null;
-    req.session.cart = [];
+    if (!rows || rows.length === 0) {
+      req.session.message = { type: "error", text: "Tidak ada item untuk checkout." };
+      return res.redirect("/cart");
+    }
 
-    req.session.message = { type: "success", text: "Checkout berhasil. Pesanan disimpan." };
-    return res.redirect("/order-user");
+    // prepare items for insertion ke tabel peminjaman
+    function computeDays(borrow, ret) {
+      try {
+        if (!borrow || !ret) return 1;
+        const a = new Date(borrow);
+        const b = new Date(ret);
+        const diffMs = b - a;
+        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        return days > 0 ? days : 1;
+      } catch (e) {
+        return 1;
+      }
+    }
+
+    const itemsToInsert = rows.map((r) => {
+      const priceUnit = Number(r.price) || 0;
+      const qty = Number(r.qty) || 1;
+      const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
+      const itemTotal = priceUnit * qty * days; // total untuk kolom price di peminjaman
+
+      return {
+        product_id: r.id_products,
+        quantity: qty,
+
+        // 🔥 format tanggal sebelum INSERT
+        borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+        return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
+
+        itemTotal: itemTotal,
+        price: priceUnit,
+        phone: r.no_telp || "",
+        address: r.alamat || "",
+      };
+    });
+
+    Order.createOrders(userId, itemsToInsert, (err2, result) => {
+      if (err2) {
+        console.error("ERROR creating orders:", err2);
+        req.session.message = { type: "error", text: "Gagal menyimpan pesanan." };
+        return res.redirect("/checkout");
+      }
+
+      // setelah sukses, hapus semua draft user
+      Draft.deleteByUser(userId, (errDel) => {
+        if (errDel) {
+          console.error("Gagal menghapus draft setelah checkout:", errDel);
+        }
+
+        req.session.message = { type: "success", text: "Checkout berhasil. Pesanan disimpan." };
+        return res.redirect("/order-user");
+      });
+    });
   });
 });
 
