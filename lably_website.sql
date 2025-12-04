@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2025 at 01:08 PM
+-- Generation Time: Dec 05, 2025 at 12:00 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -63,6 +63,27 @@ INSERT INTO `category` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `d_peminjaman`
+--
+
+CREATE TABLE `d_peminjaman` (
+  `id` int(50) NOT NULL,
+  `id_user` int(50) NOT NULL,
+  `id_products` int(50) NOT NULL,
+  `price` varchar(250) NOT NULL,
+  `tgl_pinjam` date NOT NULL,
+  `tgl_kembali` date NOT NULL,
+  `status` enum('draft') NOT NULL DEFAULT 'draft',
+  `qty` int(50) NOT NULL,
+  `no_telp` varchar(255) NOT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `peminjaman`
 --
 
@@ -71,13 +92,22 @@ CREATE TABLE `peminjaman` (
   `id_user` int(50) NOT NULL,
   `id_products` int(50) NOT NULL,
   `price` varchar(255) NOT NULL,
-  `tgl_pinjam` datetime NOT NULL,
-  `tgl_kembali` datetime NOT NULL,
+  `tgl_pinjam` date NOT NULL,
+  `tgl_kembali` date NOT NULL,
   `status` enum('pending','in use','completed','overdue') NOT NULL,
   `qty` int(50) NOT NULL,
   `no_telp` varchar(255) NOT NULL,
   `alamat` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `peminjaman`
+--
+
+INSERT INTO `peminjaman` (`id`, `id_user`, `id_products`, `price`, `tgl_pinjam`, `tgl_kembali`, `status`, `qty`, `no_telp`, `alamat`) VALUES
+(14, 9, 12, '1050000', '2025-12-24', '2025-12-31', 'in use', 1, '998', 'jhvhj'),
+(15, 9, 15, '1500000', '2025-12-12', '2025-12-13', 'completed', 1, '998', 'jhvhj'),
+(17, 9, 8, '200000', '2025-12-19', '2025-12-20', 'in use', 1, '998', 'jhvhj');
 
 -- --------------------------------------------------------
 
@@ -147,7 +177,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `status`, `created_at`, `last_login`) VALUES
 (8, 'Bima', 'bima@gmail.com', '$2b$10$FmCL.PkghfWzndZ5.QUwI.Kvopfbo8V9XEDPvPSiOQWqucrz6KKy6', 'inactive', '2025-11-20 15:52:39', '2025-11-20 23:02:33'),
-(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'inactive', '2025-11-20 16:01:38', '2025-12-01 18:50:32'),
+(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'inactive', '2025-11-20 16:01:38', '2025-12-05 04:26:09'),
 (10, 'Hanni', 'hanni@gmail.com', '$2b$10$ISb9CGqUchgBigd50UkngOGzRxVN/B27lfOezVcnGA9GP05csbwfu', 'inactive', '2025-12-01 12:24:04', '2025-12-01 19:45:41');
 
 --
@@ -165,6 +195,14 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `category`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `d_peminjaman`
+--
+ALTER TABLE `d_peminjaman`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_products` (`id_products`),
+  ADD KEY `id_user` (`id_user`);
 
 --
 -- Indexes for table `peminjaman`
@@ -212,10 +250,16 @@ ALTER TABLE `category`
   MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
+-- AUTO_INCREMENT for table `d_peminjaman`
+--
+ALTER TABLE `d_peminjaman`
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
 -- AUTO_INCREMENT for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -227,7 +271,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `reminder`
 --
 ALTER TABLE `reminder`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -238,6 +282,13 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `d_peminjaman`
+--
+ALTER TABLE `d_peminjaman`
+  ADD CONSTRAINT `d_peminjaman_ibfk_1` FOREIGN KEY (`id_products`) REFERENCES `products` (`id`),
+  ADD CONSTRAINT `d_peminjaman_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `peminjaman`
