@@ -10,6 +10,7 @@ const db = require("../config/database");
 // Models
 const User = require("../models/userModel");
 const Customer = require("../models/customerModel");
+const Order = require("../models/orderModel");
 
 // Controllers
 const authController = require("../controllers/authController");
@@ -283,7 +284,7 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
 });
 
 router.post("/submit-data", isLoggedIn, (req, res) => {
-  const { action_type, quantity, product_id, borrow_date, return_date, all_total, all_total_raw } = req.body;
+  const { action_type, quantity, product_id, borrow_date, return_date, all_total, all_total_raw, phone, address } = req.body;
 
   // helper to parse formatted currency like "Rp1.234.000" or "1234000" into number
   function parseCurrency(value) {
@@ -327,6 +328,8 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return_date: return_date || null,
         all_total: allTotalNumber,
         all_total_raw: all_total || null,
+        phone: phone || "",
+        address: address || "",
       });
 
       console.log("Produk ditambahkan ke Keranjang:", product.name);
@@ -356,6 +359,8 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return_date: return_date || null,
         all_total: allTotalNumber,
         all_total_raw: all_total || null,
+        phone: phone || "",
+        address: address || "",
       };
 
       console.log("Langsung ke proses Peminjaman:", product.name);
@@ -479,6 +484,56 @@ router.post("/checkout/cancel", isLoggedIn, (req, res) => {
   req.session.checkout = null;
   req.session.message = { type: "info", text: "Checkout cancelled." };
   return res.redirect("/catalogue");
+});
+
+
+// Finalize checkout: create peminjaman rows for the logged-in user
+router.post("/checkout/complete", isLoggedIn, (req, res) => {
+  const userId = req.session.user && req.session.user.id;
+  if (!userId) {
+    req.session.message = { type: "error", text: "User session tidak valid." };
+    return res.redirect("/login");
+  }
+
+  const sessionCheckout = req.session.checkout || null;
+  const sessionCart = req.session.cart || [];
+  const sourceItems = sessionCheckout ? [sessionCheckout] : sessionCart;
+
+  if (!sourceItems || sourceItems.length === 0) {
+    req.session.message = { type: "error", text: "Tidak ada item untuk checkout." };
+    return res.redirect("/cart");
+  }
+
+  // prepare items for insertion
+  const itemsToInsert = sourceItems.map((it) => {
+    return {
+      product_id: it.product_id,
+      quantity: Number(it.quantity) || 1,
+      borrow_date: it.borrow_date || null,
+      return_date: it.return_date || null,
+      // prefer itemTotal, then all_total, then price
+      itemTotal: it.itemTotal || it.all_total || null,
+      price: it.price || null,
+      // use phone/address from session item (set during form submission)
+      phone: it.phone || "",
+      address: it.address || "",
+    };
+  });
+
+  Order.createOrders(userId, itemsToInsert, (err, result) => {
+    if (err) {
+      console.error("ERROR creating orders:", err);
+      req.session.message = { type: "error", text: "Gagal menyimpan pesanan." };
+      return res.redirect("/checkout");
+    }
+
+    // clear checkout/cart
+    req.session.checkout = null;
+    req.session.cart = [];
+
+    req.session.message = { type: "success", text: "Checkout berhasil. Pesanan disimpan." };
+    return res.redirect("/order-user");
+  });
 });
 
 // ORDER PAGE

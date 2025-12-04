@@ -12,11 +12,12 @@ const { passLoginStatus } = require("./middlewares/authMiddleware");
 // ==========================
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(
   session({
     secret: "lably-secret-key",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
   })
 );

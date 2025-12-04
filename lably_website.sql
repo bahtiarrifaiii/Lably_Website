@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2025 at 01:01 PM
+-- Generation Time: Dec 04, 2025 at 01:08 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -57,11 +57,8 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `name`) VALUES
-(2, 'cihuyy'),
-(11, 'test'),
-(16, 'ppw'),
-(17, 'dpbo'),
-(18, 'metnuki');
+(22, 'Biologi dan Ilmu Hayati'),
+(23, 'Kimia dan Ilmu Material');
 
 -- --------------------------------------------------------
 
@@ -71,14 +68,15 @@ INSERT INTO `category` (`id`, `name`) VALUES
 
 CREATE TABLE `peminjaman` (
   `id` int(50) NOT NULL,
-  `id_admin` int(50) NOT NULL,
   `id_user` int(50) NOT NULL,
   `id_products` int(50) NOT NULL,
   `price` varchar(255) NOT NULL,
   `tgl_pinjam` datetime NOT NULL,
   `tgl_kembali` datetime NOT NULL,
   `status` enum('pending','in use','completed','overdue') NOT NULL,
-  `screated_at` datetime NOT NULL
+  `qty` int(50) NOT NULL,
+  `no_telp` varchar(255) NOT NULL,
+  `alamat` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -103,7 +101,17 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `id_category`, `description`, `stock`, `kondisi`, `price`, `image`) VALUES
-(2, 'tet', 18, 'gtau', 5, 'baikk', 500000, '1764241951129-basdat10-logis.drawio.png');
+(6, 'NanoDrop Spectrophotometer', 22, 'NanoDrop adalah spektrofotometer mikro volume yang memungkinkan pengukuran konsentrasi dan kemurnian atau protein menggunakan volume sampel yang sangat kecil tanpa memerlukan kuvet. Instrumen ini bekerja dengan menahan tetesan sampel di antara dua se', 10, 'Sangat Baik', 1200000, '1764589114461-Tabung Gas.png'),
+(7, 'Thermal Cycler', 22, 'Alat yang digunakan untuk melakukan Polymerase Chain Reaction, yaitu serangkaian siklus pemanasan dan pendinginan yang sangat tepat untuk mengamplifikasi (memperbanyak) sekuens spesifik.', 5, 'Sangat Baik', 300000, '1764589106994-Tabung Gas.png'),
+(8, 'Centrifuge', 22, 'Mesin yang memutar sampel dengan kecepatan sangat tinggi untuk memisahkan komponen-komponen (seperti sel, pelet, atau organel) berdasarkan perbedaan massa jenis melalui gaya sentrifugal.', 8, 'Sangat Baik', 200000, '1764589099874-Tabung Gas.png'),
+(9, 'Gel Electrophoresis System', 22, 'Alat yang memisahkan molekul bermuatan berdasarkan ukuran ketika sampel dialirkan listrik melalui media gel, digunakan untuk memeriksa kualitas dan ukuran produk.', 15, 'Sangat Baik', 250000, '1764589873685-Tabung Gas.png'),
+(10, 'Mikropipet', 22, 'Alat presisi yang digunakan untuk mengambil dan memindahkan volume cairan yang sangat kecil (dalam skala mikroliter), merupakan alat dasar penting dalam menyiapkan semua reaksi biologi molekuler.', 20, 'Sangat Baik', 50000, '1764589086892-Tabung Gas.png'),
+(11, 'Mikroskop Cahaya', 22, 'Alat fundamental untuk mengamati objek mikroskopis seperti sel, jaringan, bakteri, dan jamur, dengan memperbesar citra melalui sistem lensa dan pencahayaan.', 5, 'Sangat Baik', 100000, '1764589072619-Tabung Gas.png'),
+(12, 'Inkubator', 22, 'Ruangan atau wadah yang menyediakan suhu, kelembaban, dan terkadang kadar CO2 yang terkontrol dan stabil untuk mendukung pertumbuhan optimal mikroorganisme atau kultur sel.', 7, 'Sangat Baik', 150000, '1764589060419-Tabung Gas.png'),
+(13, 'Autoklaf', 22, 'Alat sterilisasi yang menggunakan uap air panas bertekanan tinggi (121 C dan 15 psi) untuk membunuh semua mikroorganisme, termasuk spora, pada alat dan media yang digunakan.', 3, 'Sangat Baik', 200000, '1764589227085-Tabung Gas.png'),
+(14, 'Qubit Fluorometer', 22, 'Alat kuantifikasi yang lebih spesifik daripada NanoDrop, menggunakan pewarnaan fluoresensi yang hanya berinteraksi dengan molekul target ($\\text{DNA}$ untai ganda atau protein) sehingga menghasilkan pengukuran konsentrasi dengan sensitivitas dan spes', 2, 'Sangat Baik', 300000, '1764589264140-Tabung Gas.png'),
+(15, 'HPLC', 23, 'Alat kromatografi canggih yang digunakan untuk memisahkan, mengidentifikasi, dan mengkuantifikasi setiap komponen dalam campuran cair kompleks. Prinsipnya adalah memisahkan analit berdasarkan interaksi yang berbeda dengan fase diam dan fase gerak.', 5, 'Sangat Baik', 1500000, '1764589337607-Tabung Gas.png'),
+(16, 'FTIR', 23, 'Teknik spektroskopi yang digunakan untuk mengidentifikasi gugus fungsi kimia dan ikatan kovalen dalam suatu sampel (padat, cair, atau gas). Alat ini bekerja dengan merekam spektrum serapan dan transmisi inframerah, menghasilkan \"sidik jari\" molekul.', 6, 'Sangat Baik', 500000, '1764589378244-Tabung Gas.png');
 
 -- --------------------------------------------------------
 
@@ -139,7 +147,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `status`, `created_at`, `last_login`) VALUES
 (8, 'Bima', 'bima@gmail.com', '$2b$10$FmCL.PkghfWzndZ5.QUwI.Kvopfbo8V9XEDPvPSiOQWqucrz6KKy6', 'inactive', '2025-11-20 15:52:39', '2025-11-20 23:02:33'),
-(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'inactive', '2025-11-20 16:01:38', '2025-11-20 23:01:44');
+(9, 'Fikri', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', 'inactive', '2025-11-20 16:01:38', '2025-12-01 18:50:32'),
+(10, 'Hanni', 'hanni@gmail.com', '$2b$10$ISb9CGqUchgBigd50UkngOGzRxVN/B27lfOezVcnGA9GP05csbwfu', 'inactive', '2025-12-01 12:24:04', '2025-12-01 19:45:41');
 
 --
 -- Indexes for dumped tables
@@ -162,7 +171,6 @@ ALTER TABLE `category`
 --
 ALTER TABLE `peminjaman`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_admin` (`id_admin`),
   ADD KEY `id_products` (`id_products`),
   ADD KEY `id_user` (`id_user`);
 
@@ -201,7 +209,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
@@ -213,7 +221,7 @@ ALTER TABLE `peminjaman`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `reminder`
@@ -225,7 +233,7 @@ ALTER TABLE `reminder`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -235,7 +243,6 @@ ALTER TABLE `users`
 -- Constraints for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  ADD CONSTRAINT `peminjaman_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   ADD CONSTRAINT `peminjaman_ibfk_2` FOREIGN KEY (`id_products`) REFERENCES `products` (`id`),
   ADD CONSTRAINT `peminjaman_ibfk_3` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
 
