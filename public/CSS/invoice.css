@@ -235,3 +235,53 @@ tbody tr:last-child td {
     color: black !important;
   }
 }
+
+/* ========= PRINT MODE ========= */
+@media print {
+
+  /* Sembunyikan elemen yang tidak perlu saat print */
+  nav,
+  .controls-section,
+  .pagination,
+  .navbar,
+  .print-button {
+    display: none !important;
+  }
+
+  /* Tampilkan print header */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  /* Halaman rapi seperti surat */
+  body {
+    margin: 20mm !important;
+    font-size: 14px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table th,
+  table td {
+    border: 1px solid #000 !important;
+    padding: 6px;
+  }
+
+  .complete {
+    color: black !important;
+    font-weight: bold;
+  }
+}
+
+/* ========= NORMAL MODE (LAYAR) ========= */
+
+/* Default: print-header disembunyikan di layar */
+.print-header {
+  display: none;
+}
+

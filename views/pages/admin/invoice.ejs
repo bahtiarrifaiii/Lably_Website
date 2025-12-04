@@ -6,13 +6,21 @@
 <section class="controls-section">
   <div class="total-checkout">
     <i class="bi bi-cart-check"></i>
-    <h2>7 ORDERS</h2>
+    <h2><%= orders.length %> ORDERS</h2>
   </div>
   <a href="#" class="print-button" onclick="window.print(); return false;">
     <i class="bi bi-printer"></i>
     Print PDF
   </a>
 </section>
+
+<!-- PRINT HEADER  -->
+<div class="print-header">
+  <h1>Lably Official Invoice</h1>
+  <p>Universitas Negeri Jakarta<br/>
+     Jl. Rawamangun Muka, Jakarta Timur</p>
+  <hr/>
+</div>
 
 <div class="table-wrapper">
   <table>
@@ -27,68 +35,29 @@
       </tr>
     </thead>
     <tbody>
+    <% if (!orders || orders.length === 0) { %>
       <tr>
-        <td>1</td>
-        <td>Chris</td>
-        <td>12/11/25 - 19/11/25</td>
-        <td>Microscope</td>
-        <td class="complete">Completed</td>
-        <td>Rp.200.000,00</td>
+        <td colspan="6" style="text-align:center; padding:15px;">No completed orders</td>
       </tr>
-      <tr>
-        <td>2</td>
-        <td>Hanni</td>
-        <td>17/11/25 - 24/11/25</td>
-        <td>Autoclave Vertical</td>
-        <td class="complete">Completed</td>
-        <td>Rp.1.000.000,00</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Ahyeon</td>
-        <td>20/11/25 - 30/11/25</td>
-        <td>Spektrofotometer</td>
-        <td class="complete">Completed</td>
-        <td>Rp.500.000,00</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>Ian</td>
-        <td>1/12/25 - 5/12/25</td>
-        <td>Beaker Glass <br />Mickroskop</td>
-        <td class="complete">Completed</td>
-        <td>Rp.750.000,00</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>Lyon</td>
-        <td>2/12/25 - 3/12/25</td>
-        <td>Glass</td>
-        <td class="complete">Completed</td>
-        <td>Rp.150.000,00</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>Ken</td>
-        <td>15/12/25 - 20/12/25</td>
-        <td>Test Tube</td>
-        <td class="complete">Completed</td>
-        <td><Rp class="5"></Rp>50.000,00</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>Karina</td>
-        <td>25/12/25 - 28/12/25</td>
-        <td>Spektorum</td>
-        <td class="complete">Completed</td>
-        <td><Rp class="5"></Rp>1.150.000,00</td>
-      </tr>
-    </tbody>
+    <% } else { %>
+
+      <% orders.forEach((o, i) => { %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= o.customer_name %></td>
+          <td><%= o.product_name %></td>
+          <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+          <td class="complete">Completed</td>
+
+          <td>
+            Rp <%= Number(o.price).toLocaleString("id-ID") %>
+          </td>
+        </tr>
+      <% }) %>
+
+    <% } %>
+  </tbody>
   </table>
 </div>
 
-<div class="pagination">
-  <button class="page-number active">1</button>
-  <button class="page-number">2</button>
-  <button class="page-next">NEXT <i class="bi bi-chevron-right"></i></button>
-</div>
+

@@ -110,24 +110,21 @@ router.get("/", passLoginStatus, async (req, res) => {
 
 // ROUTE CATALOGUE
 router.get("/catalogue", (req, res) => {
-  const page = parseInt(req.query.page) || 1; // default page 1
-  const limit = 9; // 9 produk per halaman
+  const page = parseInt(req.query.page) || 1; 
+  const limit = 9;
   const offset = (page - 1) * limit;
 
-  const search = req.query.search || ""; // kalau nanti mau tambahin search server-side
+  const search = req.query.search || "";
 
-  // Ambil data produk (paginated)
   Product.getPaginated(search, limit, offset, (err, products) => {
     if (err) return res.status(500).send("Error fetching products");
 
-    // Hitung total produk untuk pagination
     Product.count(search, (err2, result) => {
       if (err2) return res.status(500).send("Error counting products");
 
       const totalProducts = result[0].total;
       const totalPages = Math.ceil(totalProducts / limit);
 
-      // Ambil kategori
       db.query("SELECT * FROM category", (err3, categories) => {
         if (err3) return res.status(500).send("Error fetching categories");
 
@@ -161,6 +158,11 @@ router.get("/catalogue", (req, res) => {
       });
     });
   });
+});
+
+router.post("/hide-reminder", (req, res) => {
+  req.session.hideReminder = true;
+  return res.json({ success: true });
 });
 
 // ROUTE PRODUCT
@@ -633,29 +635,54 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
 // ORDER PAGE
 router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
   const orderSpecificScript = "/JS/user/order-user.js";
+  const userId = req.session.user.id;
 
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/order-user.ejs"),
-    {}
-  );
+  // Ambil data peminjaman sesuai user
+  const sql = `
+    SELECT 
+      p.id,
+      p.id_products,
+      p.qty,
+      p.price,
+      p.status,
+      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+      pr.name AS product_name
+    FROM peminjaman p
+    LEFT JOIN products pr ON p.id_products = pr.id
+    WHERE p.id_user = ?
+    ORDER BY p.id DESC
+  `;
 
-  res.render("layouts/main", {
-    title: "Order | Lably Official Web",
-    currentPage: "order-user",
-    showFooter: false,
+  db.query(sql, [userId], async (err, orders) => {
+    if (err) {
+      console.error("ORDER LOAD ERROR:", err);
+      return res.status(500).send("Error loading orders.");
+    }
 
-    meta: `
-      <meta name="description" content="List Order alat laboratorium LabLy." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
+    // Render EJS dengan data orders
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/order-user.ejs"),
+      { orders }   // KIRIM DATA KE EJS
+    );
 
-    style: `
-      <link rel="stylesheet" href="/CSS/order-user.css" />
-    `,
+    res.render("layouts/main", {
+      title: "Order | Lably Official Web",
+      currentPage: "order-user",
+      showFooter: false,
 
-    scriptFile: orderSpecificScript,
+      meta: `
+        <meta name="description" content="List Order alat laboratorium LabLy." />
+        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+      `,
 
-    content,
+      style: `
+        <link rel="stylesheet" href="/CSS/order-user.css" />
+      `,
+
+      scriptFile: orderSpecificScript,
+      content,
+    });
   });
 });
 
@@ -673,45 +700,248 @@ router.get("/customer", isAdmin, (req, res) => {
 
 /* ORDER PAGES (tidak diubah) */
 router.get("/order", isAdmin, (req, res) => {
-  // if (!req.session.admin) return res.redirect("/login");
+  const { search, filter, start, end } = req.query;
 
-  User.getAll((err, users) => {
-    const totalCustomers = users.length;
+  // ============================
+  // QUERY 1 → FILTERED ORDERS (untuk tabel)
+  // ============================
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/order/order.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Orders | Lably",
-          style: `<link rel="stylesheet" href="/css/order.css">`,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
-        });
+  let sql = `
+    SELECT 
+      p.id,
+      u.username AS username,
+      pr.name AS product_name,
+      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+      p.status
+    FROM peminjaman p
+    LEFT JOIN users u ON p.id_user = u.id
+    LEFT JOIN products pr ON p.id_products = pr.id
+    WHERE p.status IN ('pending', 'in use', 'overdue')  -- 🔥 Tampilkan 3 status saja
+  `;
+
+  const params = [];
+
+  // 🔎 SEARCH (nama user / nama barang / status)
+  if (search) {
+    sql += ` AND (u.username LIKE ? OR pr.name LIKE ? OR p.status LIKE ?) `;
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+  }
+
+  // 🔥 FILTER (pending / in use / overdue)
+  if (filter && filter !== "all") {
+    sql += ` AND p.status = ? `;
+    params.push(filter);
+  }
+
+  // 📅 DATE FILTER
+  if (start) {
+    sql += ` AND DATE(p.tgl_pinjam) >= ? `;
+    params.push(start);
+  }
+
+  if (end) {
+    sql += ` AND DATE(p.tgl_kembali) <= ? `;
+    params.push(end);
+  }
+
+  sql += ` ORDER BY p.id DESC `;
+
+  db.query(sql, params, (err, filteredOrders) => {
+    if (err) {
+      console.error("ORDER QUERY ERROR:", err);
+      return res.status(500).send("Error loading orders.");
+    }
+
+    // ============================
+    // QUERY 2 → TOTAL BOX ATAS (TIDAK terpengaruh search/filter)
+    // ============================
+
+    db.query(`SELECT status FROM peminjaman`, (err2, allOrders) => {
+      if (err2) {
+        console.error("COUNT QUERY ERROR:", err2);
+        return res.status(500).send("Error loading totals.");
       }
-    );
+
+      const totalPending = allOrders.filter(o => o.status === "pending").length;
+      const totalLoaned  = allOrders.filter(o => o.status === "in use").length;
+      const totalOverdue = allOrders.filter(o => o.status === "overdue").length;
+
+      User.getAll((errUsers, users) => {
+        const totalCustomers = users.length;
+
+        ejs.renderFile(
+          path.join(__dirname, "../views/pages/admin/order/order.ejs"),
+          {
+            users,
+            totalCustomers,
+            orders: filteredOrders,  // tampilkan di tabel
+            totalPending,
+            totalLoaned,
+            totalOverdue,
+            search,
+            filter,
+            start,
+            end
+          },
+          (err, content) => {
+            res.render("layouts/atmin", {
+              title: "Orders | Lably",
+              style: `<link rel="stylesheet" href="/css/order.css">`,
+              content,
+              message: null,
+              showPopup: false,
+              currentPage: req.path,
+            });
+          }
+        );
+      });
+    });
   });
 });
 
+// APPROVE → ubah pending → in use
+router.post("/order/approve/:id", isAdmin, (req, res) => {
+  db.query("UPDATE peminjaman SET status = 'in use' WHERE id = ?", 
+    [req.params.id], () => res.redirect("/order"));
+});
+
+// REJECT → hapus data
+router.post("/order/reject/:id", isAdmin, (req, res) => {
+  db.query("DELETE FROM peminjaman WHERE id = ?", 
+    [req.params.id], () => res.redirect("/order"));
+});
+
+// COMPLETE → ubah status jadi completed
+router.post("/order/complete/:id", isAdmin, (req, res) => {
+  const id = req.params.id;
+
+  db.query("UPDATE peminjaman SET status = 'completed' WHERE id = ?", [id], () => {
+
+    // 🔥 ketika order selesai -> hapus reminder biar tidak muncul lagi
+    db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
+      return res.redirect("/order");
+    });
+
+  });
+});
+
+// KIRIM REMINDER
+router.post("/order/reminder/:id", isAdmin, (req, res) => {
+  const peminjamanId = req.params.id;
+
+  const sql = `
+    INSERT INTO reminder (id_peminjaman, sent_at)
+    VALUES (?, NOW())
+  `;
+
+  db.query(sql, [peminjamanId], (err) => {
+    if (err) {
+      console.error("REMINDER ERROR:", err);
+      return res.redirect("/order");
+    }
+    res.redirect("/order");
+  });
+});
+
+
+
 router.get("/order-completed", isAdmin, (req, res) => {
-  // if (!req.session.admin) return res.redirect("/login");
+  const { search, filter, start, end } = req.query;
 
-  User.getAll((err, users) => {
-    const totalCustomers = users.length;
+  // ============================
+  // QUERY TAMBAH COLUMN overdue_flag
+  // ============================
+  let sql = `
+    SELECT 
+      p.id,
+      u.username AS username,
+      pr.name AS product_name,
+      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+      p.status,
+      (p.tgl_kembali < CURDATE()) AS overdue_flag
+    FROM peminjaman p
+    LEFT JOIN users u ON p.id_user = u.id
+    LEFT JOIN products pr ON p.id_products = pr.id
+    WHERE p.status = 'completed'
+  `;
 
-    ejs.renderFile(
-      path.join(__dirname, "../views/pages/admin/order/order_completed.ejs"),
-      { users, totalCustomers },
-      (err, content) => {
-        res.render("layouts/atmin", {
-          title: "Orders Completed",
-          style: `<link rel="stylesheet" href="/css/order_completed.css">`,
-          content,
-          message: null,
-          showPopup: false,
-          currentPage: req.path,
+  const params = [];
+
+  // ============================
+  // SEARCH
+  // ============================
+  if (search) {
+    sql += ` AND (u.username LIKE ? OR pr.name LIKE ?) `;
+    params.push(`%${search}%`, `%${search}%`);
+  }
+
+  // ============================
+  // FILTER BUTTONS
+  // ============================
+  if (filter === "completed") {
+    sql += ` AND (p.tgl_kembali >= CURDATE()) `;
+  }
+
+  if (filter === "overdue") {
+    sql += ` AND (p.tgl_kembali < CURDATE()) `;
+  }
+
+  // ============================
+  // DATE FILTER
+  // ============================
+  if (start) {
+    sql += ` AND DATE(p.tgl_pinjam) >= ? `;
+    params.push(start);
+  }
+  if (end) {
+    sql += ` AND DATE(p.tgl_kembali) <= ? `;
+    params.push(end);
+  }
+
+  sql += ` ORDER BY p.id DESC `;
+
+  db.query(sql, params, (err, orders) => {
+    if (err) {
+      console.error("COMPLETED QUERY ERROR:", err);
+      return res.status(500).send("Error loading completed orders.");
+    }
+
+    // Hitung total completed (TIDAK terpengaruh search/filter)
+    db.query(
+      `SELECT COUNT(*) AS totalCompleted FROM peminjaman WHERE status='completed'`,
+      (err2, totalData) => {
+        const totalCompleted = totalData[0].totalCompleted;
+
+        User.getAll((errUsers, users) => {
+          const totalCustomers = users.length;
+
+          ejs.renderFile(
+            path.join(__dirname, "../views/pages/admin/order/order_completed.ejs"),
+            {
+              users,
+              totalCustomers,
+              orders,
+              totalCompleted,
+
+              // agar tombol/filter tetap highlight
+              search,
+              filter,
+              start,
+              end
+            },
+            (err, content) => {
+              res.render("layouts/atmin", {
+                title: "Orders Completed",
+                style: `<link rel="stylesheet" href="/css/order_completed.css">`,
+                content,
+                message: null,
+                showPopup: false,
+                currentPage: req.path,
+              });
+            }
+          );
         });
       }
     );
@@ -778,14 +1008,31 @@ router.get("/analytics", isAdmin, (req, res) => {
 });
 
 router.get("/invoice", isAdmin, (req, res) => {
-  // if (!req.session.admin) return res.redirect("/login");
+  const sql = `
+    SELECT 
+      p.id,
+      u.username AS customer_name,
+      pr.name AS product_name,
+      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+      p.status,
+      p.price
+    FROM peminjaman p
+    LEFT JOIN users u ON p.id_user = u.id
+    LEFT JOIN products pr ON p.id_products = pr.id
+    WHERE p.status = 'completed'
+    ORDER BY p.id DESC
+  `;
 
-  User.getAll((err, users) => {
-    const totalCustomers = users.length;
+  db.query(sql, (err, orders) => {
+    if (err) {
+      console.error("INVOICE ERROR:", err);
+      return res.status(500).send("Error loading invoice.");
+    }
 
     ejs.renderFile(
       path.join(__dirname, "../views/pages/admin/invoice.ejs"),
-      { users, totalCustomers },
+      { orders },
       (err, content) => {
         res.render("layouts/atmin", {
           title: "Invoice",

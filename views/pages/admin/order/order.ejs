@@ -1,74 +1,95 @@
-
 <nav class="navbar">
     <span>Orders</span>
     <img src="Assets/profile.jpg" alt="">
 </nav>
+
+<!-- ORDER TOTAL INFO -->
 <div class="order-info">
     <div class="box">
-        <div class="total pending total">
-            12
-        </div>
+        <div class="total pending total"><%= totalPending %></div>
         <div class="detail pending-detail">
             <span class="pending">ITEMS</span>
             <span>PENDING REQUEST</span>
         </div>
     </div>
+
     <div class="box">
-        <div class="total loan-total">
-            32
-        </div>
+        <div class="total loan-total"><%= totalLoaned %></div>
         <div class="detail loan-detail">
             <span class="loan">ITEMS</span>
             <span>CURRENTLY LOANED</span>
         </div>
     </div>
+
     <div class="box">
-        <div class="total overdue-total">
-            4
-        </div>
+        <div class="total overdue-total"><%= totalOverdue %></div>
         <div class="detail overdue-detail">
             <span class="overdue">ITEMS</span>
             <span>OVERDUE RETURNS</span>
         </div>
     </div>
 </div>
+
+<!-- SEARCH -->
 <div class="filter">
-    <div class="search">
-        <input type="text" placeholder="Search">
-        <form action="">
-            <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
-        </form>
-    </div>
+    <form action="/order" method="GET" class="search search-form">
+        <input type="text" name="search" placeholder="Search" value="<%= search || '' %>">
+        <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
+    </form>
 </div>
+
+<!-- FILTER BUTTONS + DATE RANGE -->
 <div class="menu-option">
     <div class="menu-options">
-        <form action="">
-            <button type="button" class="btn-search">ALL</button>
+
+        <form action="/order" method="GET">
+            <button type="submit" class="btn-search <%= !filter ? 'active' : '' %>">ALL</button>
         </form>
-        <form action="">
-            <button type="button" class="btn-search">PENDING</button>
+
+        <form action="/order" method="GET">
+            <input type="hidden" name="filter" value="pending">
+            <button type="submit" class="btn-search <%= filter === 'pending' ? 'active' : '' %>">
+                PENDING
+            </button>
         </form>
-        <form action="">
-            <button type="button" class="btn-search">IN USE</button>
+
+        <form action="/order" method="GET">
+            <input type="hidden" name="filter" value="in use">
+            <button type="submit" class="btn-search <%= filter === 'in use' ? 'active' : '' %>">
+                IN USE
+            </button>
         </form>
-        <form action="">
-            <button type="button" class="btn-search">OVERDUE</button>
+
+        <form action="/order" method="GET">
+            <input type="hidden" name="filter" value="overdue">
+            <button type="submit" class="btn-search <%= filter === 'overdue' ? 'active' : '' %>">
+                OVERDUE
+            </button>
         </form>
     </div>
+
     <div class="date">
-        <input type="datetime" placeholder="Date Start"/>
-        :
-        <input type="datetime" placeholder="Date end"/>
+        <form action="/order" method="GET" style="display:flex; gap:5px;">
+            <input type="date" name="start" value="<%= start || '' %>" />
+            :
+            <input type="date" name="end" value="<%= end || '' %>" />
+            <button type="submit" class="btn-search">Filter</button>
+        </form>
     </div>
 </div>
+
+<!-- TITLE -->
 <div class="page-text">
     <span>List Of All Orders</span>
+
     <form action="/order-completed" method="GET">
-    <button type="submit" class="btn-search">
-        Completed <i class="bi bi-check-circle"></i>
-    </button>
-</form>
+        <button type="submit" class="btn-search">
+            Completed <i class="bi bi-check-circle"></i>
+        </button>
+    </form>
 </div>
+
+<!-- ORDER TABLE -->
 <div class="customer-table">
     <table>
         <thead>
@@ -79,59 +100,99 @@
                 <th>Loan Period</th>
                 <th>Status</th>
                 <th class="actions">Action</th>
-            </tr> 
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Ruru Jenjen</td>
-                    <td>Autoclave Vertical</td>
-                    <td>12/11/25-19/11/25</td>
-                    <td>Pending</td>
-                    <td class="action">
-                        <div>
-                            <form action="">
-                                    <button type="button" class="btn-approve">Approve</button>
-                            </form>
-                            <form action="">
-                                    <button type="button" class="btn-reject">Reject</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Ruru Jenjen</td>
-                    <td>Test Tube</td>
-                    <td>12/11/25-19/11/25</td>
-                    <td>In Use</td>
-                    <td class="action">
-                        <div>
-                            <form action="">
-                                    <button type="button" class="btn-use-reminder btn">Reminder</button>
-                            </form>
-                            <form action="">
-                                    <button type="button" class="btn-use-check check"><i class="bi bi-check2"></i></button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Ruru Jenjen</td>
-                    <td>Spektofotometer</td>
-                    <td>12/11/25-19/11/25</td>
-                    <td>Overdue</td>
-                    <td class="action">
-                        <div>
-                            <form action="">
-                                    <button type="button" class="btn-overdue-reminder btn">Reminder</button>
-                            </form>
-                            <form action="">
-                                    <button type="button" class="btn-overdue-check check"><i class="bi bi-check2"></i></button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
+            </tr>
         </thead>
+
+        <tbody>
+            <% if (!orders || orders.length === 0) { %>
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:20px;">No orders found.</td>
+                </tr>
+            <% } else { %>
+
+                <% orders.forEach((o, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= o.username %></td>
+                        <td><%= o.product_name %></td>
+                        <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+
+                        <td style="text-transform:capitalize;"><%= o.status %></td>
+
+                        <td class="action">
+                            <div>
+                                <% if (o.status === "pending") { %>
+
+                                    <button type="button" class="btn-approve"
+                                        onclick="showPopup('/order/approve/<%= o.id %>', 
+                                        'Approve Order',
+                                        'Do you want to approve this order?')">
+                                        Approve
+                                    </button>
+
+                                    <button type="button" class="btn-reject"
+                                        onclick="showPopup('/order/reject/<%= o.id %>', 
+                                        'Reject Order',
+                                        'This action will permanently delete this order.')">
+                                        Reject
+                                    </button>
+
+                                <% } %>
+
+                                <% if (o.status === 'in use' || o.status === 'overdue') { %>
+
+                                    <button type="button" class="btn-use-reminder btn"
+                                        onclick="showPopup('/order/reminder/<%= o.id %>',
+                                        'Send Reminder',
+                                        'Send reminder for this order?')">
+                                        Reminder
+                                    </button>
+
+                                    <button type="button" class="btn-use-check check"
+                                        onclick="showPopup('/order/complete/<%= o.id %>', 
+                                        'Complete Order',
+                                        'Are you sure you want to mark this order as completed?')">
+                                        <i class="bi bi-check2"></i>
+                                    </button>
+
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+
+            <% } %>
+        </tbody>
+    </table>
 </div>
+
+<!-- POPUP CONFIRMATION -->
+<div id="popup-overlay"></div>
+<div id="popup-box">
+    <h2 id="popup-title"></h2>
+    <p id="popup-message"></p>
+
+    <div class="popup-actions">
+        <form id="popup-form" method="POST">
+            <button type="submit" class="popup-yes">Yes</button>
+        </form>
+
+        <button class="popup-no" onclick="closePopup()">No</button>
+    </div>
+</div>
+
+<script>
+    function showPopup(actionUrl, title, message) {
+        document.getElementById("popup-title").innerText = title;
+        document.getElementById("popup-message").innerText = message;
+        document.getElementById("popup-form").action = actionUrl;
+
+        document.getElementById("popup-overlay").style.display = "block";
+        document.getElementById("popup-box").style.display = "block";
+    }
+
+    function closePopup() {
+        document.getElementById("popup-overlay").style.display = "none";
+        document.getElementById("popup-box").style.display = "none";
+    }
+</script>

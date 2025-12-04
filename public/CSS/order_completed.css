@@ -201,3 +201,16 @@ th, td {
 .even{
     background-color: #f4f4f4;
 }
+
+.date .btn-search {
+    background-color: #0b4487;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 2px 2px 4px rgb(0 0 0 / 0.15);
+    transition: 0.2s;
+}
