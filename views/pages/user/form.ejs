@@ -45,8 +45,8 @@
           </div>
 
           <!-- Tambahkan ini: -->
-          <input type="hidden" id="priceRaw" value="<%= product.price %>" />
-          <input type="hidden" id="qtyRaw" value="<%= qty %>" />
+          <input type="hidden" id="priceRaw" name="price" value="<%= product.price %>" />
+          <input type="hidden" id="qtyRaw" name="quantity" value="<%= qty %>" />
 
           <!-- Tanggal -->
           <div class="grid">
@@ -62,6 +62,7 @@
               placeholder="ALL Total"
               readonly
             />
+            <input type="hidden" id="allTotalRaw" name="all_total_raw" value="0" />
           </div>
         </div>
 

@@ -283,14 +283,84 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
 });
 
 router.post("/submit-data", isLoggedIn, (req, res) => {
-  const { action_type, quantity } = req.body;
+  const { action_type, quantity, product_id, borrow_date, return_date, all_total, all_total_raw } = req.body;
+
+  // helper to parse formatted currency like "Rp1.234.000" or "1234000" into number
+  function parseCurrency(value) {
+    if (value == null) return null;
+    if (typeof value === "number") return value;
+    // Prefer raw numeric value if available
+    if (all_total_raw && !isNaN(all_total_raw)) {
+      return Number(all_total_raw);
+    }
+    // Otherwise parse formatted string: remove "Rp" prefix and spaces, keep only digits
+    const cleaned = String(value).replace(/[^\d]/g, "");
+    if (cleaned === "") return null;
+    return Number(cleaned);
+  }
+
+  const allTotalNumber = parseCurrency(all_total);
 
   if (action_type === "cart") {
-    console.log("Produk ditambahkan ke Keranjang");
-    res.redirect("/cart");
+    // Tambahkan item ke session cart, lalu redirect ke halaman /cart
+    req.session.cart = req.session.cart || [];
+
+    Product.getById(product_id, (err, productRows) => {
+      if (err) {
+        console.error("Database Error (Product):", err);
+        req.session.message = "Gagal menambahkan produk ke keranjang.";
+        return res.redirect("/catalogue");
+      }
+
+      const product = productRows && productRows[0];
+      if (!product) {
+        req.session.message = "Produk tidak ditemukan.";
+        return res.redirect("/catalogue");
+      }
+
+      req.session.cart.push({
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: Number(quantity) || 1,
+        borrow_date: borrow_date || null,
+        return_date: return_date || null,
+        all_total: allTotalNumber,
+        all_total_raw: all_total || null,
+      });
+
+      console.log("Produk ditambahkan ke Keranjang:", product.name);
+      return res.redirect("/cart");
+    });
   } else if (action_type === "loan") {
-    console.log("Langsung ke proses Peminjaman");
-    res.redirect("/checkout");
+    // Simpan sementara data checkout di session lalu redirect ke /checkout
+    Product.getById(product_id, (err, productRows) => {
+      if (err) {
+        console.error("Database Error (Product):", err);
+        req.session.message = "Gagal memproses peminjaman.";
+        return res.redirect("/catalogue");
+      }
+
+      const product = productRows && productRows[0];
+      if (!product) {
+        req.session.message = "Produk tidak ditemukan.";
+        return res.redirect("/catalogue");
+      }
+
+      req.session.checkout = {
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: Number(quantity) || 1,
+        borrow_date: borrow_date || null,
+        return_date: return_date || null,
+        all_total: allTotalNumber,
+        all_total_raw: all_total || null,
+      };
+
+      console.log("Langsung ke proses Peminjaman:", product.name);
+      return res.redirect("/checkout");
+    });
   } else {
     res.status(400).send("Aksi tidak valid.");
   }
@@ -302,8 +372,11 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
 
 // CART PAGE
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
+  const cartItems = req.session.cart || [];
+
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/cart.ejs")
+    path.join(__dirname, "../views/pages/user/cart.ejs"),
+    { cartItems }
   );
 
   res.render("layouts/main", {
@@ -319,10 +392,73 @@ router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   });
 });
 
+// Remove a single item from cart (by product_id)
+router.post("/cart/remove", isLoggedIn, (req, res) => {
+  const { product_id } = req.body;
+  if (!req.session.cart || !Array.isArray(req.session.cart)) {
+    return res.redirect("/cart");
+  }
+
+  // Remove all items matching product_id
+  req.session.cart = req.session.cart.filter(
+    (item) => String(item.product_id) !== String(product_id)
+  );
+
+  req.session.message = { type: "success", text: "Item removed from cart." };
+  return res.redirect("/cart");
+});
+
+// Clear entire cart
+router.post("/cart/clear", isLoggedIn, (req, res) => {
+  req.session.cart = [];
+  req.session.message = { type: "success", text: "Cart cleared." };
+  return res.redirect("/cart");
+});
+
 // CHECKOUT PAGE
 router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
+  // Build checkout items from either single-item checkout (loan now) or session cart
+  const sessionCheckout = req.session.checkout || null;
+  const sessionCart = req.session.cart || [];
+
+  // choose source: prefer sessionCheckout (single loan-now), otherwise use cart
+  const sourceItems = sessionCheckout ? [sessionCheckout] : sessionCart;
+
+  function computeDays(borrow, ret) {
+    try {
+      if (!borrow || !ret) return 1;
+      const a = new Date(borrow);
+      const b = new Date(ret);
+      const diffMs = b - a;
+      const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return days > 0 ? days : 1;
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  const items = (sourceItems || []).map((it) => {
+    const price = Number(it.price) || 0;
+    const qty = Number(it.quantity) || 1;
+    const days = computeDays(it.borrow_date, it.return_date);
+    const itemTotal = Number(it.all_total) || price * qty * days;
+    return {
+      product_id: it.product_id,
+      name: it.name,
+      price,
+      quantity: qty,
+      borrow_date: it.borrow_date || null,
+      return_date: it.return_date || null,
+      days,
+      itemTotal,
+    };
+  });
+
+  const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
+
   const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/checkout.ejs")
+    path.join(__dirname, "../views/pages/user/checkout.ejs"),
+    { items, subtotal }
   );
 
   res.render("layouts/main", {
@@ -336,6 +472,13 @@ router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
     style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
     content,
   });
+});
+
+// Cancel checkout (clear session.checkout) and redirect back
+router.post("/checkout/cancel", isLoggedIn, (req, res) => {
+  req.session.checkout = null;
+  req.session.message = { type: "info", text: "Checkout cancelled." };
+  return res.redirect("/catalogue");
 });
 
 // ORDER PAGE

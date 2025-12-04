@@ -3,71 +3,37 @@
     <h2 class="section-title">Check Out</h2>
 
     <div class="cart-items-list">
-      <div class="cart-item">
-        <div class="item-product">
-          <div class="item-img-wrap">
-            <img src="./Assets/Mickroscope.png" alt="Mikroskop Cahaya" />
+      <% if (!items || items.length === 0) { %>
+        <p>No items to checkout.</p>
+      <% } else { %>
+        <% items.forEach(function(item){ %>
+          <div class="cart-item">
+            <div class="item-product">
+              <div class="item-img-wrap">
+                <% /* placeholder image - replace with item image if available */ %>
+                <img src="/Assets/Mickroscope.png" alt="<%= item.name %>" />
+              </div>
+              <span class="item-name"><%= item.name %></span>
+            </div>
+
+            <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
+
+            <span class="item-quantity"><%= item.quantity %>x</span>
+
+            <span class="item-date"><%= item.borrow_date || '-' %> - <%= item.return_date || '-' %></span>
+
+            <span class="item-days"><%= item.days %> hari</span>
+
+            <span class="item-total">Rp<%= Number(item.itemTotal).toLocaleString() %></span>
           </div>
-          <span class="item-name">Mikroskop Cahaya</span>
-        </div>
-
-        <span class="item-price">Rp200.000</span>
-
-        <span class="item-quantity">1x</span>
-
-        <span class="item-date">11/12/25 - 12/12/25</span>
-
-        <span class="item-total">Rp200.000</span>
-        <button class="item-remove-btn">
-          <i class="bi bi-x-circle-fill"></i>
-        </button>
-      </div>
-
-      <div class="cart-item">
-        <div class="item-product">
-          <div class="item-img-wrap">
-            <img src="./Assets/Mickroscope.png" alt="Mikroskop Cahaya" />
-          </div>
-          <span class="item-name">Mikroskop Cahaya</span>
-        </div>
-
-        <span class="item-price">Rp200.000</span>
-
-        <span class="item-quantity">2x</span>
-
-        <span class="item-date">11/12/25 - 12/12/25</span>
-
-        <span class="item-total">Rp400.000</span>
-        <button class="item-remove-btn">
-          <i class="bi bi-x-circle-fill"></i>
-        </button>
-      </div>
-
-      <div class="cart-item">
-        <div class="item-product">
-          <div class="item-img-wrap">
-            <img src="./Assets/Mickroscope.png" alt="Mikroskop Cahaya" />
-          </div>
-          <span class="item-name">Mikroskop Cahaya</span>
-        </div>
-
-        <span class="item-price">Rp200.000</span>
-
-        <span class="item-quantity">1x</span>
-
-        <span class="item-date">11/12/25 - 12/12/25</span>
-
-        <span class="item-total">Rp200.000</span>
-        <button class="item-remove-btn">
-          <i class="bi bi-x-circle-fill"></i>
-        </button>
-      </div>
+        <% }); %>
+      <% } %>
     </div>
 
     <div class="order-summary">
       <div class="summary-item">
         <span>Subtotal:</span>
-        <span>Rp600.000</span>
+        <span>Rp<%= Number(subtotal).toLocaleString() %></span>
       </div>
       <div class="summary-item">
         <span>Shipping:</span>
@@ -75,7 +41,7 @@
       </div>
       <div class="summary-item total">
         <span>Total:</span>
-        <span>Rp600.000</span>
+        <span>Rp<%= Number(subtotal).toLocaleString() %></span>
       </div>
     </div>
   </section>
@@ -90,6 +56,13 @@
         <button class="method-btn">E-Wallet</button>
       </div>
     </div>
-    <button class="btn btn-primary checkout-btn">Check Out</button>
+    <div class="btn-action">
+      <form method="post" action="/checkout/cancel" style="flex: 1;">
+        <button class="btn btn-secondary checkout-btn" type="submit">Cancel</button>
+      </form>
+      <form method="submit" action="/" style="flex: 1;">
+        <button class="btn btn-primary checkout-btn" type="submit">Check Out</button>
+      </form>
+    </div>
   </section>
 </div>
