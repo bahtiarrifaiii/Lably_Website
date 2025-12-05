@@ -9,7 +9,7 @@
             <input 
                 type="text" 
                 name="search" 
-                placeholder="Search Customers (Username, Email...)"
+                placeholder="Search Customers"
                 value="<%= search %>"
             >
             <button type="submit" class="btn-search">Search</button>
@@ -22,11 +22,15 @@
     <div class="menu-options">
         <span>Total Customers : <%= totalCustomers %></span>
 
-        <select name="status" id="statusFilter">
-            <option value="all" <%= status === "all" ? "selected" : "" %>>All Status</option>
-            <option value="active" <%= status === "active" ? "selected" : "" %>>Active</option>
-            <option value="inactive" <%= status === "inactive" ? "selected" : "" %>>Inactive</option>
-        </select>
+        <div class="filter-status">
+            <select name="status" id="statusFilter" class="custom-select-status">
+                <option value="all" <%= status === "all" ? "selected" : "" %>>All Status</option>
+                <option value="active" <%= status === "active" ? "selected" : "" %>>Active</option>
+                <option value="inactive" <%= status === "inactive" ? "selected" : "" %>>Inactive</option>
+            </select>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+
     </div>
 
     <div class="date">

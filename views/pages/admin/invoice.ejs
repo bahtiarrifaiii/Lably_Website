@@ -17,9 +17,11 @@
 <!-- PRINT HEADER  -->
 <div class="print-header">
   <h1>Lably Official Invoice</h1>
-  <p>Universitas Negeri Jakarta<br/>
-     Jl. Rawamangun Muka, Jakarta Timur</p>
-  <hr/>
+  <p>
+    Green Office Park 9, BSD City, Tangerang Selatan 15345<br />
+    021-3456-887 - info@lably.com
+  </p>
+  <hr />
 </div>
 
 <div class="table-wrapper">
@@ -35,29 +37,23 @@
       </tr>
     </thead>
     <tbody>
-    <% if (!orders || orders.length === 0) { %>
+      <% if (!orders || orders.length === 0) { %>
       <tr>
-        <td colspan="6" style="text-align:center; padding:15px;">No completed orders</td>
+        <td colspan="6" style="text-align: center; padding: 15px">
+          No completed orders
+        </td>
       </tr>
-    <% } else { %>
+      <% } else { %> <% orders.forEach((o, i) => { %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= o.customer_name %></td>
+        <td><%= o.product_name %></td>
+        <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+        <td class="complete">Completed</td>
 
-      <% orders.forEach((o, i) => { %>
-        <tr>
-          <td><%= i + 1 %></td>
-          <td><%= o.customer_name %></td>
-          <td><%= o.product_name %></td>
-          <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
-          <td class="complete">Completed</td>
-
-          <td>
-            Rp <%= Number(o.price).toLocaleString("id-ID") %>
-          </td>
-        </tr>
-      <% }) %>
-
-    <% } %>
-  </tbody>
+        <td>Rp <%= Number(o.price).toLocaleString("id-ID") %></td>
+      </tr>
+      <% }) %> <% } %>
+    </tbody>
   </table>
 </div>
-
-

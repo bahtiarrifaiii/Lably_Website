@@ -167,6 +167,7 @@ td {
 }
 
 thead th {
+  background-color: var(--background-product);
   color: var(--primary);
   font-weight: 600;
 }
