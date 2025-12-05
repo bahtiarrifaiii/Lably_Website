@@ -38,7 +38,7 @@ const User = {
             SET status = 'inactive'
             WHERE (status = 'active' OR status IS NULL)
             AND last_login IS NOT NULL
-            AND TIMESTAMPDIFF(MINUTE, last_login, NOW()) > 3
+            AND TIMESTAMPDIFF(DAY, last_login, NOW()) > 30
         `;
         database.query(sql, callback);
     },
