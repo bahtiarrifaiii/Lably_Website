@@ -249,10 +249,12 @@
     deleteProductId = id;
     document.getElementById("deleteProductName").textContent = name;
     document.querySelector(".delete-modal-overlay").classList.add("show");
+    document.querySelector(".delete-modal").classList.add("show");
   };
 
   window.closeDeleteModal = () => {
     document.querySelector(".delete-modal-overlay").classList.remove("show");
+    document.querySelector(".delete-modal").classList.remove("show");
   };
 
   window.confirmDelete = () => {

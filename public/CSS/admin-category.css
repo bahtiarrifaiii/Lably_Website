@@ -114,7 +114,7 @@ th {
 }
 
 .btn-edit {
-  padding: 6px 15px;
+  padding: 0.5rem 1.3rem;
   background: var(--primary);
   color: white;
   border-radius: 6px;
@@ -128,7 +128,7 @@ th {
 }
 
 .btn-delete {
-  padding: 6px 15px;
+  padding: 0.5rem 1.3rem;
   background: var(--secondary);
   color: white;
   border-radius: 6px;
@@ -184,7 +184,7 @@ th {
 .popup-yes {
   background: #dc0000;
   color: white;
-  padding: 10px 20px;
+  padding: 0.6rem 1.5rem;
   border-radius: 8px;
   text-decoration: none;
   transition: all 0.4s ease;
@@ -197,7 +197,7 @@ th {
 .popup-no {
   background: #858796;
   color: white;
-  padding: 10px 20px;
+  padding: 0.6rem 1.5rem;
   border-radius: 8px;
   border: none;
   cursor: pointer;

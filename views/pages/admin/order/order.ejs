@@ -1,198 +1,226 @@
 <nav class="navbar">
-    <span>Orders</span>
-    <img src="Assets/profile.jpg" alt="">
+  <span>Orders</span>
+  <img src="Assets/profile.jpg" alt="" />
 </nav>
 
 <!-- ORDER TOTAL INFO -->
 <div class="order-info">
-    <div class="box">
-        <div class="total pending total"><%= totalPending %></div>
-        <div class="detail pending-detail">
-            <span class="pending">ITEMS</span>
-            <span>PENDING REQUEST</span>
-        </div>
+  <div class="box">
+    <div class="total pending total"><%= totalPending %></div>
+    <div class="detail pending-detail">
+      <span class="pending">ITEMS</span>
+      <span>PENDING REQUEST</span>
     </div>
+  </div>
 
-    <div class="box">
-        <div class="total loan-total"><%= totalLoaned %></div>
-        <div class="detail loan-detail">
-            <span class="loan">ITEMS</span>
-            <span>CURRENTLY LOANED</span>
-        </div>
+  <div class="box">
+    <div class="total loan-total"><%= totalLoaned %></div>
+    <div class="detail loan-detail">
+      <span class="loan">ITEMS</span>
+      <span>CURRENTLY LOANED</span>
     </div>
+  </div>
 
-    <div class="box">
-        <div class="total overdue-total"><%= totalOverdue %></div>
-        <div class="detail overdue-detail">
-            <span class="overdue">ITEMS</span>
-            <span>OVERDUE RETURNS</span>
-        </div>
+  <div class="box">
+    <div class="total overdue-total"><%= totalOverdue %></div>
+    <div class="detail overdue-detail">
+      <span class="overdue">ITEMS</span>
+      <span>OVERDUE RETURNS</span>
     </div>
+  </div>
 </div>
 
 <!-- SEARCH -->
 <div class="filter">
-    <form action="/order" method="GET" class="search search-form">
-        <input type="text" name="search" placeholder="Search" value="<%= search || '' %>">
-        <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
-    </form>
+  <form action="/order" method="GET" class="search search-form">
+    <input
+      type="text"
+      name="search"
+      placeholder="Search"
+      value="<%= search || '' %>"
+    />
+    <button type="submit" class="btn-search">
+      <i class="bi bi-search"></i>
+    </button>
+  </form>
 </div>
 
 <!-- FILTER BUTTONS + DATE RANGE -->
 <div class="menu-option">
-    <div class="menu-options">
+  <div class="menu-options">
+    <form action="/order" method="GET">
+      <button type="submit" class="btn-search <%= !filter ? 'active' : '' %>">
+        ALL
+      </button>
+    </form>
 
-        <form action="/order" method="GET">
-            <button type="submit" class="btn-search <%= !filter ? 'active' : '' %>">ALL</button>
-        </form>
+    <form action="/order" method="GET">
+      <input type="hidden" name="filter" value="pending" />
+      <button
+        type="submit"
+        class="btn-search <%= filter === 'pending' ? 'active' : '' %>"
+      >
+        PENDING
+      </button>
+    </form>
 
-        <form action="/order" method="GET">
-            <input type="hidden" name="filter" value="pending">
-            <button type="submit" class="btn-search <%= filter === 'pending' ? 'active' : '' %>">
-                PENDING
-            </button>
-        </form>
+    <form action="/order" method="GET">
+      <input type="hidden" name="filter" value="in use" />
+      <button
+        type="submit"
+        class="btn-search <%= filter === 'in use' ? 'active' : '' %>"
+      >
+        IN USE
+      </button>
+    </form>
 
-        <form action="/order" method="GET">
-            <input type="hidden" name="filter" value="in use">
-            <button type="submit" class="btn-search <%= filter === 'in use' ? 'active' : '' %>">
-                IN USE
-            </button>
-        </form>
+    <form action="/order" method="GET">
+      <input type="hidden" name="filter" value="overdue" />
+      <button
+        type="submit"
+        class="btn-search <%= filter === 'overdue' ? 'active' : '' %>"
+      >
+        OVERDUE
+      </button>
+    </form>
+  </div>
 
-        <form action="/order" method="GET">
-            <input type="hidden" name="filter" value="overdue">
-            <button type="submit" class="btn-search <%= filter === 'overdue' ? 'active' : '' %>">
-                OVERDUE
-            </button>
-        </form>
-    </div>
-
-    <div class="date">
-        <form action="/order" method="GET" style="display:flex; gap:5px;">
-            <input type="date" name="start" value="<%= start || '' %>" />
-            :
-            <input type="date" name="end" value="<%= end || '' %>" />
-            <button type="submit" class="btn-search">Filter</button>
-        </form>
-    </div>
+  <div class="date">
+    <form action="/order" method="GET" style="display: flex; gap: 5px">
+      <input type="date" name="start" value="<%= start || '' %>" />
+      :
+      <input type="date" name="end" value="<%= end || '' %>" />
+      <button type="submit" class="btn-search">Filter</button>
+    </form>
+  </div>
 </div>
 
 <!-- TITLE -->
 <div class="page-text">
-    <span>List Of All Orders</span>
+  <span>List Of All Orders</span>
 
-    <form action="/order-completed" method="GET">
-        <button type="submit" class="btn-search">
-            Completed <i class="bi bi-check-circle"></i>
-        </button>
-    </form>
+  <form action="/order-completed" method="GET">
+    <button type="submit" class="btn-search">
+      Completed <i class="bi bi-check-circle"></i>
+    </button>
+  </form>
 </div>
 
 <!-- ORDER TABLE -->
 <div class="customer-table">
-    <table>
-        <thead>
-            <tr class="even">
-                <th>No</th>
-                <th>Customer</th>
-                <th>Equipment</th>
-                <th>Loan Period</th>
-                <th>Status</th>
-                <th class="actions">Action</th>
-            </tr>
-        </thead>
+  <table>
+    <thead>
+      <tr class="even">
+        <th>No</th>
+        <th>Customer</th>
+        <th>Equipment</th>
+        <th>Loan Period</th>
+        <th>Status</th>
+        <th class="actions">Action</th>
+      </tr>
+    </thead>
 
-        <tbody>
-            <% if (!orders || orders.length === 0) { %>
-                <tr>
-                    <td colspan="6" style="text-align:center; padding:20px;">No orders found.</td>
-                </tr>
-            <% } else { %>
+    <tbody>
+      <% if (!orders || orders.length === 0) { %>
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 20px">
+          No orders found.
+        </td>
+      </tr>
+      <% } else { %> <% orders.forEach((o, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= o.username %></td>
+        <td><%= o.product_name %></td>
+        <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
 
-                <% orders.forEach((o, index) => { %>
-                    <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= o.username %></td>
-                        <td><%= o.product_name %></td>
-                        <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+        <td style="text-transform: capitalize"><%= o.status %></td>
 
-                        <td style="text-transform:capitalize;"><%= o.status %></td>
+        <td class="action">
+          <div>
+            <% if (o.status === "pending") { %>
 
-                        <td class="action">
-                            <div>
-                                <% if (o.status === "pending") { %>
-
-                                    <button type="button" class="btn-approve"
-                                        onclick="showPopup('/order/approve/<%= o.id %>', 
+            <button
+              type="button"
+              class="btn-approve"
+              onclick="showPopup('/order/approve/<%= o.id %>', 
                                         'Approve Order',
-                                        'Do you want to approve this order?')">
-                                        Approve
-                                    </button>
+                                        'Do you want to approve this order?')"
+            >
+              Approve
+            </button>
 
-                                    <button type="button" class="btn-reject"
-                                        onclick="showPopup('/order/reject/<%= o.id %>', 
+            <button
+              type="button"
+              class="btn-reject"
+              onclick="showPopup('/order/reject/<%= o.id %>', 
                                         'Reject Order',
-                                        'This action will permanently delete this order.')">
-                                        Reject
-                                    </button>
+                                        'This action will permanently delete this order.')"
+            >
+              Reject
+            </button>
 
-                                <% } %>
+            <% } %> <% if (o.status === 'in use' || o.status === 'overdue') { %>
 
-                                <% if (o.status === 'in use' || o.status === 'overdue') { %>
-
-                                    <button type="button" class="btn-use-reminder btn"
-                                        onclick="showPopup('/order/reminder/<%= o.id %>',
+            <button
+              type="button"
+              class="btn-use-reminder btn"
+              onclick="showPopup('/order/reminder/<%= o.id %>',
                                         'Send Reminder',
-                                        'Send reminder for this order?')">
-                                        Reminder
-                                    </button>
+                                        'Send reminder for this order?')"
+            >
+              Reminder
+            </button>
 
-                                    <button type="button" class="btn-use-check check"
-                                        onclick="showPopup('/order/complete/<%= o.id %>', 
+            <button
+              type="button"
+              class="btn-use-check check"
+              onclick="showPopup('/order/complete/<%= o.id %>', 
                                         'Complete Order',
-                                        'Are you sure you want to mark this order as completed?')">
-                                        <i class="bi bi-check2"></i>
-                                    </button>
-
-                                <% } %>
-                            </div>
-                        </td>
-                    </tr>
-                <% }) %>
+                                        'Are you sure you want to mark this order as completed?')"
+            >
+              <i class="bi bi-check2"></i>
+            </button>
 
             <% } %>
-        </tbody>
-    </table>
+          </div>
+        </td>
+      </tr>
+      <% }) %> <% } %>
+    </tbody>
+  </table>
 </div>
 
 <!-- POPUP CONFIRMATION -->
-<div id="popup-overlay"></div>
-<div id="popup-box">
+<div id="popup-overlay">
+  <div id="popup-box">
     <h2 id="popup-title"></h2>
     <p id="popup-message"></p>
 
     <div class="popup-actions">
-        <form id="popup-form" method="POST">
-            <button type="submit" class="popup-yes">Yes</button>
-        </form>
+      <form id="popup-form" method="POST">
+        <button type="submit" class="popup-yes">Yes</button>
+      </form>
 
-        <button class="popup-no" onclick="closePopup()">No</button>
+      <button class="popup-no" onclick="closePopup()">No</button>
     </div>
+  </div>
 </div>
 
 <script>
-    function showPopup(actionUrl, title, message) {
-        document.getElementById("popup-title").innerText = title;
-        document.getElementById("popup-message").innerText = message;
-        document.getElementById("popup-form").action = actionUrl;
+  function showPopup(actionUrl, name) {
+    document.getElementById("popup-title").innerText = "Confirmation";
+    document.getElementById(
+      "popup-message"
+    ).innerText = `Are you sure want to proceed "${name}"?`;
+    document.getElementById("popup-form").action = actionUrl;
 
-        document.getElementById("popup-overlay").style.display = "block";
-        document.getElementById("popup-box").style.display = "block";
-    }
+    document.getElementById("popup-overlay").classList.add("show");
+    document.getElementById("popup-box").classList.add("show");
+  }
 
-    function closePopup() {
-        document.getElementById("popup-overlay").style.display = "none";
-        document.getElementById("popup-box").style.display = "none";
-    }
+  function closePopup() {
+    document.getElementById("popup-overlay").classList.remove("show");
+    document.getElementById("popup-box").classList.remove("show");
+  }
 </script>

@@ -261,53 +261,65 @@ thead th {
   font-size: 0.7rem;
 }
 
-/* ---------------------------------- */
-/* Delete Modal */
-/* ---------------------------------- */
+/* OVERLAY — default hidden */
 .delete-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999999 !important; /* FIX TERBESAR */
-  pointer-events: auto !important;
+  z-index: 999999;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
+/* Saat tampil */
 .delete-modal-overlay.show {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  animation: fadeIn 0.25s ease;
 }
 
+/* MODAL BOX */
 .delete-modal {
-  background: #fff5f5;
-  border-radius: 0.75rem;
+  background: #fff;
+  border-radius: 12px;
   padding: 1.5rem 2rem;
   max-width: 380px;
   width: 100%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  border-left: 4px solid var(--background-cancel);
-  z-index: 1000000;
+
+  opacity: 0;
+  transform: scale(0.9);
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
+.delete-modal.show {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  animation: popupFade 0.35s ease;
+}
+
+/* HEADERS */
 .delete-modal-header span {
   font-weight: 700;
   color: var(--background-cancel);
   font-size: 1rem;
 }
 
+/* BODY */
 .delete-modal-body {
   margin-top: 0.75rem;
   font-size: 0.9rem;
   color: var(--base-black);
 }
 
-.delete-modal-body p + p {
-  margin-top: 0.3rem;
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
+/* BUTTONS */
 .delete-modal-actions {
   margin-top: 1.2rem;
   display: flex;
@@ -321,21 +333,48 @@ thead th {
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8;
+  font-weight: 500;
+  transition: all 0.4s ease;
 }
 
 .btn-cancel {
-  background: #fff;
-  color: var(--base-black);
-  border: 1px solid #ddd;
+  background: #858796;
+  color: var(--base-white);
+}
+
+.btn-cancel:hover {
+  background: #cbcbcb;
 }
 
 .btn-confirm-delete {
-  background: var(--background-cancel);
-  color: #fff;
+  background: #dc0000;
+  color: var(--base-white);
 }
 
 .btn-confirm-delete:hover {
-  opacity: 0.9;
+  background: #ff0000;
+}
+
+/* ANIMATIONS */
+@keyframes popupFade {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
