@@ -40,25 +40,29 @@ body {
   padding: 2rem 0;
 }
 
-/* Typography */
+/* Fluid typography */
 h1 {
-  font-size: 2.6rem;
+  font-size: clamp(1.8rem, 3vw, 3rem);
   font-weight: 700;
 }
-
 h2 {
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-size: clamp(1.5rem, 2.5vw, 2.4rem);
+  font-weight: 600;
 }
-
 h3 {
-  font-size: 1.3rem;
-  font-weight: 500;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-weight: 600;
+}
+p {
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  font-weight: 400;
 }
 
-p {
-  font-size: 1rem;
-  font-weight: 400;
+/* Default img behavior */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 ul {
@@ -105,7 +109,7 @@ a {
 
 .logo {
   font-weight: 700;
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 2vw, 2rem);
   color: var(--primary);
 }
 
@@ -137,7 +141,7 @@ a {
 }
 
 .user {
-  width: 47 vw;
+  width: 47vw;
 }
 
 .main-nav,
@@ -148,18 +152,18 @@ a {
 }
 
 .nav-icons .bi {
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .main-nav a {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
   font-weight: 600;
   color: var(--primary);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .sec-nav a {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 2vw, 2rem);
   font-weight: 700;
 }
 
@@ -173,7 +177,7 @@ a {
 }
 
 .nav-icons a {
-  font-size: 1.3rem;
+  font-size: clamp(1.2rem, 1.2vw, 1.4rem);
   color: var(--primary);
 }
 
@@ -189,11 +193,11 @@ a {
 }
 
 .nav-icons .bi-box-arrow-right {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 }
 
 .nav-icons span {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   font-weight: 600;
 }
 
@@ -450,65 +454,7 @@ a {
   font-size: 0.9rem;
 }
 
-@media screen and (max-width: 1200px) {
-  h1 {
-    font-size: 1.9rem;
-  }
-
-  h2 {
-    font-size: 1.6rem;
-  }
-
-  h3 {
-    font-size: 1.2rem;
-  }
-
-  p {
-    font-size: 1rem;
-  }
-
-  .btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.9rem;
-  }
-}
-
-@media screen and (max-width: 992px) {
-  h2 {
-    font-size: 2rem;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-  }
-
-  p {
-    font-size: 0.9rem;
-  }
-
-  .btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.85rem;
-  }
-
-  .sec-nav a {
-    font-size: 1.6rem;
-  }
-}
-
 @media screen and (max-width: 768px) {
-  h2 {
-    font-size: 1.8rem;
-  }
-
-  h3 {
-    font-size: 1.2rem;
-  }
-
-  p {
-    font-size: 0.8rem;
-  }
-
   .btn {
     font-size: 0.8rem;
   }
@@ -525,11 +471,6 @@ a {
 
   .header-content {
     padding: 0.3rem 1.5rem;
-  }
-
-  .main-nav.active a,
-  .nav-icons.active a {
-    font-size: 1.1rem;
   }
 
   .header-content {
@@ -562,10 +503,12 @@ a {
 }
 
 @media screen and (max-width: 600px) {
-  .logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--primary);
+  .main-nav a {
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+  }
+
+  .nav-icons a {
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
   }
 
   .footer-top {
@@ -594,19 +537,15 @@ a {
   .footer-middle {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .footer-col {
     border-right: none;
-    padding: 0 0.5rem;
-    text-align: center;
-    align-items: center;
   }
 
   .footer-left {
-    order: 2;
-    padding: 0;
+    display: none;
   }
 
   .footer-mid {
@@ -616,13 +555,14 @@ a {
 
   .footer-right {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
     order: 3;
   }
 
-  .footer-col h4 {
-    padding-bottom: 0.5rem;
-    font-size: 1.2rem;
+  .footer-right h4 {
+    display: none;
   }
 
   .footer-bottom {

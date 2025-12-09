@@ -16,7 +16,6 @@
 }
 
 .hero-content h1 {
-  font-size: 3.2rem;
   margin-bottom: 1rem;
   color: var(--primary);
   border-bottom: 0.15rem solid var(--primary);
@@ -25,7 +24,7 @@
 /* --- Edge Section --- */
 .edge {
   width: 100%;
-  height: 12rem;
+  height: 10rem;
   background-color: var(--primary);
   margin: 0 auto;
 }
@@ -59,7 +58,6 @@
   padding: 0.8rem 1.5rem;
   border: 2px solid var(--primary);
   border-radius: 0.5rem;
-  font-size: 1rem;
   color: var(--primary);
   background-color: var(--base-white);
   appearance: none;
@@ -78,7 +76,6 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--primary);
-  font-size: 1.1rem;
   pointer-events: none;
   z-index: 10;
 }
@@ -97,7 +94,6 @@
   padding: 0.8rem 3rem;
   border: 2px solid var(--primary);
   border-radius: 0.5rem;
-  font-size: 1rem;
   color: var(--primary);
   background-color: var(--base-white);
   outline: none;
@@ -110,7 +106,6 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--primary);
-  font-size: 1.1rem;
   pointer-events: none;
 }
 
@@ -125,15 +120,16 @@
 }
 
 .catalogue-item {
+  height: 100%;
   background-color: var(--background-product);
   padding: 1.5rem;
   border-radius: 1rem;
   text-align: center;
+  justify-content: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: all 0.4s ease-in-out;
   z-index: 1;
 }
 
@@ -141,7 +137,6 @@
   width: 100%;
   height: auto;
   margin-bottom: 10px;
-
   overflow: hidden;
   margin: 0 auto 10px auto;
 }
@@ -150,7 +145,6 @@
   width: 50%;
   height: auto;
   border-radius: 8px;
-
   transition: transform 0.3s ease-in-out;
   display: block;
   margin: 0 auto;
@@ -158,7 +152,6 @@
 
 .item-name {
   font-weight: 600;
-  font-size: 1.3rem;
   color: var(--primary);
 }
 
@@ -217,7 +210,7 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   font-weight: 600;
   transition: all 0.4s ease;
 }
@@ -248,15 +241,11 @@
 
 .page-next i,
 .page-prev i {
-  font-size: 0.7rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   margin-left: 0.4rem;
 }
 
 @media screen and (max-width: 992px) {
-  .catalogue {
-    padding: 5rem 0;
-  }
-
   .hero-content h1 {
     font-size: 2.8rem;
   }
@@ -269,24 +258,12 @@
     flex-wrap: wrap;
   }
 
-  .catalogue-item .item-name {
-    font-size: 1.2rem;
-  }
-
   .edge {
     height: 10rem;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .catalogue {
-    padding: 4rem 0;
-  }
-
-  .hero-content h1 {
-    font-size: 2.6rem;
-  }
-
   .edge {
     height: 8rem;
   }
@@ -296,22 +273,14 @@
     gap: 1rem;
   }
 
-  .item-img img {
-    width: 40%;
+  .catalogue-item {
+    height: auto;
   }
 
-  .catalogue-item .item-name {
-    font-size: 0.9rem;
-  }
-
-  .page-link-active,
-  .page-link {
-    font-size: 0.9rem;
-  }
-
-  .page-link {
-    width: 1.8rem;
-    height: 1.8rem;
+  .page-number,
+  .page-next,
+  .page-prev {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   }
 }
 
@@ -334,50 +303,13 @@
     gap: 1rem;
   }
 
-  .item-img img {
-    width: 40%;
+  .catalogue-item {
+    height: 100%;
   }
 
-  .page-link-active,
-  .page-link {
-    font-size: 0.7rem;
-  }
-
-  .page-link {
-    width: 1.8rem;
-    height: 1.8rem;
-  }
-}
-
-@media screen and (max-width: 375px) {
-  .hero-content h1 {
-    font-size: 1.5rem;
-  }
-
-  .custom-select {
-    font-size: 0.75rem;
-    padding: 0.8rem;
-  }
-
-  .filter-group .bi-chevron-down {
-    font-size: 0.8rem;
-  }
-
-  .catalogue-item .item-name {
-    font-size: 0.65rem;
-  }
-
-  .catalogue-item .item-price {
-    font-size: 0.6rem;
-  }
-
-  .page-link-active,
-  .page-link {
-    font-size: 0.7rem;
-  }
-
-  .page-link {
-    width: 1.8rem;
-    height: 1.8rem;
+  .page-number,
+  .page-next,
+  .page-prev {
+    font-size: clamp(0.75rem, 1.2vw, 0.8rem);
   }
 }
