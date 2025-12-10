@@ -91,20 +91,132 @@ router.get("/logout", (req, res) => {
 
 // ROUTE HOME
 router.get("/", passLoginStatus, async (req, res) => {
-  const content = await ejs.renderFile(
-    path.join(__dirname, "../views/pages/user/home.ejs")
-  );
+  const filter = req.query.filter || "default";
 
-  res.render("layouts/main", {
-    title: "Home | Lably Official Web",
-    currentPage: "home",
-    showFooter: true,
-    meta: `
-      <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
-      <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-    `,
-    style: `<link rel="stylesheet" href="/CSS/home.css" />`,
-    content,
+  let sql = "";
+
+  if (filter === "best") {
+    // Produk dipinjam lebih dari 3x
+    sql = `
+      SELECT p.id, p.name, p.price, p.image, p.stock
+      FROM products p
+      JOIN (
+        SELECT id_products, COUNT(*) AS total
+        FROM peminjaman
+        GROUP BY id_products
+        HAVING total > 3
+      ) AS t
+      ON p.id = t.id_products
+      LIMIT 6
+    `;
+  } 
+  
+  else if (filter === "available") {
+    // Produk stok > 1
+    sql = `
+      SELECT id, name, price, image, stock
+      FROM products
+      WHERE stock > 1
+      LIMIT 6
+    `;
+  }
+
+  else {
+    // Default → ambil 6 produk pertama
+    sql = `
+      SELECT id, name, price, image, stock
+      FROM products
+      LIMIT 6
+    `;
+  }
+
+  db.query(sql, async (err, products) => {
+    if (err) {
+      console.error("Error loading products:", err);
+      products = [];
+    }
+
+    // mapping data untuk dikirim ke EJS
+    const catalogue = products.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      img: p.image
+        ? `/uploads/${p.image}`
+        : "/Assets/default.png", // fallback
+      stock: p.stock
+    }));
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/home.ejs"),
+      { 
+        catalogue,
+        activeFilter: filter  // 🔥 biar tombol biru sesuai filter
+      }
+    );
+
+    res.render("layouts/main", {
+      title: "Home | Lably Official Web",
+      currentPage: "home",
+      showFooter: true,
+      meta: `
+        <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
+      `,
+      style: `<link rel="stylesheet" href="/CSS/home.css" />`,
+      content,
+    });
+  });
+});
+
+router.get("/api/best-items", (req, res) => {
+  const sql = `
+    SELECT p.id, p.name, p.price, p.image, p.stock
+    FROM products p
+    JOIN (
+      SELECT id_products, COUNT(*) AS total
+      FROM peminjaman
+      GROUP BY id_products
+      HAVING total > 3
+    ) AS t
+    ON p.id = t.id_products
+    LIMIT 6
+  `;
+
+  db.query(sql, (err, rows) => {
+    if (err) return res.json([]);
+
+    const items = rows.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      img: p.image ? `/uploads/${p.image}` : "/Assets/default.png",
+      stock: p.stock
+    }));
+
+    res.json(items);
+  });
+});
+
+router.get("/api/availability", (req, res) => {
+  const sql = `
+    SELECT id, name, price, image, stock
+    FROM products
+    WHERE stock > 1
+    LIMIT 6
+  `;
+
+  db.query(sql, (err, rows) => {
+    if (err) return res.json([]);
+
+    const items = rows.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      img: p.image ? `/uploads/${p.image}` : "/Assets/default.png",
+      stock: p.stock
+    }));
+
+    res.json(items);
   });
 });
 

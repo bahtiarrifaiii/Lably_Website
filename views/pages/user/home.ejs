@@ -68,69 +68,36 @@
 
     <div class="catalogue-filter">
       <div class="filter">
-        <button class="filter-btn active" id="filter-all">Best Items</button>
-        <button class="filter-btn inactive" id="filter-loaned">
-          Availability
-        </button>
-      </div>
-      <a href="/catalogue">See More</a>
-    </div>
 
-    <div class="catalogue-grid">
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
+        <button id="filter-best" class="filter-btn">Best Items</button>
+        <button id="filter-availability" class="filter-btn">Availability</button>
+      </div>
+
+  <a href="/catalogue">See More</a>
+</div>
+
+          <div class="catalogue-grid">
+        <% catalogue.forEach(item => { %>
+        <a href="/product/<%= item.id %>">
+          <div class="catalogue-item">
+
+            <div class="item-img">
+              <img src="<%= item.img %>" alt="<%= item.name %>" />
+            </div>
+
+            <p class="item-name"><%= item.name %></p>
+            <p class="item-price">IDR <%= item.price.toLocaleString() %></p>
+
+            <% if (item.stock > 0) { %>
+              <span class="item-availability available">Available</span>
+            <% } else { %>
+              <span class="item-availability out">Out of Stock</span>
+            <% } %>
+
           </div>
-          <p class="item-name">Binokuler</p>
-          <p class="item-price">IDR 1.000.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Lysis</p>
-          <p class="item-price">IDR 650.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Reaktor</p>
-          <p class="item-price">IDR 2.000.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Binokuler Pro</p>
-          <p class="item-price">IDR 1.500.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Razor</p>
-          <p class="item-price">IDR 900.000</p>
-        </div>
-      </a>
-      <a href="/product"
-        ><div class="catalogue-item">
-          <div class="item-img">
-            <img src="./Assets/Mickroscope.png" alt="" />
-          </div>
-          <p class="item-name">Trunity</p>
-          <p class="item-price">IDR 1.150.000</p>
-        </div>
-      </a>
+        </a>
+        <% }) %>
+      </div>
     </div>
   </div>
 </section>
@@ -212,3 +179,62 @@
     </div>
   </div>
 </section>
+
+<script>
+  const grid = document.querySelector(".catalogue-grid");
+  const bestBtn = document.getElementById("filter-best");
+  const availBtn = document.getElementById("filter-availability");
+
+  function renderProducts(items) {
+    grid.innerHTML = "";
+    items.forEach(item => {
+      grid.innerHTML += `
+        <a href="/product/${item.id}">
+          <div class="catalogue-item">
+            <div class="item-img">
+              <img src="${item.img}" alt="${item.name}" />
+            </div>
+
+            <p class="item-name">${item.name}</p>
+            <p class="item-price">IDR ${Number(item.price).toLocaleString()}</p>
+
+            ${item.stock > 0 
+              ? `<span class="item-availability available">Available</span>`
+              : `<span class="item-availability out">Out of Stock</span>`
+            }
+          </div>
+        </a>
+      `;
+    });
+  }
+
+  function activate(btn) {
+    bestBtn.classList.remove("active");
+    availBtn.classList.remove("active");
+    btn.classList.add("active");
+  }
+
+  // DEFAULT → Availability Active
+  activate(availBtn);
+  fetch("/api/availability")
+    .then(res => res.json())
+    .then(data => renderProducts(data));
+
+  bestBtn.addEventListener("click", () => {
+    activate(bestBtn);
+    fetch("/api/best-items")
+      .then(res => res.json())
+      .then(data => renderProducts(data));
+  });
+
+  availBtn.addEventListener("click", () => {
+    activate(availBtn);
+    fetch("/api/availability")
+      .then(res => res.json())
+      .then(data => renderProducts(data));
+  });
+</script>
+
+
+
+
