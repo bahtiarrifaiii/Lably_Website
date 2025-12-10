@@ -272,3 +272,223 @@ th {
 .print-header {
   display: none;
 }
+
+/* =============== PRINT MODE =============== */
+.invoice-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px 40px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: "Poppins", sans-serif;
+  color: #1f2a3c;
+}
+
+/* HEADER */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.brand-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-logo {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0b4487;
+}
+
+.brand-logo span {
+  color: #3ea8ff;
+}
+
+.brand-subtitle {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #6c7a92;
+}
+
+.invoice-info {
+  text-align: right;
+  max-width: 340px;
+}
+
+.invoice-title {
+  font-size: 32px;
+  letter-spacing: 2px;
+  margin: 0 0 10px;
+  color: #003366;
+}
+
+.invoice-meta {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.meta-label {
+  font-weight: 600;
+  color: #4a5d79;
+}
+
+.meta-value {
+  color: #1f2a3c;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #d2d9e5;
+  margin: 20px 0;
+}
+
+/* TABLE */
+.invoice-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.invoice-table th {
+  background: #e7f2ff !important;
+  color: #0f3f74;
+  padding: 10px;
+  border: 1px solid #b7c7e5 !important;
+}
+
+.invoice-table td {
+  border: 1px solid #b7c7e5 !important;
+  padding: 10px;
+}
+
+.invoice-table td:first-child {
+  text-align: center;
+}
+
+/* TOTAL BOX */
+.bottom-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  gap: 40px;
+}
+
+.admin-contact h3 {
+  margin: 0 0 5px;
+  color: #0f3f74;
+}
+
+.admin-contact p {
+  font-size: 13px;
+  color: #4a5d79;
+}
+
+.total-box {
+  border: 1px solid #b7c7e5;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 220px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f3f7ff;
+}
+
+.total-label {
+  font-weight: bold;
+  color: #003366;
+}
+
+.total-value {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+/* NOTE */
+.note-section {
+  margin-top: 25px;
+}
+
+.note-section h4 {
+  font-size: 14px;
+  color: #0f3f74;
+  margin-bottom: 6px;
+}
+
+.note-section p {
+  color: #4a5d79;
+}
+
+@media print {
+  /* Sembunyikan elemen layar */
+  nav,
+  .navbar,
+  .controls-section,
+  .table-wrapper,
+  .pagination,
+  .screen-only {
+    display: none !important;
+  }
+
+  /* Tampilkan hanya invoice-page */
+  .invoice-page {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Table print style */
+  table.invoice-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  table.invoice-table th,
+  table.invoice-table td {
+    border: 1px solid #000 !important;
+    color: #000 !important;
+    padding: 6px !important;
+  }
+
+  /* Total box border */
+  .total-box {
+    border-color: #000 !important;
+  }
+
+  /* Background putih bersih */
+  body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+  }
+}
+
+/* NORMAL MODE */
+.print-only {
+  display: none;
+}
+
+@media screen {
+  .invoice-page.print-only {
+    display: none;
+  }
+}
+

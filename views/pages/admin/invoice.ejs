@@ -1,9 +1,9 @@
-<nav class="navbar">
+<nav class="navbar screen-only">
   <span>Invoice</span>
   <img src="Assets/profile.jpg" alt="" />
 </nav>
 
-<section class="controls-section">
+<section class="controls-section screen-only">
   <div class="total-checkout">
     <i class="bi bi-cart-check"></i>
     <h2><%= orders.length %> ORDERS</h2>
@@ -14,17 +14,8 @@
   </a>
 </section>
 
-<!-- PRINT HEADER  -->
-<div class="print-header">
-  <h1>Lably Official Invoice</h1>
-  <p>
-    Green Office Park 9, BSD City, Tangerang Selatan 15345<br />
-    021-3456-887 - info@lably.com
-  </p>
-  <hr />
-</div>
-
-<div class="table-wrapper">
+<!-- ======================= SCREEN TABLE (LAMA) ======================= -->
+<div class="table-wrapper screen-only">
   <table>
     <thead>
       <tr>
@@ -36,24 +27,102 @@
         <th>Price</th>
       </tr>
     </thead>
+
     <tbody>
       <% if (!orders || orders.length === 0) { %>
-      <tr>
-        <td colspan="6" style="text-align: center; padding: 15px">
-          No completed orders
-        </td>
-      </tr>
-      <% } else { %> <% orders.forEach((o, i) => { %>
-      <tr>
-        <td><%= i + 1 %></td>
-        <td><%= o.customer_name %></td>
-        <td><%= o.product_name %></td>
-        <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
-        <td class="complete">Completed</td>
-
-        <td>Rp <%= Number(o.price).toLocaleString("id-ID") %></td>
-      </tr>
-      <% }) %> <% } %>
+        <tr>
+          <td colspan="6" style="text-align:center; padding:15px;">
+            No completed orders
+          </td>
+        </tr>
+      <% } else { %>
+        <% orders.forEach((o, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= o.customer_name %></td>
+            <td><%= o.product_name %></td>
+            <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+            <td class="complete">Completed</td>
+            <td>Rp <%= Number(o.price).toLocaleString("id-ID") %></td>
+          </tr>
+        <% }) %>
+      <% } %>
     </tbody>
   </table>
+</div>
+
+
+<!-- ======================= PRINT-ONLY INVOICE BARU ======================= -->
+<div class="print-only invoice-page">
+
+  <!-- HEADER -->
+  <div class="invoice-header">
+    <div class="brand-block">
+      <div class="brand-logo">Lab<span>Ly</span></div>
+      <div class="brand-subtitle">Peminjaman Alat Laboratorium</div>
+    </div>
+
+    <div class="invoice-info">
+      <h2 class="invoice-title">INVOICE</h2>
+
+      <div class="invoice-meta">
+        <div class="meta-row"><span class="meta-label">Alamat:</span><span class="meta-value">Green Office Park 9, BSD City</span></div>
+        <div class="meta-row"><span class="meta-label">Kontak:</span><span class="meta-value">021-3456-887</span></div>
+        <div class="meta-row"><span class="meta-label">Email:</span><span class="meta-value">info@lably.com</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- TABLE -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Customer</th>
+        <th>Equipment</th>
+        <th>Loan Period</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% orders.forEach((o, i) => { %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= o.customer_name %></td>
+          <td><%= o.product_name %></td>
+          <td><%= o.tgl_pinjam %> - <%= o.tgl_kembali %></td>
+          <td>Rp <%= Number(o.price).toLocaleString("id-ID") %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- TOTAL -->
+  <div class="bottom-section">
+    <div class="admin-contact">
+      <h3>Diterbitkan Oleh</h3>
+      <p>info@lably.com</p>
+    </div>
+
+    <div class="total-box">
+      <div class="total-row">
+        <span class="total-label">TOTAL</span>
+        <span class="total-value">
+          Rp <%= Number(
+            orders.reduce((sum, o) => sum + Number(o.price), 0)
+          ).toLocaleString("id-ID") %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note-section">
+    <h4>Catatan</h4>
+    <p>"Semangat! Teruslah berkarya dan berkontribusi untuk dunia riset."</p>
+  </div>
+
 </div>
