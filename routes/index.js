@@ -1093,29 +1093,51 @@ router.get("/analytics", isAdmin, (req, res) => {
                   console.error("Error top customers:", err5);
                   return res.status(500).send("Error loading analytics");
                 }
+                // monthly transactions for current year (months 1..12)
+                const monthlySql = `
+                  SELECT MONTH(tgl_pinjam) AS mon, COUNT(*) AS cnt
+                  FROM peminjaman
+                  WHERE tgl_pinjam IS NOT NULL AND YEAR(tgl_pinjam) = YEAR(CURDATE())
+                  GROUP BY MONTH(tgl_pinjam)
+                `;
 
-                ejs.renderFile(
-                  path.join(__dirname, "../views/pages/admin/analytics.ejs"),
-                  {
-                    users,
-                    totalCustomers,
-                    totalItems,
-                    totalTransactions,
-                    totalIncome,
-                    topItems: topItems || [],
-                    topCustomers: topCustomers || [],
-                  },
-                  (err, content) => {
-                    res.render("layouts/atmin", {
-                      title: "Analytics",
-                      style: `<link rel="stylesheet" href="/css/analytics.css">`,
-                      content,
-                      showPopup: false,
-                      message: null,
-                      currentPage: req.path,
-                    });
+                db.query(monthlySql, (err6, monthlyRows) => {
+                  if (err6) {
+                    console.error("Error monthly stats:", err6);
+                    return res.status(500).send("Error loading analytics");
                   }
-                );
+
+                  // build array of 12 months (index 0 => Jan)
+                  const monthlyData = new Array(12).fill(0);
+                  (monthlyRows || []).forEach((r) => {
+                    const m = Number(r.mon);
+                    if (!isNaN(m) && m >= 1 && m <= 12) monthlyData[m - 1] = r.cnt;
+                  });
+
+                  ejs.renderFile(
+                    path.join(__dirname, "../views/pages/admin/analytics.ejs"),
+                    {
+                      users,
+                      totalCustomers,
+                      totalItems,
+                      totalTransactions,
+                      totalIncome,
+                      topItems: topItems || [],
+                      topCustomers: topCustomers || [],
+                      monthlyData,
+                    },
+                    (err, content) => {
+                      res.render("layouts/atmin", {
+                        title: "Analytics",
+                        style: `<link rel="stylesheet" href="/css/analytics.css">`,
+                        content,
+                        showPopup: false,
+                        message: null,
+                        currentPage: req.path,
+                      });
+                    }
+                  );
+                });
               });
             });
           }

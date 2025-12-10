@@ -44,18 +44,9 @@
     <tbody>
       <tr>
         <td>Loan</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <% for (let i = 0; i < 12; i++) { %>
+          <td><%= (monthlyData && monthlyData[i]) ? monthlyData[i] : 0 %></td>
+        <% } %>
       </tr>
     </tbody>
   </table>

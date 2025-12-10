@@ -67,7 +67,19 @@
 }
 
 .total {
-  border-left: 10px solid var(--secondary);
+  border-left: 10px solid var(--primary);
+}
+
+.total-items {
+  border-left: 10px solid #f1930b;
+}
+
+.total-trs{
+  border-left: 10px solid #ff0000;
+}
+
+.total-income{
+  border-left: 10px solid #00ff55;
 }
 
 .page-text {
