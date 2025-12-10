@@ -535,6 +535,7 @@ router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
       product_id: r.id_products,
       name: r.product_name || "Produk",
       price: Number(r.price) || 0,
+      image: r.product_image ? `/uploads/${r.product_image}` : "/Assets/default.png",
       quantity: Number(r.qty) || 1,
 
       // 🔥 format tanggal (HANYA YYYY-MM-DD)
@@ -630,6 +631,7 @@ router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
       return {
         product_id: r.id_products,
         name: r.product_name || "Produk",
+        image: r.product_image ? `/uploads/${r.product_image}` : "/Assets/default.png",
         price,
         quantity: qty,
 
@@ -795,7 +797,10 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       p.status,
       DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
       DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
-      pr.name AS product_name
+
+      pr.name AS product_name,
+      pr.image AS product_image,   
+      pr.price AS product_price    
     FROM peminjaman p
     LEFT JOIN products pr ON p.id_products = pr.id
     WHERE p.id_user = ?

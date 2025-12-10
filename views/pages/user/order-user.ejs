@@ -27,7 +27,10 @@
             order.status === 'completed' ? 'complete' : 'paid'
         %>"
       >
-        <img src="/Assets/Mickroscope.png" class="product-image" />
+        <img 
+  src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>" 
+  class="product-image"
+/>
 
         <div class="order-details">
 

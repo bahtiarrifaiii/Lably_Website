@@ -27,15 +27,18 @@ const Draft = {
     getByUser: (userId, callback) => {
     const sql = `
         SELECT 
-            d.*,
-            DATE_FORMAT(d.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
-            DATE_FORMAT(d.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
-            p.name AS product_name
+        d.*,
+        DATE_FORMAT(d.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+        DATE_FORMAT(d.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+        p.name AS product_name,
+        p.image AS product_image,
+        p.price AS product_price
         FROM d_peminjaman d
         LEFT JOIN products p ON d.id_products = p.id
         WHERE d.id_user = ?
         ORDER BY d.id DESC
     `;
+    
     database.query(sql, [userId], callback);
     },
 
