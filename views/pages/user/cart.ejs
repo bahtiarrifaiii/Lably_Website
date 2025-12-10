@@ -1,11 +1,6 @@
 <div class="container cart">
   <div class="cart-table-header">
-    <span class="col-product">PRODUCT</span>
-    <span class="col-date">DATE</span>
-    <span class="col-days">Duration (Days)</span>
-    <span class="col-price">PRICE</span>
-    <span class="col-quantity">QUANTITY</span>
-    <span class="col-total">TOTAL</span>
+    <h3 class="title">My Cart</h3>
     <form method="post" action="/cart/clear" style="display:inline">
       <button class="col-remove-btn">REMOVE ALL</button>
     </form>
@@ -31,19 +26,33 @@
           const itemDays = computeDays(item.borrow_date, item.return_date);
         %>
         <div class="cart-item">
-          <div class="item-product">
-            <div class="item-img-wrap">
-              <% /* image handling: if you store filenames, show with /uploads/... */ %>
-              <img src="/Assets/Mickroscope.png" alt="<%= item.name %>" />
-            </div>
-            <span class="item-name"><%= item.name %></span>
+          <div class="item-img-wrap">
+            <% /* image handling: if you store filenames, show with /uploads/... */ %>
+            <img src="/uploads/<%= item.image %>" alt="<%= item.name %>" />
           </div>
-          <span class="item-date"><%= item.borrow_date || '-' %> - <%= item.return_date || '-' %></span>
-          <span class="item-days"><%= itemDays %></span>
-          <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
-          <span class="item-quantity"><%= item.quantity %></span>
-          <span class="item-total">Rp<%=(Number(item.all_total) || (Number(item.price) * Number(item.quantity) * Number(itemDays))).toLocaleString()%>
-          </span>
+          <div class="item-detail">
+            <div class="type-wrap">
+              <p>Nama Product</p>
+              <span class="item-name"><%= item.name %></span>
+            </div>
+            <div class="type-wrap">
+              <p>Durasi Hari</p>
+              <span class="item-days"><%= itemDays %> Hari</span>
+            </div>
+            <div class="type-wrap">
+              <p>Harga</p>
+              <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
+            </div>
+            <div class="type-wrap">
+              <p>Jumlah</p>
+              <span class="item-quantity"><%= item.quantity %>x</span>
+            </div>
+            <div class="type-wrap">
+              <p>Total</p>
+              <span class="item-total">Rp<%=(Number(item.all_total) || (Number(item.price) * Number(item.quantity) * Number(itemDays))).toLocaleString()%>
+              </span>
+            </div>
+          </div>
           <form method="post" action="/cart/remove" style="display:inline">
             <input type="hidden" name="product_id" value="<%= item.product_id %>" />
             <button class="item-remove-btn" type="submit">

@@ -61,6 +61,7 @@
   padding: 3.5rem 4.5rem;
   justify-content: center;
   position: relative;
+  background-color: var(--base-white);
 }
 
 .auth-right .btn-back {

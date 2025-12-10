@@ -20,7 +20,7 @@
 }
 
 .item-img-wrap img {
-  max-width: 80%;
+  max-width: 90%;
   height: auto;
   display: block;
 }
@@ -30,7 +30,6 @@
 }
 
 .category {
-  font-size: 1.1rem;
   font-weight: 500;
   color: var(--base-black);
   margin-bottom: 0.5rem;
@@ -38,11 +37,10 @@
 }
 
 .item-content-wrap h1 {
-  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 800;
   color: var(--primary);
   line-height: 1.1;
-  margin: 0 0 1rem 0;
+  margin-bottom: 1rem;
 }
 
 .price {
@@ -53,7 +51,6 @@
 }
 
 .price h2 {
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 700;
   color: var(--secondary);
   line-height: 1;
@@ -61,14 +58,12 @@
 }
 
 .price h2:last-child {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 500;
   color: #888;
 }
 
 .item-content-wrap p:not(.category) {
-  font-size: clamp(0.8rem, 3vw, 1rem);
-  line-height: 1.6;
   color: var(--base-black);
   margin-bottom: 2rem;
   text-align: justify;
@@ -84,7 +79,6 @@
 .quantity-input {
   display: flex;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  border-radius: 0.5rem;
 }
 
 .qty-btn,
@@ -92,7 +86,7 @@
   width: 45px;
   height: 45px;
   display: flex;
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 1.2vw, 1.5rem);
   font-weight: 500;
   border: none;
   outline: none;
@@ -113,7 +107,7 @@
 
 .qty-display {
   display: flex;
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   font-weight: 600;
   background-color: var(--base-white);
   justify-content: center;
@@ -125,7 +119,7 @@
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 0.5rem;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -136,35 +130,76 @@
   box-shadow: 0 4px 10px rgba(11, 68, 135, 0.3);
 }
 
+@media screen and (max-width: 1200px) {
+  .qty-btn,
+  .qty-display {
+    width: 35px;
+    height: 40px;
+  }
+
+  .btn {
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .item-content-wrap h1 {
+    font-size: clamp(1.5rem, 2.5vw, 1.8rem);
+  }
+
+  .qty-btn,
+  .qty-display {
+    width: 30px;
+    height: 38px;
+  }
+
+  .btn {
+    padding: 0.6rem 0.8rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  }
+}
+
 @media screen and (max-width: 768px) {
+  .item-img-wrap img {
+    max-width: 80%;
+  }
+
   .product-detail {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
 
-  .item-content-wrap p {
-    font-size: clamp(0.8rem, 3vw, 1rem);
-  }
-
-  .item-content-wrap h1 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-  }
-
-  .price h2 {
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-  }
-
   .btn {
     padding: 0.8rem 1rem;
-    font-size: clamp(0.8rem, 3vw, 1.1rem);
+    font-size: clamp(0.7rem, 1.2vw, 1.2rem);
+  }
+
+  .action-group {
+    gap: 0.6rem;
   }
 }
 
 @media screen and (max-width: 600px) {
+  .item-content-wrap h1 {
+    font-size: 1.4rem;
+  }
+
+  .price h2 {
+    font-size: 1.3rem;
+  }
+
   .qty-btn,
   .qty-display {
-    width: 35px;
-    height: 45px;
+    width: 28px;
+    height: 42px;
+  }
+
+  .btn {
+    padding: 0.8rem 0.7rem;
+  }
+
+  .action-group {
+    gap: 0.3rem;
   }
 }

@@ -118,7 +118,7 @@ a {
 }
 
 .sec-nav .logo {
-  margin-left: 1.8rem;
+  margin-left: 3rem;
 }
 
 .back-btn {
@@ -147,7 +147,7 @@ a {
 .main-nav,
 .nav-icons {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
@@ -160,6 +160,14 @@ a {
   font-weight: 600;
   color: var(--primary);
   transition: all 0.4s ease;
+}
+
+.main-nav {
+  margin-left: -1.6rem;
+}
+
+.not {
+  margin-left: 2.6rem;
 }
 
 .sec-nav a {
@@ -454,6 +462,12 @@ a {
   font-size: 0.9rem;
 }
 
+@media screen and (max-width: 1024px) {
+  .not {
+    margin-left: 2rem;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .btn {
     font-size: 0.8rem;
@@ -462,6 +476,11 @@ a {
   .main-nav,
   .nav-icons {
     display: none;
+  }
+
+  .main-nav,
+  .not {
+    margin-left: 0;
   }
 
   .menu-toggle {
@@ -517,7 +536,7 @@ a {
   }
 
   .footer-top h3 {
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
   }
 
   .newsletter-form {

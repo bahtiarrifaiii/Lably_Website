@@ -576,6 +576,7 @@ router.post("/cart/remove", isLoggedIn, (req, res) => {
   const sql = `
     DELETE FROM d_peminjaman
     WHERE id_user = ? AND id_products = ?
+    LIMIT 1
   `;
   db.query(sql, [userId, product_id], (err) => {
     if (err) {
