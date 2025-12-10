@@ -800,9 +800,12 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
 
       pr.name AS product_name,
       pr.image AS product_image,   
-      pr.price AS product_price    
+      pr.price AS product_price, 
+      
+      r.id AS reminder_id 
     FROM peminjaman p
     LEFT JOIN products pr ON p.id_products = pr.id
+    LEFT JOIN reminder r ON r.id_peminjaman = p.id
     WHERE p.id_user = ?
     ORDER BY p.id DESC
   `;
@@ -970,6 +973,8 @@ router.post("/order/complete/:id", isAdmin, (req, res) => {
   const id = req.params.id;
 
   db.query("UPDATE peminjaman SET status = 'completed' WHERE id = ?", [id], () => {
+  db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id]);
+
 
     // 🔥 ketika order selesai -> hapus reminder biar tidak muncul lagi
     db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
@@ -996,7 +1001,6 @@ router.post("/order/reminder/:id", isAdmin, (req, res) => {
     res.redirect("/order");
   });
 });
-
 
 
 router.get("/order-completed", isAdmin, (req, res) => {

@@ -171,3 +171,33 @@
   font-size: 0.7rem;
   margin-left: 0.4rem;
 }
+
+.reminder-list {
+  margin: 5px auto;
+  max-width: 900px;
+  margin-top: -3rem;
+}
+
+.reminder-card {
+  background: #fff4e5;
+  border-left: 5px solid #ff9800;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reminder-title {
+  font-weight: bold;
+  color: #e57300;
+}
+
+.reminder-text {
+  margin: 0;
+  color: #333;
+}
+
+

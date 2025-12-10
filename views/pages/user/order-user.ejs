@@ -1,4 +1,17 @@
 <div class="container main-content" id="main-content">
+  <div class="reminder-list">
+      <% orders.forEach(o => { %>
+        <% if (o.reminder_id && o.status !== 'completed') { %>
+          <div class="reminder-card">
+            <span class="reminder-title">⚠ Reminder</span>
+            <p class="reminder-text">
+              Your loan for <strong><%= o.product_name %></strong> has been reminded by admin.
+              Please return it as soon as possible.
+            </p>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
   <div class="top-section">
     <h1 class="order-title">YOUR ORDERS</h1>
     <div class="filters">
@@ -9,6 +22,7 @@
       </button>
     </div>
   </div>
+  
 
   <div class="order-card-list">
 
