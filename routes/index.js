@@ -577,7 +577,6 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
       return res.redirect("/cart");
     }
 
-    // prepare items for insertion ke tabel peminjaman
     function computeDays(borrow, ret) {
       try {
         if (!borrow || !ret) return 1;
@@ -595,16 +594,13 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
       const priceUnit = Number(r.price) || 0;
       const qty = Number(r.qty) || 1;
       const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
-      const itemTotal = priceUnit * qty * days; // total untuk kolom price di peminjaman
+      const itemTotal = priceUnit * qty * days;
 
       return {
         product_id: r.id_products,
         quantity: qty,
-
-        // 🔥 format tanggal sebelum INSERT
         borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
         return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
-
         itemTotal: itemTotal,
         price: priceUnit,
         phone: r.no_telp || "",
@@ -619,15 +615,54 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
         return res.redirect("/checkout");
       }
 
-      // setelah sukses, hapus semua draft user
-      Draft.deleteByUser(userId, (errDel) => {
-        if (errDel) {
-          console.error("Gagal menghapus draft setelah checkout:", errDel);
-        }
+      /* =====================================================
+         🔥 UPDATE STOK PRODUK SECARA REAL-TIME
+      ===================================================== */
+      const updateStockPromises = itemsToInsert.map((item) => {
+        return new Promise((resolve, reject) => {
+          const sql = `
+            UPDATE products 
+            SET stock = stock - ?
+            WHERE id = ? AND stock >= ?
+          `;
+          db.query(sql, [item.quantity, item.product_id, item.quantity], (err, result) => {
+            if (err) return reject(err);
 
-        req.session.message = { type: "success", text: "Checkout berhasil. Pesanan disimpan." };
-        return res.redirect("/order-user");
+            if (result.affectedRows === 0) {
+              return reject(
+                new Error("Stok tidak mencukupi untuk produk ID " + item.product_id)
+              );
+            }
+
+            resolve();
+          });
+        });
       });
+
+      Promise.all(updateStockPromises)
+        .then(() => {
+          // kalau stok aman → hapus draft
+          Draft.deleteByUser(userId, (errDel) => {
+            if (errDel) {
+              console.error("Gagal menghapus draft setelah checkout:", errDel);
+            }
+
+            req.session.message = {
+              type: "success",
+              text: "Checkout berhasil. Pesanan disimpan.",
+            };
+            return res.redirect("/order-user");
+          });
+        })
+        .catch((errStock) => {
+          console.error("STOCK ERROR:", errStock);
+
+          req.session.message = {
+            type: "error",
+            text: "Checkout gagal: stok salah satu produk sudah habis.",
+          };
+          return res.redirect("/cart");
+        });
     });
   });
 });
