@@ -89,3 +89,37 @@
   </div>
 </footer>
 <% } %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const emailInput = document.querySelector(".newsletter-form input");
+    const sendBtn = document.querySelector(".newsletter-form button");
+
+    // Function kirim email
+    function sendEmail() {
+      const email = emailInput.value.trim();
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Email tidak valid. Coba cek lagi ya!");
+        return;
+      }
+
+      const subject = encodeURIComponent("Info Seputar Lably");
+      const body = encodeURIComponent("Halo, saya ingin terhubung dengan Lably.");
+      const gmailURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+
+      window.open(gmailURL, "_blank");
+    }
+
+    sendBtn.addEventListener("click", sendEmail);
+    emailInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault(); 
+        sendEmail();
+      }
+    });
+  });
+</script>
+
+
