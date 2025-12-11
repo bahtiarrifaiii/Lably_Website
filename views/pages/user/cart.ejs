@@ -32,23 +32,23 @@
           </div>
           <div class="item-detail">
             <div class="type-wrap">
-              <p>Nama Product</p>
+              <p class="name">Nama Product</p>
               <span class="item-name"><%= item.name %></span>
             </div>
             <div class="type-wrap">
-              <p>Durasi Hari</p>
+              <p class="duration">Durasi Hari</p>
               <span class="item-days"><%= itemDays %> Hari</span>
             </div>
             <div class="type-wrap">
-              <p>Harga</p>
+              <p class="price">Harga</p>
               <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
             </div>
             <div class="type-wrap">
-              <p>Jumlah</p>
-              <span class="item-quantity"><%= item.quantity %>x</span>
+              <p class="quantity">Jumlah</p>
+              <span class="item-quantity"><%= item.quantity %></span>
             </div>
             <div class="type-wrap">
-              <p>Total</p>
+              <p class="total">Total</p>
               <span class="item-total">Rp<%=(Number(item.all_total) || (Number(item.price) * Number(item.quantity) * Number(itemDays))).toLocaleString()%>
               </span>
             </div>

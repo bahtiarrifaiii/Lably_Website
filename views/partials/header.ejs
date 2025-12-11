@@ -50,7 +50,7 @@ headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
 <% } %> <% } else if (headerTwoPages.includes(currentPage)) { %>
 <header class="main-header">
   <div class="header-content">
-    <a href="/catalogue" class="back-btn">
+    <a href="javascript:history.back()" class="back-btn">
       <i class="bi bi-arrow-left"></i>
       <span>Back</span>
     </a>

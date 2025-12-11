@@ -8,23 +8,18 @@
       <% } else { %>
         <% items.forEach(function(item){ %>
           <div class="cart-item">
-            <div class="item-product">
-              <div class="item-img-wrap">
-                <% /* placeholder image - replace with item image if available */ %>
-                <img src="<%= item.image %>" alt="<%= item.name %>">
-              </div>
-              <span class="item-name"><%= item.name %></span>
+            <div class="item-img-wrap">
+              <% /* placeholder image - replace with item image if available */ %>
+              <img src="<%= item.image %>" alt="<%= item.name %>">
             </div>
 
-            <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
-
-            <span class="item-quantity"><%= item.quantity %>x</span>
-
-            <span class="item-date"><%= item.borrow_date || '-' %> - <%= item.return_date || '-' %></span>
-
-            <span class="item-days"><%= item.days %> hari</span>
-
-            <span class="item-total">Rp<%= Number(item.itemTotal).toLocaleString() %></span>
+            <div class="item-product">
+              <span class="item-name"><%= item.name %></span>
+              <span class="item-price">Rp<%= Number(item.price).toLocaleString() %></span>
+              <span class="item-quantity"><%= item.quantity %>x</span>
+              <span class="item-days"><%= item.days %> hari</span>
+              <span class="item-total">Rp<%= Number(item.itemTotal).toLocaleString() %></span>
+            </div>
           </div>
         <% }); %>
       <% } %>
@@ -57,9 +52,6 @@
       </div>
     </div>
     <div class="btn-action">
-      <form method="post" action="/checkout/cancel" style="flex: 1;">
-        <button class="btn btn-secondary checkout-btn" type="submit">Cancel</button>
-      </form>
       <form method="post" action="/checkout/complete" style="flex: 1;">
         <button class="btn btn-primary checkout-btn" type="submit">Check Out</button>
       </form>

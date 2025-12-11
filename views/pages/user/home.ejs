@@ -68,36 +68,33 @@
 
     <div class="catalogue-filter">
       <div class="filter">
-
-        <button id="filter-best" class="filter-btn">Best Items</button>
-        <button id="filter-availability" class="filter-btn">Availability</button>
+        <button id="filter-availability" class="filter-btn active">
+          Availability
+        </button>
+        <button id="filter-best" class="filter-btn active">Best Items</button>
       </div>
+      <a href="/catalogue">See More</a>
+    </div>
 
-  <a href="/catalogue">See More</a>
-</div>
-
-          <div class="catalogue-grid">
-        <% catalogue.forEach(item => { %>
-        <a href="/product/<%= item.id %>">
-          <div class="catalogue-item">
-
-            <div class="item-img">
-              <img src="<%= item.img %>" alt="<%= item.name %>" />
-            </div>
-
-            <p class="item-name"><%= item.name %></p>
-            <p class="item-price">IDR <%= item.price.toLocaleString() %></p>
-
-            <% if (item.stock > 0) { %>
-              <span class="item-availability available">Available</span>
-            <% } else { %>
-              <span class="item-availability out">Out of Stock</span>
-            <% } %>
-
+    <div class="catalogue-grid">
+      <% catalogue.forEach(item => { %>
+      <a href="/product/<%= item.id %>">
+        <div class="catalogue-item">
+          <div class="item-img">
+            <img src="<%= item.img %>" alt="<%= item.name %>" />
           </div>
-        </a>
-        <% }) %>
-      </div>
+
+          <p class="item-name"><%= item.name %></p>
+          <p class="item-price">IDR <%= item.price.toLocaleString() %></p>
+
+          <% if (item.stock > 0) { %>
+          <p class="item-availability available">Available</p>
+          <% } else { %>
+          <p class="item-availability out">Out of Stock</p>
+          <% } %>
+        </div>
+      </a>
+      <% }) %>
     </div>
   </div>
 </section>
@@ -187,7 +184,7 @@
 
   function renderProducts(items) {
     grid.innerHTML = "";
-    items.forEach(item => {
+    items.forEach((item) => {
       grid.innerHTML += `
         <a href="/product/${item.id}">
           <div class="catalogue-item">
@@ -198,9 +195,10 @@
             <p class="item-name">${item.name}</p>
             <p class="item-price">IDR ${Number(item.price).toLocaleString()}</p>
 
-            ${item.stock > 0 
-              ? `<span class="item-availability available">Available</span>`
-              : `<span class="item-availability out">Out of Stock</span>`
+            ${
+              item.stock > 0
+                ? `<span class="item-availability available">Available</span>`
+                : `<span class="item-availability out">Out of Stock</span>`
             }
           </div>
         </a>
@@ -217,24 +215,20 @@
   // DEFAULT → Availability Active
   activate(availBtn);
   fetch("/api/availability")
-    .then(res => res.json())
-    .then(data => renderProducts(data));
+    .then((res) => res.json())
+    .then((data) => renderProducts(data));
 
   bestBtn.addEventListener("click", () => {
     activate(bestBtn);
     fetch("/api/best-items")
-      .then(res => res.json())
-      .then(data => renderProducts(data));
+      .then((res) => res.json())
+      .then((data) => renderProducts(data));
   });
 
   availBtn.addEventListener("click", () => {
     activate(availBtn);
     fetch("/api/availability")
-      .then(res => res.json())
-      .then(data => renderProducts(data));
+      .then((res) => res.json())
+      .then((data) => renderProducts(data));
   });
 </script>
-
-
-
-
