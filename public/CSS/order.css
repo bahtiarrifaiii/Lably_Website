@@ -319,34 +319,29 @@ th {
   color: var(--base-white);
 }
 
-.action .btn-use-reminder {
-  background-color: var(--primary);
-  transition: all 0.4s ease;
-  cursor: pointer;
-}
-
-.action .btn-use-reminder:hover {
-  background-color: var(--btn-hover-blue);
-}
-
+.action .btn-use-reminder,
 .action .btn-use-check {
-  background-color: var(--secondary);
-  transition: all 0.4s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
+  color: var(--base-white);
 }
 
-.action .btn-use-check:hover {
-  background-color: var(--btn-hover-orange);
+.action .btn-use-reminder.in-use,
+.action .btn-use-check.in-use {
+  background-color: #0b4487;
+}
+.action .btn-use-reminder.in-use:hover,
+.action .btn-use-check.in-use:hover {
+  filter: brightness(0.9);
 }
 
-.action .btn-overdue-reminder,
-.action .btn-overdue-check {
-  background-color: var(--btn-hover-blue);
+.action .btn-use-reminder.overdue,
+.action .btn-use-check.overdue {
+  background-color: #f1930b; 
 }
-
-.action .btn-overdue-reminder:hover,
-.action .btn-overdue-check:hover {
-  background-color: var(--primary);
+.action .btn-use-reminder.overdue:hover,
+.action .btn-use-check.overdue:hover {
+  filter: brightness(0.95);
 }
 
 /* OVERLAY */

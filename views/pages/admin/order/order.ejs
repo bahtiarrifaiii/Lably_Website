@@ -164,7 +164,7 @@
 
             <button
               type="button"
-              class="btn-use-reminder btn"
+              class="btn-use-reminder btn <%= o.status === 'overdue' ? 'overdue' : 'in-use' %>"
               onclick="showPopup('/order/reminder/<%= o.id %>',
                                         'Send Reminder',
                                         'Send reminder for this order?')"
@@ -174,7 +174,7 @@
 
             <button
               type="button"
-              class="btn-use-check check"
+              class="btn-use-check check <%= o.status === 'overdue' ? 'overdue' : 'in-use' %>"
               onclick="showPopup('/order/complete/<%= o.id %>', 
                                         'Complete Order',
                                         'Are you sure you want to mark this order as completed?')"
