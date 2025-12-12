@@ -109,9 +109,7 @@ router.get("/", passLoginStatus, async (req, res) => {
       ON p.id = t.id_products
       LIMIT 6
     `;
-  } 
-  
-  else if (filter === "available") {
+  } else if (filter === "available") {
     // Produk stok > 1
     sql = `
       SELECT id, name, price, image, stock
@@ -119,9 +117,7 @@ router.get("/", passLoginStatus, async (req, res) => {
       WHERE stock > 1
       LIMIT 6
     `;
-  }
-
-  else {
+  } else {
     // Default → ambil 6 produk pertama
     sql = `
       SELECT id, name, price, image, stock
@@ -137,21 +133,19 @@ router.get("/", passLoginStatus, async (req, res) => {
     }
 
     // mapping data untuk dikirim ke EJS
-    const catalogue = products.map(p => ({
+    const catalogue = products.map((p) => ({
       id: p.id,
       name: p.name,
       price: p.price,
-      img: p.image
-        ? `/uploads/${p.image}`
-        : "/Assets/default.png", // fallback
-      stock: p.stock
+      img: p.image ? `/uploads/${p.image}` : "/Assets/default.png", // fallback
+      stock: p.stock,
     }));
 
     const content = await ejs.renderFile(
       path.join(__dirname, "../views/pages/user/home.ejs"),
-      { 
+      {
         catalogue,
-        activeFilter: filter  // 🔥 biar tombol biru sesuai filter
+        activeFilter: filter, // 🔥 biar tombol biru sesuai filter
       }
     );
 
@@ -185,12 +179,12 @@ router.get("/api/best-items", (req, res) => {
   db.query(sql, (err, rows) => {
     if (err) return res.json([]);
 
-    const items = rows.map(p => ({
+    const items = rows.map((p) => ({
       id: p.id,
       name: p.name,
       price: p.price,
       img: p.image ? `/uploads/${p.image}` : "/Assets/default.png",
-      stock: p.stock
+      stock: p.stock,
     }));
 
     res.json(items);
@@ -208,12 +202,12 @@ router.get("/api/availability", (req, res) => {
   db.query(sql, (err, rows) => {
     if (err) return res.json([]);
 
-    const items = rows.map(p => ({
+    const items = rows.map((p) => ({
       id: p.id,
       name: p.name,
       price: p.price,
       img: p.image ? `/uploads/${p.image}` : "/Assets/default.png",
-      stock: p.stock
+      stock: p.stock,
     }));
 
     res.json(items);
@@ -222,7 +216,7 @@ router.get("/api/availability", (req, res) => {
 
 // ROUTE CATALOGUE
 router.get("/catalogue", (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
+  const page = parseInt(req.query.page) || 1;
   const limit = 9;
   const offset = (page - 1) * limit;
 
@@ -276,6 +270,10 @@ router.post("/hide-reminder", (req, res) => {
   req.session.hideReminder = true;
   return res.json({ success: true });
 });
+
+/* ============================================
+  PAGES (LOGIN REQUIRED)
+============================================ */
 
 // ROUTE PRODUCT
 router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
@@ -516,10 +514,6 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
   }
 });
 
-/* ============================================
-  PAGES (LOGIN REQUIRED)
-============================================ */
-
 // CART PAGE
 router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
   const userId = req.session.user && req.session.user.id;
@@ -535,7 +529,9 @@ router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
       product_id: r.id_products,
       name: r.product_name || "Produk",
       price: Number(r.price) || 0,
-      image: r.product_image ? `/uploads/${r.product_image}` : "/Assets/default.png",
+      image: r.product_image
+        ? `/uploads/${r.product_image}`
+        : "/Assets/default.png",
       quantity: Number(r.qty) || 1,
 
       // 🔥 format tanggal (HANYA YYYY-MM-DD)
@@ -631,7 +627,9 @@ router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
       return {
         product_id: r.id_products,
         name: r.product_name || "Produk",
-        image: r.product_image ? `/uploads/${r.product_image}` : "/Assets/default.png",
+        image: r.product_image
+          ? `/uploads/${r.product_image}`
+          : "/Assets/default.png",
         price,
         quantity: qty,
 
@@ -671,7 +669,6 @@ router.post("/checkout/cancel", isLoggedIn, (req, res) => {
   return res.redirect("/catalogue");
 });
 
-
 // Finalize checkout: create peminjaman rows for the logged-in user
 router.post("/checkout/complete", isLoggedIn, (req, res) => {
   const userId = req.session.user && req.session.user.id;
@@ -683,12 +680,18 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
   Draft.getByUser(userId, (err, rows) => {
     if (err) {
       console.error("ERROR get draft for complete:", err);
-      req.session.message = { type: "error", text: "Gagal memproses checkout." };
+      req.session.message = {
+        type: "error",
+        text: "Gagal memproses checkout.",
+      };
       return res.redirect("/checkout");
     }
 
     if (!rows || rows.length === 0) {
-      req.session.message = { type: "error", text: "Tidak ada item untuk checkout." };
+      req.session.message = {
+        type: "error",
+        text: "Tidak ada item untuk checkout.",
+      };
       return res.redirect("/cart");
     }
 
@@ -726,7 +729,10 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
     Order.createOrders(userId, itemsToInsert, (err2, result) => {
       if (err2) {
         console.error("ERROR creating orders:", err2);
-        req.session.message = { type: "error", text: "Gagal menyimpan pesanan." };
+        req.session.message = {
+          type: "error",
+          text: "Gagal menyimpan pesanan.",
+        };
         return res.redirect("/checkout");
       }
 
@@ -740,17 +746,23 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
             SET stock = stock - ?
             WHERE id = ? AND stock >= ?
           `;
-          db.query(sql, [item.quantity, item.product_id, item.quantity], (err, result) => {
-            if (err) return reject(err);
+          db.query(
+            sql,
+            [item.quantity, item.product_id, item.quantity],
+            (err, result) => {
+              if (err) return reject(err);
 
-            if (result.affectedRows === 0) {
-              return reject(
-                new Error("Stok tidak mencukupi untuk produk ID " + item.product_id)
-              );
+              if (result.affectedRows === 0) {
+                return reject(
+                  new Error(
+                    "Stok tidak mencukupi untuk produk ID " + item.product_id
+                  )
+                );
+              }
+
+              resolve();
             }
-
-            resolve();
-          });
+          );
         });
       });
 
@@ -766,7 +778,7 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
               type: "success",
               text: "Checkout berhasil. Pesanan disimpan.",
             };
-            return res.redirect("/order-user");
+            return res.redirect("/notif-checkout");
           });
         })
         .catch((errStock) => {
@@ -779,6 +791,30 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
           return res.redirect("/cart");
         });
     });
+  });
+});
+
+// NOTIF CHECKOUT PAGE
+router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/notif-checkout.ejs")
+  );
+
+  res.render("layouts/forms", {
+    title: "Payment Success | LabLy",
+    currentPage: "notif-checkout",
+    showFooter: false,
+
+    meta: `
+        <meta name="description" content="Pembayaran berhasil di LabLy." />
+        <meta name="keywords" content="LabLy, checkout success" />
+      `,
+
+    style: `
+        <link rel="stylesheet" href="/CSS/notif-checkout.css" />
+      `,
+
+    content,
   });
 });
 
@@ -819,7 +855,7 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
     // Render EJS dengan data orders
     const content = await ejs.renderFile(
       path.join(__dirname, "../views/pages/user/order-user.ejs"),
-      { orders }   // KIRIM DATA KE EJS
+      { orders } // KIRIM DATA KE EJS
     );
 
     res.render("layouts/main", {
@@ -919,9 +955,13 @@ router.get("/order", isAdmin, (req, res) => {
         return res.status(500).send("Error loading totals.");
       }
 
-      const totalPending = allOrders.filter(o => o.status === "pending").length;
-      const totalLoaned  = allOrders.filter(o => o.status === "in use").length;
-      const totalOverdue = allOrders.filter(o => o.status === "overdue").length;
+      const totalPending = allOrders.filter(
+        (o) => o.status === "pending"
+      ).length;
+      const totalLoaned = allOrders.filter((o) => o.status === "in use").length;
+      const totalOverdue = allOrders.filter(
+        (o) => o.status === "overdue"
+      ).length;
 
       User.getAll((errUsers, users) => {
         const totalCustomers = users.length;
@@ -931,14 +971,14 @@ router.get("/order", isAdmin, (req, res) => {
           {
             users,
             totalCustomers,
-            orders: filteredOrders,  // tampilkan di tabel
+            orders: filteredOrders, // tampilkan di tabel
             totalPending,
             totalLoaned,
             totalOverdue,
             search,
             filter,
             start,
-            end
+            end,
           },
           (err, content) => {
             res.render("layouts/atmin", {
@@ -958,30 +998,36 @@ router.get("/order", isAdmin, (req, res) => {
 
 // APPROVE → ubah pending → in use
 router.post("/order/approve/:id", isAdmin, (req, res) => {
-  db.query("UPDATE peminjaman SET status = 'in use' WHERE id = ?", 
-    [req.params.id], () => res.redirect("/order"));
+  db.query(
+    "UPDATE peminjaman SET status = 'in use' WHERE id = ?",
+    [req.params.id],
+    () => res.redirect("/order")
+  );
 });
 
 // REJECT → hapus data
 router.post("/order/reject/:id", isAdmin, (req, res) => {
-  db.query("DELETE FROM peminjaman WHERE id = ?", 
-    [req.params.id], () => res.redirect("/order"));
+  db.query("DELETE FROM peminjaman WHERE id = ?", [req.params.id], () =>
+    res.redirect("/order")
+  );
 });
 
 // COMPLETE → ubah status jadi completed
 router.post("/order/complete/:id", isAdmin, (req, res) => {
   const id = req.params.id;
 
-  db.query("UPDATE peminjaman SET status = 'completed' WHERE id = ?", [id], () => {
-  db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id]);
+  db.query(
+    "UPDATE peminjaman SET status = 'completed' WHERE id = ?",
+    [id],
+    () => {
+      db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id]);
 
-
-    // 🔥 ketika order selesai -> hapus reminder biar tidak muncul lagi
-    db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
-      return res.redirect("/order");
-    });
-
-  });
+      // 🔥 ketika order selesai -> hapus reminder biar tidak muncul lagi
+      db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
+        return res.redirect("/order");
+      });
+    }
+  );
 });
 
 // KIRIM REMINDER
@@ -1001,7 +1047,6 @@ router.post("/order/reminder/:id", isAdmin, (req, res) => {
     res.redirect("/order");
   });
 });
-
 
 router.get("/order-completed", isAdmin, (req, res) => {
   const { search, filter, start, end } = req.query;
@@ -1075,7 +1120,10 @@ router.get("/order-completed", isAdmin, (req, res) => {
           const totalCustomers = users.length;
 
           ejs.renderFile(
-            path.join(__dirname, "../views/pages/admin/order/order_completed.ejs"),
+            path.join(
+              __dirname,
+              "../views/pages/admin/order/order_completed.ejs"
+            ),
             {
               users,
               totalCustomers,
@@ -1086,7 +1134,7 @@ router.get("/order-completed", isAdmin, (req, res) => {
               search,
               filter,
               start,
-              end
+              end,
             },
             (err, content) => {
               res.render("layouts/atmin", {
@@ -1233,7 +1281,8 @@ router.get("/analytics", isAdmin, (req, res) => {
                   const monthlyData = new Array(12).fill(0);
                   (monthlyRows || []).forEach((r) => {
                     const m = Number(r.mon);
-                    if (!isNaN(m) && m >= 1 && m <= 12) monthlyData[m - 1] = r.cnt;
+                    if (!isNaN(m) && m >= 1 && m <= 12)
+                      monthlyData[m - 1] = r.cnt;
                   });
 
                   ejs.renderFile(

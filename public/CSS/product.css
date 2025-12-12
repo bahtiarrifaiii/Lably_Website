@@ -47,7 +47,7 @@
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .price h2 {
@@ -61,6 +61,17 @@
   font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 500;
   color: #888;
+}
+
+.stock {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stock h3 {
+  color: var(--primary);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
 }
 
 .item-content-wrap p:not(.category) {
@@ -183,10 +194,19 @@
 @media screen and (max-width: 600px) {
   .item-content-wrap h1 {
     font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .price {
+    margin-bottom: 0.3rem;
   }
 
   .price h2 {
     font-size: 1.3rem;
+  }
+
+  .stock h3 {
+    font-size: 1rem;
   }
 
   .qty-btn,

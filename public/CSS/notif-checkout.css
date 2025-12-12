@@ -1,0 +1,109 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.card-container {
+  max-width: 35rem;
+  width: 90%;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.status-icon {
+  max-width: 15rem;
+  height: 15rem;
+  border-radius: 50%;
+  background-color: #e8f5e9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-icon img {
+  max-width: 60%;
+  height: auto;
+}
+
+.title {
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  color: var(--base-black);
+  margin: 0.5rem;
+}
+
+.message {
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  color: #777;
+  line-height: 1.4;
+  margin-bottom: 2rem;
+}
+
+.button-wrap {
+  max-width: 20rem;
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+
+.button-wrap .btn {
+  width: 100%;
+  padding: 0.8rem 2rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  font-weight: 600;
+  border-radius: 1.5rem;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+}
+
+.button-wrap .bck-shop {
+  border: 2px solid #66bb6a;
+  background-color: transparent;
+  color: #66bb6a;
+}
+
+.bck-shop:hover {
+  background-color: #e8f5e9;
+  color: #55a25e;
+}
+
+.cntn-button {
+  background-color: #66bb6a;
+  color: var(--base-white);
+}
+
+.cntn-button:hover {
+  background-color: #55a25e;
+}
+
+@media screen and (max-width: 600px) {
+  .status-icon {
+    max-width: 12rem;
+    height: 12rem;
+  }
+
+  .status-icon img {
+    max-width: 45%;
+    height: auto;
+  }
+
+  .title {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+  }
+
+  .message {
+    font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+  }
+
+  .button-wrap .btn {
+    padding: 0.5rem 1.1rem;
+    font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+  }
+}
