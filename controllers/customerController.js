@@ -11,7 +11,7 @@ module.exports = {
         const dateEnd = req.query.dateEnd || "";
         const page = parseInt(req.query.page) || 1;
 
-        const limit = 10;
+        const limit = 5; // show 5 customers per page
         const offset = (page - 1) * limit;
 
         Customer.countFiltered(search, status, dateStart, dateEnd, (err, countResult) => {
@@ -32,6 +32,7 @@ module.exports = {
                         totalCustomers,
                         page,
                         totalPages,
+                        limit,
                         search,
                         status,
                         dateStart,

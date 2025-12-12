@@ -65,7 +65,7 @@
         <tbody>
             <% users.forEach((u, index) => { %>
                 <tr class="<%= index % 2 === 1 ? 'even' : '' %>">
-                    <td><%= index + 1 + ((page - 1) * 10) %></td>
+                    <td><%= index + 1 + ((page - 1) * limit) %></td>
                     <td><%= u.username %></td>
                     <td><%= u.email %></td>
                     <td class="<%= u.status === 'inactive' ? 'status-inactive' : 'status-active' %>">
@@ -78,6 +78,7 @@
     </table>
 </div>
 
+<% if (totalCustomers > 5) { %>
 <div class="pagination">
     <% if (page > 1) { %>
         <a href="/customer?page=<%= page - 1 %>&search=<%= search %>&status=<%= status %>&dateStart=<%= dateStart %>&dateEnd=<%= dateEnd %>" class="page-prev">
@@ -100,6 +101,7 @@
         </a>
     <% } %>
 </div>
+<% } %>
 
 <script>
     document.getElementById("statusFilter").addEventListener("change", function () {
