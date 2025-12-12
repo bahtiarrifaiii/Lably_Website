@@ -766,7 +766,7 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
               type: "success",
               text: "Checkout berhasil. Pesanan disimpan.",
             };
-            return res.redirect("/order-user");
+            return res.redirect("/notif-checkout");
           });
         })
         .catch((errStock) => {
@@ -780,6 +780,33 @@ router.post("/checkout/complete", isLoggedIn, (req, res) => {
         });
     });
   });
+});
+
+// NOTIF CHECKOUT PAGE
+router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
+  try {
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/notif-checkout.ejs"),
+      {}
+    );
+
+    return res.render("layouts/main", {
+      title: "Payment Success | Lably",
+      currentPage: "notif-checkout",
+      showFooter: false,
+      meta: `
+        <meta name="description" content="Notifikasi Checkout laboratorium LabLy." />
+        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+      `,
+      style: `
+        <link rel="stylesheet" href="/CSS/notif-checkout.css" />
+      `,
+      content,
+    });
+  } catch (err) {
+    console.error("Error rendering notif-checkout:", err);
+    return res.redirect("/order-user");
+  }
 });
 
 // ORDER PAGE
