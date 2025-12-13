@@ -492,3 +492,52 @@ th {
   }
 }
 
+.page-prev {
+  background-color: transparent;
+  border: none;
+  color: var(--primary);
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.4s ease;
+}
+
+.page-prev i {
+  font-size: 0.7rem;
+  margin-right: 0.4rem;
+}
+
+.page-next,
+.page-prev {
+  border: none;
+  background: transparent;
+  color: var(--primary);
+}
+
+.page-next:hover,
+.page-prev:hover {
+  color: var(--btn-hover-blue);
+}
+
+.page-number {
+  background-color: white;
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.4s ease;
+}
+
+.page-number:hover {
+  color: var(--base-white);
+  background-color: var(--btn-hover-blue);
+  border-color: var(--btn-hover-blue);
+}
+
+.page-number.active {
+  background-color: var(--primary);
+  color: var(--base-white);
+}
