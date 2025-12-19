@@ -220,6 +220,9 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   if (qtyDisplay && plus && minus && quantityForms.length > 0) {
+    const productContainer = document.querySelector('.container.product-detail');
+    const maxStock = productContainer ? (parseInt(productContainer.dataset.stock) || Infinity) : Infinity;
+
     // Fungsi untuk memperbarui semua hidden input QTY
     function updateHiddenQties() {
       const currentQty = qtyDisplay.value;
@@ -228,10 +231,34 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
+    // Utility: tampilkan popup kecil di client
+    function showClientPopup(type, text) {
+      const existing = document.getElementById('client-popup');
+      if (existing) existing.remove();
+      const div = document.createElement('div');
+      div.id = 'client-popup';
+      div.className = `popup ${type}`;
+      div.style.position = 'fixed';
+      div.style.top = '6rem';
+      div.style.right = '1rem';
+      div.style.zIndex = 2000;
+      div.style.padding = '10px 14px';
+      div.style.borderRadius = '6px';
+      div.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+      div.innerText = text;
+      document.body.appendChild(div);
+      setTimeout(() => { const p = document.getElementById('client-popup'); if (p) p.remove(); }, 3500);
+    }
+
     // Listener tombol PLUS
     plus.addEventListener("click", () => {
-      qtyDisplay.value = parseInt(qtyDisplay.value) + 1;
-      updateHiddenQties();
+      const current = parseInt(qtyDisplay.value);
+      if (current < maxStock) {
+        qtyDisplay.value = current + 1;
+        updateHiddenQties();
+      } else {
+        showClientPopup('error', 'Jumlah yang diminta melebihi stok tersedia.');
+      }
     });
 
     // Listener tombol MINUS
@@ -244,7 +271,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Listener submit pada semua form yang relevan
     quantityForms.forEach((form) => {
-      form.addEventListener("submit", updateHiddenQties); // pastikan QTY diperbarui saat submit
+      form.addEventListener("submit", (e) => {
+        updateHiddenQties(); // pastikan QTY diperbarui saat submit
+        if (Number(qtyDisplay.value) > maxStock) {
+          e.preventDefault();
+          showClientPopup('error', 'Jumlah yang diminta melebihi stok tersedia.');
+        }
+      });
     });
 
     // Panggil sekali untuk inisialisasi

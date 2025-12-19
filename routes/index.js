@@ -170,20 +170,25 @@ router.get("/", passLoginStatus, async (req, res) => {
 
 router.get("/api/best-items", (req, res) => {
   const sql = `
-    SELECT p.id, p.name, p.price, p.image, p.stock
-    FROM products p
-    JOIN (
-      SELECT id_products, COUNT(*) AS total
-      FROM peminjaman
-      GROUP BY id_products
-      HAVING total > 3
-    ) AS t
-    ON p.id = t.id_products
-    LIMIT 6
+    SELECT 
+      pr.id,
+      pr.name,
+      pr.price,
+      pr.image,
+      pr.stock,
+      SUM(p.qty) AS total_qty
+    FROM peminjaman p
+    JOIN products pr ON p.id_products = pr.id
+    GROUP BY pr.id, pr.name, pr.price, pr.image, pr.stock
+    ORDER BY total_qty DESC
+    LIMIT 3
   `;
 
   db.query(sql, (err, rows) => {
-    if (err) return res.json([]);
+    if (err) {
+      console.error(err);
+      return res.json([]);
+    }
 
     const items = rows.map(p => ({
       id: p.id,
@@ -192,7 +197,6 @@ router.get("/api/best-items", (req, res) => {
       img: p.image ? `/uploads/${p.image}` : "/Assets/default.png",
       stock: p.stock
     }));
-
     res.json(items);
   });
 });
@@ -299,9 +303,13 @@ router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
 
     const product = results[0];
 
+    // Ambil pesan popup (jika ada) dari session, lalu reset
+    const popupMessage = req.session.message || null;
+    req.session.message = null;
+
     const content = await ejs.renderFile(
       path.join(__dirname, "../views/pages/user/product.ejs"),
-      { product }
+      { product, message: popupMessage, showPopup: !!popupMessage }
     );
 
     res.render("layouts/main", {
@@ -313,6 +321,8 @@ router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
       `,
       style: `<link rel="stylesheet" href="/CSS/product.css" />`,
       content,
+      message: popupMessage,
+      showPopup: !!popupMessage,
     });
   });
 });
@@ -452,12 +462,19 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return res.redirect("/catalogue");
       }
 
+      // Validasi: pastikan quantity tidak melebihi stock
+      const qtyNum = Number(quantity) || 1;
+      if (qtyNum <= 0 || qtyNum > Number(product.stock)) {
+        req.session.message = { type: "error", text: "Jumlah yang diminta melebihi stok tersedia." };
+        return res.redirect(`/product/${product.id}`);
+      }
+
       const draftData = {
         product_id: product.id,
         price: product.price, // simpan harga satuan
         borrow_date: borrow_date || null,
         return_date: return_date || null,
-        quantity: Number(quantity) || 1,
+        quantity: qtyNum,
         phone: phone || "",
         address: address || "",
       };
@@ -488,12 +505,19 @@ router.post("/submit-data", isLoggedIn, (req, res) => {
         return res.redirect("/catalogue");
       }
 
+      // Validasi: pastikan quantity tidak melebihi stock
+      const qtyNum = Number(quantity) || 1;
+      if (qtyNum <= 0 || qtyNum > Number(product.stock)) {
+        req.session.message = { type: "error", text: "Jumlah yang diminta melebihi stok tersedia." };
+        return res.redirect(`/product/${product.id}`);
+      }
+
       const draftData = {
         product_id: product.id,
         price: product.price,
         borrow_date: borrow_date || null,
         return_date: return_date || null,
-        quantity: Number(quantity) || 1,
+        quantity: qtyNum,
         phone: phone || "",
         address: address || "",
       };

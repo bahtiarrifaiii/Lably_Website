@@ -1,4 +1,11 @@
-<div class="container product-detail">
+<div class="container product-detail" data-stock="<%= product.stock %>">
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="popup <%= message.type %>" id="product-popup" style="position:fixed; top:6rem; right:1rem; z-index:2000; padding:12px 18px; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,0.12);">
+      <%= message.text %>
+    </div>
+    <script>setTimeout(()=>{const p=document.getElementById('product-popup'); if(p) p.remove()}, 3500);</script>
+  <% } %>
+
   <div class="item-img-wrap">
     <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" />
   </div>
