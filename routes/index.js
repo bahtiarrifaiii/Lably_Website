@@ -1015,15 +1015,39 @@ router.post("/order/reject/:id", isAdmin, (req, res) => {
 router.post("/order/complete/:id", isAdmin, (req, res) => {
   const id = req.params.id;
 
-  db.query("UPDATE peminjaman SET status = 'completed' WHERE id = ?", [id], () => {
-  db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id]);
-
-
-    // 🔥 ketika order selesai -> hapus reminder biar tidak muncul lagi
-    db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
+  // Ambil data peminjaman dulu (product id, qty, status)
+  db.query("SELECT id_products, qty, status FROM peminjaman WHERE id = ?", [id], (err, results) => {
+    if (err) {
+      console.error("ERROR fetching peminjaman:", err);
       return res.redirect("/order");
-    });
+    }
 
+    if (!results || results.length === 0) {
+      req.session.message = { type: "error", text: "Peminjaman tidak ditemukan." };
+      return res.redirect("/order");
+    }
+
+    const row = results[0];
+    const productId = row.id_products;
+    const qty = Number(row.qty) || 0;
+
+    if (row.status === 'completed') {
+      db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
+        return res.redirect("/order");
+      });
+      return;
+    }
+    db.query("UPDATE products SET stock = stock + ? WHERE id = ?", [qty, productId], (err2) => {
+      if (err2) {
+        console.error("ERROR restoring stock:", err2);
+      }
+      db.query("UPDATE peminjaman SET status = 'completed' WHERE id = ?", [id], () => {
+        // hapus reminder agar tidak muncul lagi
+        db.query("DELETE FROM reminder WHERE id_peminjaman = ?", [id], () => {
+          return res.redirect("/order");
+        });
+      });
+    });
   });
 });
 
