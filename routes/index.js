@@ -227,11 +227,13 @@ router.get("/catalogue", (req, res) => {
   const offset = (page - 1) * limit;
 
   const search = req.query.search || "";
+  const category = req.query.category || "all";
+  const selectedPrice = req.query.price || "all";
 
-  Product.getPaginated(search, limit, offset, (err, products) => {
+  Product.getPaginated(search, limit, offset, category, (err, products) => {
     if (err) return res.status(500).send("Error fetching products");
 
-    Product.count(search, (err2, result) => {
+    Product.count(search, category, (err2, result) => {
       if (err2) return res.status(500).send("Error counting products");
 
       const totalProducts = result[0].total;
@@ -247,6 +249,9 @@ router.get("/catalogue", (req, res) => {
             categories,
             currentPage: page,
             totalPages,
+            selectedCategory: category,
+            selectedPrice,
+            search
           },
           (err4, content) => {
             if (err4) {

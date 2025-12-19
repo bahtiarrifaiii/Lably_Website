@@ -22,8 +22,9 @@ const Product = {
     database.query(query, [id], callback);
   },
 
-  // LIST + SEARCH + PAGINATION — FIXED VERSION
-  getPaginated: (search, limit, offset, callback) => {
+  // LIST + SEARCH + PAGINATION — SUPPORT CATEGORY FILTER
+  // signature: getPaginated(search, limit, offset, category, callback)
+  getPaginated: (search, limit, offset, category, callback) => {
     let query = `
       SELECT p.*, c.name AS category_name
       FROM products p
@@ -31,18 +32,27 @@ const Product = {
     `;
     const params = [];
 
+    const whereClauses = [];
+
     if (search && search.trim() !== "") {
-      query += `
-        WHERE (
+      whereClauses.push(`(
              p.name LIKE ?
           OR CAST(p.stock AS CHAR) LIKE ?
           OR p.kondisi LIKE ?
           OR CAST(p.price AS CHAR) LIKE ?
           OR c.name LIKE ?
-        )
-      `;
+        )`);
       const like = `%${search}%`;
       params.push(like, like, like, like, like);
+    }
+
+    if (category && String(category).trim() !== "" && String(category).trim() !== "all") {
+      whereClauses.push(`p.id_category = ?`);
+      params.push(category);
+    }
+
+    if (whereClauses.length > 0) {
+      query += '\n      WHERE ' + whereClauses.join(' AND ') + '\n    ';
     }
 
     query += `
@@ -55,8 +65,9 @@ const Product = {
     database.query(query, params, callback);
   },
 
-  // COUNT — FIXED VERSION
-  count: (search, callback) => {
+  // COUNT — SUPPORT CATEGORY FILTER
+  // signature: count(search, category, callback)
+  count: (search, category, callback) => {
     let query = `
       SELECT COUNT(*) AS total
       FROM products p
@@ -64,18 +75,27 @@ const Product = {
     `;
     const params = [];
 
+    const whereClauses = [];
+
     if (search && search.trim() !== "") {
-      query += `
-        WHERE (
+      whereClauses.push(`(
              p.name LIKE ?
           OR CAST(p.stock AS CHAR) LIKE ?
           OR p.kondisi LIKE ?
           OR CAST(p.price AS CHAR) LIKE ?
           OR c.name LIKE ?
-        )
-      `;
+        )`);
       const like = `%${search}%`;
       params.push(like, like, like, like, like);
+    }
+
+    if (category && String(category).trim() !== "" && String(category).trim() !== "all") {
+      whereClauses.push(`p.id_category = ?`);
+      params.push(category);
+    }
+
+    if (whereClauses.length > 0) {
+      query += '\n      WHERE ' + whereClauses.join(' AND ') + '\n    ';
     }
 
     database.query(query, params, callback);

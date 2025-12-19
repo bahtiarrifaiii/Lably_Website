@@ -22,11 +22,11 @@
           id="filterCategory"
           aria-label="Filter by Category"
         >
-          <option value="all" selected>Categories</option>
+          <option value="all" <%= (!selectedCategory || selectedCategory === 'all') ? 'selected' : '' %>>Categories</option>
 
           <!-- kategori otomatis dari database -->
           <% categories.forEach(cat => { %>
-          <option value="<%= cat.id %>"><%= cat.name %></option>
+          <option value="<%= cat.id %>" <%= (String(selectedCategory) === String(cat.id)) ? 'selected' : '' %>><%= cat.name %></option>
           <% }) %>
         </select>
         <i class="bi bi-chevron-down"></i>
@@ -39,11 +39,11 @@
           id="filterPrice"
           aria-label="Filter by Price"
         >
-          <option value="all" selected>Price</option>
-          <option value="0-500000">IDR 0 - 500rb</option>
-          <option value="500001-1000000">IDR 500rb - 1jt</option>
-          <option value="1000001-2000000">IDR 1jt - 2jt</option>
-          <option value="2000001-above">IDR 2jt+</option>
+          <option value="all" <%= (!selectedPrice || selectedPrice === 'all') ? 'selected' : '' %>>Price</option>
+          <option value="0-500000" <%= (selectedPrice === '0-500000') ? 'selected' : '' %>>IDR 0 - 500rb</option>
+          <option value="500001-1000000" <%= (selectedPrice === '500001-1000000') ? 'selected' : '' %>>IDR 500rb - 1jt</option>
+          <option value="1000001-2000000" <%= (selectedPrice === '1000001-2000000') ? 'selected' : '' %>>IDR 1jt - 2jt</option>
+          <option value="2000001-above" <%= (selectedPrice === '2000001-above') ? 'selected' : '' %>>IDR 2jt+</option>
         </select>
         <i class="bi bi-chevron-down"></i>
       </div>
@@ -60,6 +60,8 @@
         aria-label="Search items"
       />
     </div>
+
+    <div id="filterDebug" class="filter-debug" style="margin-top:12px;font-size:0.95rem;color:#666;"></div>
   </div>
 
   <!-- PRODUCT LIST -->
@@ -122,22 +124,45 @@
     const priceSelect = document.getElementById("filterPrice");
     const searchInput = document.getElementById("filterSearch");
     const items = document.querySelectorAll(".catalogue-item");
+    const debugEl = document.getElementById("filterDebug");
+
+    function getCounts() {
+      const counts = {};
+      items.forEach((it) => {
+        const c = it.dataset.category || "<empty>";
+        counts[c] = (counts[c] || 0) + 1;
+      });
+      return counts;
+    }
 
     function applyFilters() {
-      const category = categorySelect.value;
+      const categoryValue = categorySelect.value;
+      const selectedText = categorySelect.options[categorySelect.selectedIndex]?.text || "";
       const priceRange = priceSelect.value;
       const searchTerm = searchInput.value.toLowerCase();
 
-      items.forEach((item) => {
+      // diagnostics
+      let matchedCount = 0;
+      const sample = [];
+
+      items.forEach((item, idx) => {
         const itemCategory = item.dataset.category;
         const itemPrice = Number(item.dataset.price);
         const itemName = item.dataset.name;
 
         let show = true;
 
-        /* CATEGORY */
-        if (category !== "all") {
-          show = show && itemCategory === category;
+        /* CATEGORY (type-safe comparison) */
+        if (categoryValue !== "all") {
+          // prefer numeric comparison when possible
+          const catNum = Number(categoryValue);
+          const itemCatNum = Number(itemCategory);
+
+          if (!isNaN(catNum) && !isNaN(itemCatNum)) {
+            show = show && itemCatNum === catNum;
+          } else {
+            show = show && String(itemCategory).trim() === String(categoryValue).trim();
+          }
         }
 
         /* PRICE */
@@ -158,11 +183,45 @@
 
         /* SHOW / HIDE */
         item.parentElement.style.display = show ? "block" : "none";
+
+        if (show) matchedCount++;
+        if (sample.length < 6) sample.push({ idx, itemCategory, itemName, show });
       });
+
+      const counts = getCounts();
+      const countsText = Object.entries(counts)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(', ');
+      if (debugEl) debugEl.textContent = debugText;
+      console.log("Filter diagnostics:", debugText, sample);
     }
 
-    categorySelect.addEventListener("change", applyFilters);
+    categorySelect.addEventListener("change", () => {
+      const cat = categorySelect.value;
+      const params = new URLSearchParams(window.location.search);
+
+      if (cat === "all") params.delete("category");
+      else params.set("category", cat);
+
+      // preserve search and price filters when navigating
+      const s = searchInput.value.trim();
+      if (s) params.set("search", s); else params.delete("search");
+
+      const p = priceSelect.value;
+      if (p && p !== "all") params.set("price", p); else params.delete("price");
+
+      // reset to first page
+      params.set("page", "1");
+
+      // navigate
+      window.location = "/catalogue?" + params.toString();
+    });
+
+    // still support client-side for price and search within the loaded page
     priceSelect.addEventListener("change", applyFilters);
     searchInput.addEventListener("keyup", applyFilters);
+
+    // apply filters initially in case a value is pre-selected
+    applyFilters();
   });
 </script>
