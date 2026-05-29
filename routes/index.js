@@ -858,10 +858,14 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       pr.image AS product_image,   
       pr.price AS product_price, 
       
-      r.id AS reminder_id 
+      r.reminder_id AS reminder_id 
     FROM peminjaman p
     LEFT JOIN products pr ON p.id_products = pr.id
-    LEFT JOIN reminder r ON r.id_peminjaman = p.id
+    LEFT JOIN (
+      SELECT id_peminjaman, MAX(id) AS reminder_id
+      FROM reminder
+      GROUP BY id_peminjaman
+    ) r ON r.id_peminjaman = p.id
     WHERE p.id_user = ?
     ORDER BY p.id DESC
   `;
