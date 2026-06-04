@@ -861,7 +861,6 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
   const orderSpecificScript = "/JS/user/order-user.js";
   const userId = req.session.user.id;
 
-  // Ambil data peminjaman sesuai user
   const sql = `
     SELECT 
       p.id,
@@ -873,10 +872,10 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
 
       pr.name AS product_name,
-      pr.image AS product_image,   
-      pr.price AS product_price, 
-      
-      r.reminder_id AS reminder_id 
+      pr.image AS product_image,
+      pr.price AS product_price,
+
+      r.reminder_id AS reminder_id
     FROM peminjaman p
     LEFT JOIN products pr ON p.id_products = pr.id
     LEFT JOIN (
@@ -894,28 +893,26 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       return res.status(500).send("Error loading orders.");
     }
 
-    // Render EJS dengan data orders
     const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/order-user.ejs"),
-      { orders }, // KIRIM DATA KE EJS
+      path.join(__dirname, "../views/pages/user/profile/order.ejs"),{
+      orders,
+      user: req.session.user, 
+    }
     );
 
-    res.render("layouts/main", {
-      title: "Order | Lably Official Web",
-      currentPage: "order-user",
-      showFooter: false,
-
-      meta: `
-        <meta name="description" content="List Order alat laboratorium LabLy." />
-        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-      `,
+    res.render("layouts/profile", {
+      title: "My Orders | Lably",
 
       style: `
+        <link rel="stylesheet" href="/CSS/dashboard-profile.css" />
         <link rel="stylesheet" href="/CSS/order-user.css" />
       `,
 
       scriptFile: orderSpecificScript,
+
       content,
+
+      currentPage: req.path,
     });
   });
 });

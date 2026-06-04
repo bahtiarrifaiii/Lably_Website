@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const filterButtons = document.querySelectorAll(".filter-btn");
   const orderCards = document.querySelectorAll(".order-card");
-  const mainContent = document.querySelector(".container.main-content");
+  const mainContent = document.querySelector(".main-content");
   const paginationContainer = document.querySelector(".pagination");
 
   const filterMap = {
@@ -129,3 +129,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyFilter("all");
 });
+
+const notifBtn = document.getElementById("notifBtn");
+const reminderPopup = document.getElementById("reminderPopup");
+
+if (notifBtn && reminderPopup) {
+  notifBtn.addEventListener("click", () => {
+    if (reminderPopup.style.display === "block") {
+      reminderPopup.style.display = "none";
+    } else {
+      reminderPopup.style.display = "block";
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      !notifBtn.contains(e.target) &&
+      !reminderPopup.contains(e.target)
+    ) {
+      reminderPopup.style.display = "none";
+    }
+  });
+}

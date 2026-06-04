@@ -8,12 +8,14 @@
       <span>Dashboard</span>
     </a>
   </div>
-  <div class="menu Customers">
-    <a href="/#">
-      <i class="bi bi-cart"></i>
-      <span>My Orders</span>
-    </a>
-  </div>
+  <div
+  class="menu orders <%= currentPage === '/order-user' ? 'active' : '' %>"
+>
+  <a href="/order-user">
+    <i class="bi bi-cart"></i>
+    <span>My Orders</span>
+  </a>
+</div>
   <div
     class="menu profile <%= currentPage === '/profile-customer' ? 'active' : '' %>"
   >

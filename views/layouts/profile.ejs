@@ -30,5 +30,8 @@
             <%- content %>
         </div>
     </div>
+    <% if (typeof scriptFile !== 'undefined' && scriptFile) { %>
+    <script src="<%= scriptFile %>"></script>
+    <% } %>
 </body>
 </html>
