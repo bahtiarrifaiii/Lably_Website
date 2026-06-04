@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 100vh;
+  min-height: 85vh;
   padding: 2rem 0;
 }
 
@@ -21,16 +21,18 @@
 
 .hero-text h1 {
   color: var(--primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  font-size: clamp(1.8rem, 2.8vw, 2.6rem);
 }
 
 .hero-text p {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   text-align: justify;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
 }
 
 .hero-image {
-  width: 40%;
+  width: 38%;
   display: flex;
   justify-content: center;
   margin-top: 2rem;
@@ -39,35 +41,34 @@
 /* --- Why Section --- */
 .why-section {
   background-color: var(--primary);
-  padding: 2rem 0;
+  padding: 1.2rem 0;
 }
 
 .why-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
   align-items: center;
-  justify-content: center;
 }
 
 .wrap {
   display: flex;
   align-items: center;
-  justify-items: center;
-  gap: 2rem;
-  padding-right: 2rem;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
   border-right: 1px solid var(--base-white);
   color: var(--base-white);
 }
 
 .wrap .bi {
-  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-size: clamp(1.6rem, 2.2vw, 2rem);
   color: var(--base-white);
 }
 
 .wrap h3 {
   line-height: 1.3;
   margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
 }
 
 .wrap:last-child {
@@ -77,36 +78,37 @@
 
 /* --- Catalogue Section --- */
 .catalogue-content {
-  padding: 8rem 0;
+  padding: 4rem 0 8rem 0;
 }
 
 .catalogue-content h1 {
   text-align: center;
-  padding: 3.8rem 0 2rem;
+  padding: 2.5rem 0 1.5rem;
   font-weight: 600;
   color: var(--primary);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
 }
 
 .type-product-wrap {
   display: flex;
-  justify-content: space-between;
-  gap: 2rem;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
 .type-product-box {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   background-color: var(--background-product);
-  padding: 3rem 2rem;
-  border-radius: 1rem;
+  padding: 1.8rem 1.5rem;
+  border-radius: 0.8rem;
   width: 100%;
-  max-width: 33rem;
+  max-width: 28rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .type-product-box .type-product-img {
-  max-width: 10rem;
+  max-width: 7rem;
 }
 
 .type-product-img img {
@@ -120,19 +122,22 @@
 
 .type-product-box .type-product-content h3 {
   color: var(--primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
 }
 
 .type-product-box .type-product-content p {
   color: var(--color-secondary);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  font-size: clamp(0.8rem, 1vw, 0.85rem);
 }
 
 .type-product-box .type-product-content a {
   display: inline-block;
-  padding-top: 0.8rem;
+  padding-top: 0.5rem;
   color: var(--secondary);
   font-weight: 600;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
   transition: all 0.3s ease;
 }
 
@@ -144,20 +149,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
 }
 
 .catalogue-filter .filter {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .filter-btn {
-  padding: 0.7rem 1.5rem;
+  padding: 0.5rem 1.2rem;
   border: 2px solid var(--primary);
   border-radius: 1.5rem;
   cursor: pointer;
   font-weight: 600;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
   transition: all 0.3s ease;
   background-color: transparent;
   color: var(--primary);
@@ -177,6 +183,7 @@
 .catalogue-filter a {
   color: var(--secondary);
   font-weight: 600;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
   transition: all 0.3s ease;
 }
 
@@ -187,31 +194,33 @@
 .catalogue-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2.2rem;
+  gap: 1.5rem;
 }
 
 .catalogue-item {
   height: 100%;
   background-color: var(--background-product);
-  padding: 1.5rem;
-  border-radius: 1rem;
+  padding: 1.2rem;
+  border-radius: 0.8rem;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   z-index: 1;
 }
 
 .item-img {
   width: 100%;
   overflow: hidden;
-  margin: 0 auto 10px auto;
+  margin: 0 auto 8px auto;
 }
 
 .item-img img {
-  width: 50%;
+  width: 45%;
   height: auto;
   border-radius: 8px;
   transition: all 0.3s ease-in-out;
@@ -222,11 +231,13 @@
 .item-name {
   font-weight: 600;
   color: var(--primary);
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
 }
 
 .item-price {
   font-weight: 500;
-  margin-top: 5px;
+  margin-top: 4px;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
 }
 
 .catalogue-grid a:hover .catalogue-item {
@@ -239,7 +250,7 @@
   position: absolute;
   inset: 0;
   background-color: rgba(11, 68, 135, 0);
-  border-radius: 1rem;
+  border-radius: 0.8rem;
   pointer-events: none;
   transition: all 0.3s ease-in-out;
   z-index: 2;
@@ -260,33 +271,35 @@
 }
 
 .item-availability {
-  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   font-weight: 700;
   color: var(--secondary);
-  margin-top: 1rem;
+  margin-top: 0.6rem;
 }
 
 /* --- Pro Section --- */
 .pro-section {
   background-color: var(--primary);
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .pro-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3rem;
+  gap: 2rem;
   align-items: center;
   color: var(--base-white);
 }
 
 .pro-content h1 {
   font-weight: 600;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
 }
 
 .pro-text p {
   text-align: justify;
-  padding-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
 }
 
 .btn {
@@ -295,7 +308,7 @@
 
 /* --- Advantage Section --- */
 .advantage-section {
-  padding: 6rem 0;
+  padding: 4rem 0;
   background-image: var(--background-gradient);
 }
 
@@ -308,36 +321,38 @@
 
 .reason-content h2 {
   color: var(--primary);
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
 }
 
 .reason-content p {
   color: var(--color-secondary);
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
 }
 
 .reason-card-wrap {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  padding-top: 2rem;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .reason-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3rem 2rem;
-  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  border-radius: 0.8rem;
   text-align: center;
   background-color: var(--background-product);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
 .reason-icon {
-  width: 5rem;
-  height: 5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   background-color: var(--primary);
   display: flex;
@@ -347,37 +362,39 @@
 }
 
 .reason-card .bi {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--base-white);
 }
 
 .reason-card h3 {
   color: var(--primary);
-  padding-top: 1.5rem;
+  padding-top: 1rem;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
 }
 
 .reason-card p {
   color: var(--base-black);
-  padding-top: 1rem;
+  padding-top: 0.8rem;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
 }
 
 .banner-section {
   display: flex;
-  gap: 2rem;
-  margin: 3rem auto;
+  gap: 1.5rem;
+  margin: 2.5rem auto;
   background-color: var(--background-product);
-  border-radius: 1rem;
+  border-radius: 0.8rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding: 0;
 }
 
 .banner-image {
-  flex-basis: 40%;
+  flex-basis: 35%;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  border-radius: 1rem 0 0 1rem;
+  border-radius: 0.8rem 0 0 0.8rem;
 }
 
 .banner-image img {
@@ -387,26 +404,34 @@
 }
 
 .banner-content {
-  flex-basis: 60%;
-  padding: 2rem;
+  flex-basis: 65%;
+  padding: 1.8rem;
 }
 
 .banner-content h3 {
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
 }
 
 .banner-content p {
   text-align: justify;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
 }
 
 .banner-content .btn {
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
+/* ===== RESPONSIVE ===== */
+
 @media screen and (max-width: 992px) {
+  .hero-section {
+    padding-top: 4rem;
+  }
+
   .pro-images {
     display: none;
     flex-basis: 0;
@@ -426,51 +451,65 @@
   }
 
   .pro-content h1 {
-    padding-bottom: 2rem;
+    padding-bottom: 1.5rem;
   }
 
   .pro-content h1,
   .pro-text p {
     text-align: center;
   }
+
+  .type-product-box {
+    max-width: none;
+  }
 }
 
 @media screen and (max-width: 768px) {
+  .hero-content {
+    min-height: 70vh;
+  }
+
   .hero-image {
     display: none;
   }
 
   .hero-text {
     width: 100%;
-    padding: 6rem 1rem;
+    padding: 4rem 1rem;
     text-align: center;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
   }
 
   .hero-text p {
     text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   .btn {
-    padding: 0.8rem 1.5rem;
+    padding: 0.7rem 1.3rem;
+    font-size: 0.85rem;
   }
 
   .type-product-box {
-    padding: 1.5rem 2rem;
+    padding: 1.2rem 1.5rem;
   }
 
   .type-product-box img {
     height: auto;
-    max-width: 5rem;
+    max-width: 4.5rem;
     width: 100%;
   }
 
   .type-product-box .type-product-content h3 {
-    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
   }
 
   .type-product-box .type-product-content a,
   .type-product-box .type-product-content p {
-    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   }
 
   .catalogue-grid {
@@ -486,17 +525,41 @@
     display: none;
   }
 
+  .reason-card {
+    padding: 1.5rem 1rem;
+  }
+
   .banner-section {
     flex-direction: column;
     align-items: center;
     gap: 0;
     padding: 0;
   }
+
+  .banner-image {
+    flex-basis: auto;
+    width: 100%;
+    height: 200px;
+    border-radius: 0.8rem 0.8rem 0 0;
+  }
+
+  .banner-content {
+    flex-basis: auto;
+    padding: 1.5rem;
+  }
 }
 
 @media screen and (max-width: 600px) {
+  .hero-content {
+    min-height: 60vh;
+  }
+
+  .hero-text {
+    padding: 3rem 0.5rem;
+  }
+
   .why-section {
-    height: 6rem;
+    padding: 0.8rem 0;
   }
 
   .why-container {
@@ -504,31 +567,41 @@
   }
 
   .catalogue-content {
-    padding: 4rem 0;
+    padding: 3rem 0;
+  }
+
+  .catalogue-content h1 {
+    padding: 1.5rem 0 1rem;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
   }
 
   .type-product-img {
     display: none;
   }
 
+  .type-product-box {
+    padding: 1rem 1.2rem;
+  }
+
   .catalogue-filter {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.8rem;
+    padding-bottom: 1.5rem;
   }
 
   .catalogue-filter a,
   .catalogue-filter .filter-btn {
-    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    font-size: clamp(0.75rem, 1.2vw, 0.85rem);
   }
 
   .catalogue-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
   .advantage-section {
-    padding: 4rem 0;
+    padding: 3rem 0;
   }
 
   .reason-card-wrap {
@@ -537,60 +610,99 @@
   }
 
   .reason-card {
-    padding: 1.5rem;
+    padding: 1.2rem;
+  }
+
+  .reason-card p {
+    display: block;
   }
 
   .reason-icon {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .reason-card .bi {
+    font-size: 1.2rem;
   }
 
   .banner-content {
-    padding: 1.5rem;
+    padding: 1.2rem;
   }
 
   .catalogue-item .item-name,
   .catalogue-item .item-price,
   .catalogue-item .item-availability {
-    font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  }
+
+  .pro-section {
+    padding: 1.2rem 0;
+  }
+
+  .pro-content h1 {
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    padding-bottom: 1rem;
+  }
+
+  .pro-text p {
+    font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+    padding-bottom: 1rem;
   }
 }
 
 @media screen and (max-width: 450px) {
-  .hero-text h1,
-  .pro-content h1,
-  .catalogue-content h1,
-  .reason-content h2 {
-    font-size: clamp(1.4rem, 3vw, 1.7rem);
-    margin-top: 1rem;
+  .hero-content {
+    min-height: auto;
+    padding: 1rem 0;
+  }
+
+  .hero-text {
+    padding: 2.5rem 0;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    margin-top: 0.5rem;
+  }
+
+  .hero-text p {
+    font-size: clamp(0.75rem, 1.2vw, 0.8rem);
+    margin-bottom: 1.2rem;
   }
 
   .type-product-wrap {
     flex-direction: column;
+    gap: 0.8rem;
   }
 
   .type-product-box {
-    padding: 0.8rem 1.4rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .type-product-box .type-product-content h3 {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   }
 
   .catalogue-content h1 {
-    padding-top: 2rem;
+    padding-top: 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.4rem);
   }
 
-  .hero-text p,
-  .pro-text p,
-  .reason-content p,
-  .banner-content p {
-    font-size: clamp(0.75rem, 1.2vw, 0.8rem);
+  .pro-content h1,
+  .reason-content h2 {
+    font-size: clamp(1.2rem, 3vw, 1.4rem);
+    margin-top: 0.5rem;
   }
 
   .btn {
     font-size: clamp(0.7rem, 1.2vw, 0.8rem);
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
   }
 
   .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
   }
 
   .catalogue-filter {
@@ -608,7 +720,7 @@
   .catalogue-item .item-name,
   .catalogue-item .item-price,
   .catalogue-item .item-availability {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
 
   .container {
@@ -616,15 +728,33 @@
   }
 
   .reason-card h3 {
-    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-size: clamp(0.9rem, 2vw, 1rem);
   }
 
   .reason-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .reason-card .bi {
     font-size: 1rem;
+  }
+
+  .reason-card {
+    padding: 1rem;
+  }
+
+  .banner-content h3 {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-content p {
+    font-size: clamp(0.75rem, 1vw, 0.8rem);
+    margin-bottom: 1rem;
+  }
+
+  .banner-image {
+    height: 150px;
   }
 }
