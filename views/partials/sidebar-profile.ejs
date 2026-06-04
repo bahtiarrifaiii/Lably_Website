@@ -1,27 +1,31 @@
 <div class="logo">Lab<span>Ly</span></div>
 <div class="left-menu">
-    <div class="menu dashboard">
-        <a href="/dashboard-customer">
-        <i class="bi bi-house-door"></i>
-        <span>Dashboard</span>
-        </a>
-    </div>
-    <div class="menu Customers">
-        <a href="/#">
-        <i class="bi bi-suitcase-lg"></i>
-        <span>My Orders</span>
-        </a>
-    </div>
-    <div class="menu Products">
-        <a href="/#">
-        <i class="bi bi-person"></i>
-        <span>Profile</span>
-        </a>
-    </div>
+  <div
+    class="menu dashboard <%= currentPage === '/dashboard-customer' ? 'active' : '' %>"
+  >
+    <a href="/dashboard-customer">
+      <i class="bi bi-house-door"></i>
+      <span>Dashboard</span>
+    </a>
+  </div>
+  <div class="menu Customers">
+    <a href="/#">
+      <i class="bi bi-cart"></i>
+      <span>My Orders</span>
+    </a>
+  </div>
+  <div
+    class="menu profile <%= currentPage === '/profile-customer' ? 'active' : '' %>"
+  >
+    <a href="/profile-customer">
+      <i class="bi bi-person"></i>
+      <span>Profile</span>
+    </a>
+  </div>
 </div>
 <div class="logout">
-    <a href="/logout">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Log Out</span>
-    </a>
+  <a href="/logout">
+    <i class="bi bi-box-arrow-right"></i>
+    <span>Log Out</span>
+  </a>
 </div>

@@ -1,0 +1,156 @@
+<!-- profile-page.ejs -->
+
+<div class="profile-content">
+  <!-- HEADER -->
+  <div class="profile-header">
+    <h1>Profile</h1>
+    <p>Kelola informasi akun Anda</p>
+  </div>
+
+  <div class="profile-body">
+    <!-- KIRI: Informasi Pribadi -->
+    <div class="profile-card info-card">
+      <div class="card-title">
+        <h2>Informasi Pribadi</h2>
+        <p>Perbarui informasi pribadi Anda</p>
+      </div>
+
+      <form action="/profile-customer/update" method="POST">
+        <div class="form-group">
+          <label for="nama">Nama Lengkap</label>
+          <input
+            type="text"
+            id="nama"
+            name="username"
+            value="<%= user.username %>"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="<%= user.email %>"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Nomor Telepon</label>
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            value="<%= user.phone %>"
+            readonly
+          />
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="btn-edit" id="btnEdit">
+            Edit Profil
+          </button>
+          <button
+            type="submit"
+            class="btn-save"
+            id="btnSave"
+            style="display: none"
+          >
+            Simpan Perubahan
+          </button>
+          <button
+            type="button"
+            class="btn-cancel"
+            id="btnCancel"
+            style="display: none"
+          >
+            Batal
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- KANAN: Avatar + Keamanan Akun -->
+    <div class="profile-side">
+      <!-- Avatar Card -->
+      <div class="profile-card avatar-card">
+        <div class="avatar-wrap">
+          <img src="/Assets/profile.jpg" alt="Avatar" class="avatar-img" />
+          <button class="avatar-edit-btn" type="button">
+            <i class="bi bi-camera"></i>
+          </button>
+        </div>
+        <p>Nama Member</p>
+        <h3><%= user.username %></h3>
+      </div>
+
+      <!-- Keamanan Akun Card -->
+      <div class="profile-card security-card">
+        <div class="card-title">
+          <h2>Keamanan Akun</h2>
+          <p>Kelola keamanan akun Anda</p>
+        </div>
+
+        <ul class="security-list">
+          <li>
+            <div class="security-item">
+              <i class="bi bi-lock"></i>
+              <div>
+                <span class="security-label">Ubah Password</span>
+                <span class="security-desc">Perbarui pasword akun Anda</span>
+              </div>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verifikasi -->
+  <div class="profile-card help-card">
+    <div class="help-icon">
+      <i class="bi bi-exclamation-circle"></i>
+    </div>
+    <div class="help-text">
+      <h4>Verifikasi Lebih Lanjut</h4>
+      <p>
+        Untuk verifikasi lebih lanjut, kami memerlukan verifikasi identitas
+        menggunakan kartu identitas anda.
+      </p>
+    </div>
+    <button type="button" class="btn-support">Verifikasi</button>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  const btnEdit = document.getElementById("btnEdit");
+  const btnSave = document.getElementById("btnSave");
+  const btnCancel = document.getElementById("btnCancel");
+  const inputs = document.querySelectorAll(".info-card input");
+  const originalValues = {};
+
+  btnEdit.addEventListener("click", () => {
+    inputs.forEach((input) => {
+      originalValues[input.id] = input.value;
+      input.removeAttribute("readonly");
+    });
+    btnEdit.style.display = "none";
+    btnSave.style.display = "block";
+    btnCancel.style.display = "block";
+  });
+
+  btnCancel.addEventListener("click", () => {
+    inputs.forEach((input) => {
+      input.value = originalValues[input.id];
+      input.setAttribute("readonly", true);
+    });
+    btnEdit.style.display = "block";
+    btnSave.style.display = "none";
+    btnCancel.style.display = "none";
+  });
+</script>
