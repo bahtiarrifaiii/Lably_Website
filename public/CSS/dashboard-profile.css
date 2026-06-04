@@ -1,0 +1,24 @@
+/* Main Content */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.container {
+  display: grid;
+  height: 100vh;
+  grid-template-areas: "left right";
+  grid-template-columns: 1fr 4fr;
+  background: #f8f9ff;
+}
+
+.right {
+  grid-area: right;
+  background-color: #ffffff;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 0 2rem;
+}

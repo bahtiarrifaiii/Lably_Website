@@ -902,6 +902,20 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
   });
 });
 
+// USER DASHBOARD CUSTOMER PAGE
+router.get("/dashboard-customer", isLoggedIn, passLoginStatus, async (req, res) => {
+  const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/profile/dashboard.ejs"),
+    {}
+  );
+
+  res.render("layouts/profile", {
+    title: "Customer Dashboard | Lably",
+    style: `<link rel="stylesheet" href="/CSS/dashboard-profile.css" />`,
+    content,
+  });
+});
+
 /* ============================================
    ADMIN PAGE
 ============================================ */

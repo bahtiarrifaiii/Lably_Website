@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Sansation:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <!-- Sidebar CSS -->
+    <link rel="stylesheet" href="/CSS/sidebar-profile.css" />
+
+    <!-- Page-specific CSS -->
+    <% if (typeof style !== "undefined" && style) { %> <%- style %> <% } %>
+    <title><%= typeof title !== 'undefined' ? title : 'Lably' %></title>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <%- include('../partials/sidebar-profile') %>
+        </div>
+        <div class="right">
+            <%- content %>
+        </div>
+    </div>
+</body>
+</html>
