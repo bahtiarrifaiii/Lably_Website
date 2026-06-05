@@ -155,19 +155,19 @@ a {
   transition: all 0.4s ease;
 }
 
+.main-nav {
+  margin-left: 1.6rem;
+}
+
+.log {
+  margin-left: 3.3rem;
+}
+
 .main-nav a {
   font-size: clamp(1rem, 1.2vw, 1.1rem);
   font-weight: 600;
   color: var(--primary);
   transition: all 0.4s ease;
-}
-
-.main-nav {
-  margin-left: -1.6rem;
-}
-
-.not {
-  margin-left: 2.6rem;
 }
 
 .sec-nav a {
@@ -302,7 +302,8 @@ a {
 .btn-primary {
   background-color: var(--btn-hover-orange);
   color: var(--base-white);
-  box-shadow: 0 8px 15px -3px rgba(241, 147, 11, 0.5),
+  box-shadow:
+    0 8px 15px -3px rgba(241, 147, 11, 0.5),
     0 4px 6px -2px rgba(241, 147, 11, 0.2);
 }
 

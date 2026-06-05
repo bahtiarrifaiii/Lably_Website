@@ -134,24 +134,24 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
 }
 
 .btn-edit:hover {
-  background: var(--btn-hover-blue);
+  background: #1b73dfff;
 }
 
 .btn-cancel {
   width: 100%;
   padding: 0.75rem;
-  background: #e53e3e;
+  background: #d51c39;
   color: var(--base-white);
   border: none;
   border-radius: 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
 }
 
 .btn-cancel:hover {
@@ -161,18 +161,18 @@
 .btn-save {
   width: 100%;
   padding: 0.75rem;
-  background: #1a3a6b;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.5s ease;
 }
 
 .btn-save:hover {
-  background: #2563eb;
+  background: #1b73dfff;
 }
 
 /* ================================
@@ -307,6 +307,9 @@
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  background: var(--background-product);
+  border: 1.5px solid var(--primary);
+  margin-bottom: -0.5rem;
 }
 
 .help-icon {
@@ -340,19 +343,212 @@
 
 .btn-support {
   padding: 0.6rem 1.2rem;
-  background: #fff;
-  color: #1a3a6b;
-  border: 2px solid #1a3a6b;
+  background: var(--background-product);
+  color: var(--primary);
+  border: 1.8px solid var(--primary);
   border-radius: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
   flex-shrink: 0;
 }
 
 .btn-support:hover {
+  background: var(--primary);
+  color: var(--base-white);
+}
+
+/* ================================
+   VERIFIKASI STATUS
+================================ */
+.help-card.verified {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+}
+
+.help-card.verified .help-icon {
+  background: #16a34a;
+}
+
+.help-card.pending {
+  background: #fffbeb;
+  border: 1.5px solid #fca738ff;
+}
+
+.help-card.pending .help-icon {
+  background: #fc9a38ff;
+}
+
+.help-card.rejected {
+  background: #ffededff;
+  border: 1.5px solid #f86363ff;
+}
+
+.help-card.rejected .help-icon {
+  background: #ea0c0cff;
+}
+
+.btn-pending {
+  background: #fc9a38ff !important;
+  color: #fff !important;
+  border: none !important;
+  opacity: 0.8;
+  cursor: not-allowed !important;
+}
+
+.btn-rejected {
+  background: transparent !important;
+  color: #ea260cff !important;
+  border: 2px solid #ea380cff !important;
+}
+
+.btn-rejected:hover {
+  background: #ea260cff !important;
+  color: #fff !important;
+}
+
+/* ================================
+   INPUT KTP
+================================ */
+.ktp-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.ktp-modal-overlay.show {
+  display: flex;
+}
+
+.ktp-modal {
   background: #1a3a6b;
+  border: 2px solid var(--primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  color: var(--base-white);
+}
+
+.ktp-modal-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.ktp-modal-icon {
+  font-size: 1.6rem;
+  color: var(--base-white);
+  padding-right: 0.8rem;
+  flex-shrink: 0;
+}
+
+.ktp-modal-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.ktp-modal-header p {
+  font-size: 0.82rem;
+  color: #dddddd;
+  margin-bottom: 0.5rem;
+}
+
+.badge-pending {
+  font-size: 0.78rem;
+  background: #d51c39;
+  color: var(--base-white);
+  padding: 0.3rem 0.7rem;
+  border-radius: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ktp-dropzone {
+  border: 2px dashed #888;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+}
+
+.ktp-dropzone:hover {
+  border-color: var(--base-white);
+}
+
+.ktp-dropzone i {
+  font-size: 1.8rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.ktp-dropzone p {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 0.2rem;
+}
+
+.ktp-dropzone span {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.ktp-note {
+  font-size: 0.8rem;
+  color: #dddddd;
+  margin-bottom: 1.2rem;
+}
+
+.ktp-modal-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.btn-cancel-modal {
+  flex: 1;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel-modal:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-kirim {
+  flex: 2;
+  padding: 0.7rem;
+  background: #1e40af;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.btn-kirim:hover {
+  background: #1d4ed8;
 }

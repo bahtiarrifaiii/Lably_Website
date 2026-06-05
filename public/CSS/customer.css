@@ -277,3 +277,16 @@ th {
 .page-prev i {
   font-size: 0.7rem;
 }
+
+.btn-see-more {
+  text-decoration: none;
+  color: var(--secondary);
+  font-weight: 500;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+
+.btn-see-more:hover {
+  color: var(--btn-hover-orange);
+  font-weight: 600;
+}

@@ -894,10 +894,11 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
     }
 
     const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/profile/order.ejs"),{
-      orders,
-      user: req.session.user, 
-    }
+      path.join(__dirname, "../views/pages/user/profile/order.ejs"),
+      {
+        orders,
+        user: req.session.user,
+      },
     );
 
     res.render("layouts/profile", {
@@ -992,6 +993,30 @@ router.post("/profile-customer/update", isLoggedIn, async (req, res) => {
   });
 });
 
+// Upload KTP User
+router.post(
+  "/profile-customer/upload-ktp",
+  isLoggedIn,
+  upload.single("ktp_image"),
+  (req, res) => {
+    if (!req.file) {
+      req.session.message = "File tidak ditemukan.";
+      return res.redirect("/profile-customer");
+    }
+
+    const ktpPath = `/uploads/${req.file.filename}`;
+    User.uploadKtp(req.session.user.id, ktpPath, (err) => {
+      if (err) {
+        console.error("Database Error:", err);
+        req.session.message = "Gagal mengirim KTP.";
+        return res.redirect("/profile-customer");
+      }
+      req.session.message = "KTP berhasil dikirim, menunggu verifikasi admin.";
+      res.redirect("/profile-customer");
+    });
+  },
+);
+
 /* ============================================
    ADMIN PAGE
 ============================================ */
@@ -1002,6 +1027,21 @@ router.get("/dashboard", isAdmin, authController.dashboard);
 router.get("/customer", isAdmin, (req, res) => {
   // if (!req.session.admin) return res.redirect("/login");
   return customerController.list(req, res);
+});
+
+// CUSTOMER DETAIL
+router.get("/customer/:id", isAdmin, (req, res) => {
+  return customerController.detail(req, res);
+});
+
+// APPROVE KTP
+router.post("/customer/:id/approve-ktp", isAdmin, (req, res) => {
+  return customerController.approveKtp(req, res);
+});
+
+// REJECT KTP
+router.post("/customer/:id/reject-ktp", isAdmin, (req, res) => {
+  return customerController.rejectKtp(req, res);
 });
 
 /* ORDER PAGES (tidak diubah) */

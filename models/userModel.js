@@ -51,6 +51,12 @@ const User = {
       "UPDATE users SET username = ?, email = ?, phone = ? WHERE id = ?";
     database.query(sql, [username, email, phone, id], callback);
   },
+
+  uploadKtp: (id, ktpPath, callback) => {
+    const sql =
+      "UPDATE users SET ktp_image = ?, ktp_status = 'pending' WHERE id = ?";
+    database.query(sql, [ktpPath, id], callback);
+  },
 };
 
 module.exports = User;
