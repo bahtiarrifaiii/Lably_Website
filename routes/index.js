@@ -924,16 +924,77 @@ router.get(
   isLoggedIn,
   passLoginStatus,
   async (req, res) => {
-    const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/profile/dashboard.ejs"),
-      {},
-    );
+    const userId = req.session.user.id;
 
-    res.render("layouts/profile", {
-      title: "Customer Dashboard | Lably",
-      style: `<link rel="stylesheet" href="/CSS/dashboard-profile.css" />`,
-      content,
-      currentPage: req.path,
+    User.getById(userId, async (err, userRows) => {
+      if (err) {
+        console.error("Database Error (User):", err);
+        return res.status(500).send("Error loading user dashboard.");
+      }
+
+      if (!userRows || userRows.length === 0) {
+        return res.status(404).send("User not found.");
+      }
+
+      const user = userRows[0];
+
+      const sql = `
+        SELECT
+          p.id,
+          p.id_products,
+          p.status,
+          DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+          DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+          pr.name AS product_name,
+          pr.image AS product_image,
+          c.name AS category_name
+        FROM peminjaman p
+        LEFT JOIN products pr ON p.id_products = pr.id
+        LEFT JOIN category c ON pr.id_category = c.id
+        WHERE p.id_user = ?
+        ORDER BY p.tgl_pinjam DESC, p.id DESC
+      `;
+
+      db.query(sql, [userId], async (orderErr, orders) => {
+        if (orderErr) {
+          console.error("Dashboard Order Load Error:", orderErr);
+          return res.status(500).send("Error loading dashboard orders.");
+        }
+
+        const activeOrders = orders.filter(
+          (o) => o.status === "in use" || o.status === "overdue",
+        );
+        const completedOrders = orders.filter((o) => o.status === "completed");
+        const pendingOrders = orders.filter((o) => o.status === "pending");
+        const uniqueProducts = new Set(
+          orders
+            .filter((o) => o.status !== "pending")
+            .map((o) => o.id_products),
+        ).size;
+
+        const latestOrders = orders.slice(0, 3);
+
+        const content = await ejs.renderFile(
+          path.join(__dirname, "../views/pages/user/profile/dashboard.ejs"),
+          {
+            user,
+            stats: {
+              active: activeOrders.length,
+              completed: completedOrders.length,
+              pending: pendingOrders.length,
+              uniqueProducts,
+            },
+            latestOrders,
+          },
+        );
+
+        res.render("layouts/profile", {
+          title: "Customer Dashboard | Lably",
+          style: `<link rel="stylesheet" href="/CSS/dashboard-profile.css" />`,
+          content,
+          currentPage: req.path,
+        });
+      });
     });
   },
 );
