@@ -918,6 +918,55 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
   });
 });
 
+// ORDER DETAIL PAGE
+router.get("/order-detail/:id", isLoggedIn, passLoginStatus, async (req, res) => {
+  const orderId = req.params.id;
+  const userId = req.session.user.id;
+
+  const sql = `
+    SELECT 
+      p.id,
+      p.id_products,
+      p.qty,
+      p.price,
+      p.status,
+      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+      pr.name AS product_name,
+      pr.image AS product_image,
+      c.name AS category_name
+    FROM peminjaman p
+    LEFT JOIN products pr ON p.id_products = pr.id
+    LEFT JOIN category c ON pr.id_category = c.id
+    WHERE p.id = ? AND p.id_user = ?
+  `;
+
+  db.query(sql, [orderId, userId], async (err, results) => {
+    if (err) {
+      console.error("ORDER DETAIL LOAD ERROR:", err);
+      return res.status(500).send("Error loading order detail.");
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send("Order not found.");
+    }
+
+    const order = results[0];
+
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/profile/order-detail.ejs"),
+      { order }
+    );
+
+    res.render("layouts/profile", {
+      title: "Order Detail | Lably",
+      style: `<link rel="stylesheet" href="/CSS/order-detail.css" />`,
+      content,
+      currentPage: req.path,
+    });
+  });
+});
+
 // USER DASHBOARD CUSTOMER PAGE
 router.get(
   "/dashboard-customer",

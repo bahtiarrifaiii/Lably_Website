@@ -68,7 +68,7 @@
             order.status === 'pending' ? 'paid' : 
             order.status === 'in use' ? 'in-use' :
             order.status === 'overdue' ? 'overdue' :
-            order.status === 'completed' ? 'complete' : 'paid' %>" >
+            order.status === 'completed' ? 'complete' : 'paid' %>" onclick="window.location.href='/order-detail/<%= order.id %>'" style="cursor: pointer;">
       <div class="order-img-wrap">
         <img
           src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>"
