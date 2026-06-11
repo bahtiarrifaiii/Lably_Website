@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     completed: ["complete"],
   };
 
-  const rowsPerPage = 5;
+  const rowsPerPage = 100;
   let currentPage = 1;
   let currentlyVisibleCards = [];
 

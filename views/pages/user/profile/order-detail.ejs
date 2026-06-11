@@ -1,3 +1,17 @@
+<%
+function formatTanggal(tanggal){
+    const bulan = [
+        "Januari","Februari","Maret","April",
+        "Mei","Juni","Juli","Agustus",
+        "September","Oktober","November","Desember"
+    ];
+
+    const d = new Date(tanggal);
+
+    return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+}
+%>
+
 <div class="top-bar">
     <div class="temp back">
         <a href="/order-user">
@@ -20,21 +34,21 @@
         </div>
         <div class="tool-info-content">
             <div class="tool-img">
-                <img src="/uploads/1764587234242-Mickroscope.png" alt="">
+                <img src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>" alt="">
             </div>
             <div class="tool-text">
-                <div class="tool-name">Mikroskop</div>
+                <div class="tool-name"><%= order.product_name %></div>
                 <div class="tool">
                     <p class="title-info">Kode alat</p>
-                    <p class="title-name">LAB-MIC-001</p>
+                    <p class="title-name">LAB-MIC-<%= String(order.id_products).padStart(3,'0') %></p>
                 </div>
                 <div class="tool">
                     <div class="title-info">Kategori</div>
-                    <div class="title-name">anu anu anu</div>
+                    <div class="title-name"><%= order.category_name %></div>
                 </div>
                 <div class="tool">
                     <div class="title-info">Kondisi</div>
-                    <div class="title-name">Baik</div>
+                    <div class="title-name"><%= order.kondisi %></div>
                 </div>
             </div>
         </div>
@@ -47,7 +61,22 @@
         <div class="order-summary-content">
             <div class="order-status">
                 <p>Status Order</p>
-                <p class="info-status">In Use</p>
+                <p class="info-status
+                    <%= order.status === 'completed'
+                    ? 'status-complete'
+                    : order.status === 'overdue'
+                    ? 'status-overdue'
+                    : 'status-active' %>">
+
+                    <%= order.status === 'completed'
+                        ? 'Returned'
+                        : order.status === 'overdue'
+                        ? 'Overdue'
+                        : order.status === 'pending'
+                        ? 'Paid'
+                        : 'In Use'
+                    %>
+                </p>
             </div>
             <div class="order-sum-info">
                 <div class="order-sum1">
@@ -55,14 +84,16 @@
                         <i class="bi bi-command"></i>
                         <div class="order-sum-text">
                             <p>QTY yang dipinjam</p>
-                            <p class="sum-info">1 Unit</p>
+                            <p class="sum-info"><%= order.qty %> Unit</p>
                         </div>
                     </div>
                     <div class="order-sum cost">
                         <i class="bi bi-coin"></i>
                         <div class="order-sum-text">
                             <p>Biaya Peminjaman</p>
-                            <p class="sum-info">Rp. 1.000.000</p>
+                            <p class="sum-info">
+                            Rp. <%= Number(order.product_price).toLocaleString('id-ID') %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -71,14 +102,18 @@
                         <i class="bi bi-clock"></i>
                         <div class="order-sum-text">
                             <p>Durasi Peminjaman</p>
-                            <p class="sum-info">31 Mei 2026 - 31 Juni 2026</p>
+                            <p class="sum-info">
+                            <%= formatTanggal(order.tgl_pinjam) %> - <%= formatTanggal(order.tgl_kembali) %>
+                            </p>
                         </div>
                     </div>
                     <div class="order-sum total">
                         <i class="bi bi-wallet"></i>
                         <div class="order-sum-text">
-                            <p>Biaya Peminjaman</p>
-                            <p class="sum-info">Rp. 1.000.000</p>
+                            <p>Total Biaya</p>
+                            <p class="sum-info">
+                            Rp. <%= Number(order.price).toLocaleString('id-ID') %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -90,10 +125,47 @@
     </div>
 
     <div class="content order-info">
-        <div class="title">
-            <h1>Informasi Peminjam</h1>
+    <div class="title">
+        <h1>Informasi Peminjam</h1>
+    </div>
+
+    <div class="borrower-content">
+
+        <div class="borrow-item">
+            <div class="borrow-label">
+                <i class="bi bi-person-fill"></i>
+                <span>Nama</span>
+            </div>
+
+            <div class="borrow-value">
+                <%= order.username %>
+            </div>
         </div>
-    </div>   
+
+        <div class="borrow-item">
+            <div class="borrow-label">
+                <i class="bi bi-envelope-fill"></i>
+                <span>Email</span>
+            </div>
+
+            <div class="borrow-value">
+                <%= order.email %>
+            </div>
+        </div>
+
+        <div class="borrow-item">
+            <div class="borrow-label">
+                <i class="bi bi-telephone-fill"></i>
+                <span>Nomor HP</span>
+            </div>
+
+            <div class="borrow-value">
+                <%= order.phone || '-' %>
+            </div>
+        </div>
+
+    </div>
+</div>  
 
     <div class="content order-timeline">
         <div class="title">
@@ -108,8 +180,57 @@
     </div>
 
     <div class="content return">
-        <div class="title">
-            <h1>Informasi Pengembalian</h1>
+    <div class="title">
+        <h1>Informasi Pengembalian</h1>
+    </div>
+
+    <div class="return-content">
+
+        <div class="return-status">
+
+            <% if(order.status === 'completed'){ %>
+
+                <span class="returned">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Sudah Dikembalikan
+                </span>
+
+            <% } else if(order.status === 'overdue'){ %>
+
+                <span class="overdue">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    Terlambat Dikembalikan
+                </span>
+
+            <% } else { %>
+
+                <span class="not-returned">
+                    <i class="bi bi-clock-fill"></i>
+                    Belum Dikembalikan
+                </span>
+
+            <% } %>
+
         </div>
-    </div>        
+
+        <div class="return-date">
+
+            <% if(order.status === 'completed'){ %>
+
+                <p>Barang sudah dikembalikan dengan aman.</p>
+
+            <% } else { %>
+
+                <p>Pengembalian dilakukan sebelum atau pada</p>
+
+                <strong>
+                    <%= formatTanggal(order.tgl_kembali) %>
+                </strong>
+
+            <% } %>
+
+        </div>
+
+    </div>
+</div>      
 </div>

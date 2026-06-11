@@ -924,21 +924,40 @@ router.get("/order-detail/:id", isLoggedIn, passLoginStatus, async (req, res) =>
   const userId = req.session.user.id;
 
   const sql = `
-    SELECT 
-      p.id,
-      p.id_products,
-      p.qty,
-      p.price,
-      p.status,
-      DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
-      DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
-      pr.name AS product_name,
-      pr.image AS product_image,
-      c.name AS category_name
-    FROM peminjaman p
-    LEFT JOIN products pr ON p.id_products = pr.id
-    LEFT JOIN category c ON pr.id_category = c.id
-    WHERE p.id = ? AND p.id_user = ?
+    SELECT
+    p.id,
+    p.id_products,
+    p.qty,
+    p.price,
+    p.status,
+
+    DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+    DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+
+    pr.name AS product_name,
+    pr.image AS product_image,
+    pr.kondisi,
+    pr.price AS product_price,
+
+    c.name AS category_name,
+
+    u.username,
+    u.email,
+    u.phone
+
+FROM peminjaman p
+
+LEFT JOIN products pr
+ON p.id_products = pr.id
+
+LEFT JOIN category c
+ON pr.id_category = c.id
+
+LEFT JOIN users u
+ON p.id_user = u.id
+
+WHERE p.id = ?
+AND p.id_user = ?
   `;
 
   db.query(sql, [orderId, userId], async (err, results) => {

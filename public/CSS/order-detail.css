@@ -53,16 +53,17 @@
 }
 
 .main-content{
-    display: grid;
-    height: 85vh;
-    margin-top: 20px;
-    box-sizing: border-box;
+    display:grid;
+    margin-top:20px;
+    box-sizing:border-box;
     grid-template-areas: "tool-info order-summary order-summary"
-                         "order-info order-timeline payment"
-                         "order-info order-timeline return";
-    grid-template-columns: 1fr 0.75fr 0.75fr;
-    grid-template-rows: 1fr 0.6fr 0.4fr;
-    gap: 10px;
+                        "order-info order-timeline payment"
+                        "order-info order-timeline return";
+    grid-template-columns:1fr 0.75fr 0.75fr;
+    grid-template-rows: auto
+                        auto
+                        auto;
+    gap:10px;
 }
 
 .content{
@@ -94,12 +95,21 @@
 }
 
 .tool-info-content .tool-img{
-    background-color: beige;
-    border-radius: 5px;
+    width:180px;
+    height:220px;
+    background:#efefd8;
+    border-radius:8px;
+    overflow:hidden;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .tool-info-content .tool-img img{
-    width: 120px;
+    width:100%;
+    height:100%;
+    object-fit:scale-down;
 }
 
 .tool-info-content .tool-text{
@@ -131,6 +141,10 @@
     grid-area: order-summary;
 }
 
+.tool-info, .order-summary{
+    align-self:start;
+}
+
 .order-summary-content{
     display: flex;
     flex-direction: column;
@@ -148,33 +162,54 @@
     margin-bottom: 3px;
 }
 
-.order-status .info-status{
-    display: inline-block;
-    padding: 3px 10px 3px 10px;
-    background-color: rgba(101, 255, 129, 0.4);
-    color: #00ff00;
-    font-size: 16px;
-    border-radius: 5px;
+.info-status{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:5px;
+    font-size:16px;
+    font-weight:600;
+}
+
+.status-complete{
+    background:#d9f5df;
+    color:#2ca34a;
+}
+
+.status-active{
+    background:#fff0d9;
+    color:#f57c00;
+}
+
+.status-overdue{
+    background:#ffe0e0;
+    color:#d93025;
 }
 
 .order-summary-content .order-sum-info{
-    height: 110px;
-    display: flex;
-    flex-direction: row;
-    gap: 150px;
-    align-items: center;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-top:10px;
+    margin-bottom:8px;
+    gap:35px;
 }
 
 .order-sum1, .order-sum2{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    width:48%;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
 }
 
 .order-sum{
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-height:56px;
+}
+
+.order-sum-text{
+    flex:1;
 }
 
 .order-sum i{
@@ -188,6 +223,11 @@
     font-size: 12px;
     font-weight: 600;
     color: rgb(90, 90, 90)
+}
+
+.sum-info{
+    line-height:1.3;
+    word-break:keep-all;
 }
 
 .order-sum-text .sum-info{
@@ -205,6 +245,11 @@
     border-radius: 5px;
     box-shadow: 0 2px 6px 0 rgba(30, 58, 138, 0.4);
     transition: all 0.2s ease;
+    display:inline-block;
+}
+
+.add-duration{
+    margin-top:4px;
 }
 
 .order-info{
@@ -215,10 +260,81 @@
     grid-area: order-timeline;
 }
 
-.payment{
-    grid-area: payment;
+.borrower-content{
+    padding: 8px 12px;
 }
 
-.return{
-    grid-area: return;
+.borrow-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid #f1f1f1;
+}
+
+.borrow-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#666;
+    font-size:13px;
+}
+
+.borrow-label i{
+    color:var(--primary);
+}
+
+.borrow-value{
+    font-size:13px;
+    color:#222;
+    font-weight:500;
+}
+
+.return-content{
+    padding:10px 12px;
+}
+
+.return-status{
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.returned{
+    color:#2ca34a;
+}
+
+.not-returned{
+    color:#f57c00;
+}
+
+.overdue{
+    color:#d93025;
+}
+
+.return-date{
+    font-size:11px;
+    color:#666;
+    line-height:1.4;
+}
+
+.return-date strong{
+    display:block;
+    margin-top:5px;
+    font-size:14px;
+    color:#222;
+    font-weight:600;
+}
+
+.tool-info-content{
+    min-height:230px;
+}
+
+.order-summary-content{
+    min-height:230px;
+}
+
+.tool-info, .order-summary{
+    display:flex;
+    flex-direction:column;
 }
