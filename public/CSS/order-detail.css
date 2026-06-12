@@ -62,33 +62,29 @@
   color: var(--primary);
 }
 
-.top-bar .logo-title h1 span {
-  color: var(--btn-hover-blue);
-}
-
-/* ==========================================================================
-   MAIN CONTENT GRID
-   ========================================================================== */
 .main-content {
   display: grid;
+  margin-top: 20px;
+  box-sizing: border-box;
   grid-template-areas:
     "tool-info order-summary order-summary"
     "order-info order-timeline payment"
     "order-info order-timeline return";
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 1.5rem;
-  box-sizing: border-box;
+  grid-template-columns: 1fr 0.75fr 0.75fr;
+  grid-template-rows:
+    min-content
+    auto
+    auto;
+  gap: 10px;
 }
 
-/* Base Content Card */
 .content {
-  background: #fff;
-  border-radius: 1rem;
-  padding: 1.8rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: none;
-  display: flex;
-  flex-direction: column;
+  border: #e6e6e6 solid 2px;
+  border-radius: 5px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 10px;
 }
 
 /* Badge Title for each section */
@@ -122,16 +118,14 @@
 }
 
 .tool-info-content .tool-img {
-  width: 130px;
-  height: 160px;
-  background: #f8f9ff;
-  border: 1.5px solid #dde3f0;
-  border-radius: 0.75rem;
+  width: 160px;
+  height: 200px;
+  background: #efefd8;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0;
 }
 
 .tool-info-content .tool-img img {
@@ -405,26 +399,30 @@
   height: 21px;
   display: flex;
   align-items: center;
-  font-size: 0.82rem;
-  font-weight: 550;
-  color: #333;
 }
 
-.timeline-info div:nth-child(even) {
-  height: 21px; /* spacers aligning with path lines */
+.borrower-content {
+  padding: 8px 12px;
 }
 
-/* ==========================================================================
-   PAYMENT SECTION
-   ========================================================================== */
-.payment {
-  grid-area: payment;
+.borrow-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
 }
 
-.payment p {
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 0.4rem;
+.borrow-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 13px;
+}
+
+.borrow-label i {
+  color: var(--primary);
 }
 
 .payment p:last-child {
@@ -475,6 +473,21 @@
 
 .return-date span {
   display: inline;
-  color: #1a3a6b;
-  font-weight: 700;
+  margin-top: 5px;
+  color: #222;
+  font-weight: 600;
+}
+
+.tool-info-content {
+  min-height: 230px;
+}
+
+.order-summary-content {
+  min-height: 230px;
+}
+
+.tool-info,
+.order-summary {
+  display: flex;
+  flex-direction: column;
 }

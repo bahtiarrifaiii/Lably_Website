@@ -170,24 +170,29 @@ function formatTanggal(tanggal){
     <% 
         const status = (order.status || '').toString().toLowerCase();
         const timelineSteps = [
-            { label: 'Peminjaman dibuat', date: order.created_at || order.tgl_pinjam || null },
-            { label: 'Pembayaran Berhasil', date: order.paid_at || order.payment_date || null },
-            { label: 'Barang diambil', date: order.picked_at || null },
-            { label: 'Barang dikembalikan', date: order.returned_at || order.tgl_kembali || null }
+            { label: 'Peminjaman dibuat' },
+            { label: 'Pembayaran Berhasil' },
+            { label: 'Menunggu Persetujuan' },
+            { label: 'Barang diambil' },
+            { label: 'Barang dikembalikan' }
         ];
         let completedCount = 1;
-        if (status === 'pending') {
-            completedCount = 2;
-        }
-        if (status === 'in use') {
-            completedCount = 3;
-        }
-        if (status === 'overdue') {
-            completedCount = 3;
-        }
-        if (status === 'completed') {
-            completedCount = 4;
-        }
+
+if(status === 'pending'){
+    completedCount = 3;
+}
+
+if(status === 'in use'){
+    completedCount = 4;
+}
+
+if(status === 'overdue'){
+    completedCount = 4;
+}
+
+if(status === 'completed'){
+    completedCount = 5;
+}
     %>
 
     <div class="content order-timeline">
@@ -202,32 +207,86 @@ function formatTanggal(tanggal){
                     <% if (idx < timelineSteps.length - 1) { %>
                         <div class="line <%= (idx + 2) <= completedCount ? 'completed' : '' %>"></div>
                     <% } %>
+
                 <% }); %>
             </div>
             <div class="timeline-info">
-                <% timelineSteps.forEach(function(step, idx) { %>
-                    <div>
-                        <% if (idx < completedCount) { %>
-                            <% if (idx === 2) { %>
-                                <%= step.label %> (<%= status === 'overdue' ? 'Overdue' : 'In use' %>)
-                            <% } else { %>
-                                <%= step.label %>
-                            <% } %>
-                        <% } %>
-                    </div>
-                    <% if (idx < timelineSteps.length - 1) { %><div></div><% } %>
-                <% }); %>
-            </div>
+
+    <% timelineSteps.forEach(function(step, idx) { %>
+
+        <div>
+
+            <% if(idx < completedCount){ %>
+
+                <% if(idx === 2){ %>
+
+                    <%= step.label %>
+                    <span class="timeline-status paid">(Paid)</span>
+
+                <% } else if(idx === 3){ %>
+
+                    <%= step.label %>
+
+                    <% if(status === 'overdue'){ %>
+                        <span class="timeline-status overdue">(Overdue)</span>
+                    <% } else { %>
+                        <span class="timeline-status active">(In Use)</span>
+                    <% } %>
+
+                <% } else { %>
+
+                    <%= step.label %>
+
+                <% } %>
+
+            <% } %>
+
+        </div>
+
+    <% }); %>
+
+</div>
         </div>
     </div>
 
     <div class="content payment">
-        <div class="title">
-            <h1>Informasi Pembayaran</h1>
-        </div>
-        <p>dfd</p>
-        <p>dsfdf</p>
+    <div class="title">
+        <h1>Informasi Pembayaran</h1>
     </div>
+
+    <div class="payment-content">
+
+        <div class="payment-item">
+            <span class="payment-label">Status Pembayaran</span>
+            <span class="payment-status paid">PAID</span>
+        </div>
+
+        <div class="payment-item">
+            <span class="payment-label">Metode Pembayaran</span>
+            <span class="payment-value">QRIS</span>
+        </div>
+
+        <div class="payment-item">
+            <span class="payment-label">Tanggal Pembayaran</span>
+            <span class="payment-value">
+                <%= formatTanggal(order.tgl_pinjam) %>
+            </span>
+        </div>
+
+        <div class="payment-item">
+            <span class="payment-label">No. Transaksi</span>
+            <span class="payment-value">
+                TRX-<%= order.id %>
+            </span>
+        </div>
+
+        <button class="payment-proof">
+            <i class="bi bi-receipt"></i>
+            Lihat Bukti Pembayaran
+        </button>
+
+    </div>
+</div>
 
     <div class="content return">
     <div class="title">
