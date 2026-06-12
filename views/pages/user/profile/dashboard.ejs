@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="nav1">
         <h2>Dashboard</h2>
-        <p class="welcome">Selamat Datang, <%= user.username %>!</p>
+        <p class="welcome">Hello There, <%= user.username %>!</p>
     </div>
 
 <div class="nav2">
@@ -57,13 +57,13 @@
     </div>
     <p class="verif-text">
         <% if (user.ktp_status === 'verified') { %>
-            Akun Terverifikasi
+            Verified Account
         <% } else if (user.ktp_status === 'pending') { %>
-            Menunggu Verifikasi
+            Waiting for Verification
         <% } else if (user.ktp_status === 'rejected') { %>
-            Verifikasi Ditolak
+            Verification Rejected
         <% } else { %>
-            Akun Belum Terverifikasi
+            Unverified Account
         <% } %>
     </p>
 </div>
@@ -71,28 +71,28 @@
     <div class="order order-active">
         <div class="dash-logo color1"><i class="bi bi-bag-plus"></i></div>
         <div class="dash-text">
-            <p class="text1">Peminjaman Aktif</p>
+            <p class="text1">Active Loans</p>
             <p class="text2"><%= stats.active %></p>
         </div>
     </div>
     <div class="order order-complete">
         <div class="dash-logo color2"><i class="bi bi-bag-check"></i></div>
         <div class="dash-text">
-            <p class="text1">Peminjaman Selesai</p>
+            <p class="text1">Completed Loans</p>
             <p class="text2"><%= stats.completed %></p>
         </div>
     </div>
     <div class="order order-status">
         <div class="dash-logo color3"><i class="bi bi-clock"></i></div>
         <div class="dash-text">
-            <p class="text1">Menunggu Persetujuan</p>
+            <p class="text1">Waiting for Approval</p>
             <p class="text2"><%= stats.pending %></p>
         </div>
     </div>
     <div class="order order-equipment">
         <div class="dash-logo color4"><i class="bi bi-tools"></i></div>
         <div class="dash-text">
-            <p class="text1">Alat Dipinjam</p>
+            <p class="text1">Borrowed Items</p>
             <p class="text2"><%= stats.uniqueProducts %></p>
         </div>
     </div>
@@ -100,55 +100,55 @@
 <div class="dashboard-info2">
     <div class="dash flow-info">
         <div class="dash1 flow-info-text">
-            <p>Alur Peminjaman</p>
+            <p>Loan Flow</p>
         </div>
         <div class="flow-info-data">
             <div class="flow">
                 <div class="flow-number">1</div>
                 <div class="flow-text">
-                    <p class="flow-text1">Pinjam Alat</p>
-                    <p class="flow-text2">Pilih alat laboratorium yang tersedia</p>
+                    <p class="flow-text1">Borrow Equipment</p>
+                    <p class="flow-text2">Select available laboratory equipment</p>
                 </div>
             </div>
             <div class="flow">
                 <div class="flow-number">2</div>
                 <div class="flow-text">
-                    <p class="flow-text1">Ajukan Peminjaman</p>
-                    <p class="flow-text2">Lengkapi informasi dan ajukan peminjaman</p>
+                    <p class="flow-text1">Submit Loan Request</p>
+                    <p class="flow-text2">Fill in the information and submit the loan request</p>
                 </div>
             </div>
             <div class="flow">
                 <div class="flow-number">3</div>
                 <div class="flow-text">
-                    <p class="flow-text1">Menunggu Persetujuan</p>
-                    <p class="flow-text2">Menunggu informasi dari admin laboratorium</p>
+                    <p class="flow-text1">Waiting for Approval</p>
+                    <p class="flow-text2">Waiting for information from laboratory admin</p>
                 </div>
             </div>
             <div class="flow">
                 <div class="flow-number">4</div>
                 <div class="flow-text">
-                    <p class="flow-text1">Ambil & Gunakan</p>
-                    <p class="flow-text2">Ambil alat dan gunakan sesuai ketentuan</p>
+                    <p class="flow-text1">Take & Use</p>
+                    <p class="flow-text2">Take the equipment and use it according to the terms</p>
                 </div>
             </div>
             <div class="flow">
                 <div class="flow-number">5</div>
                 <div class="flow-text">
-                    <p class="flow-text1">Kembalikan</p>
-                    <p class="flow-text2">Kembalikan alat tepat waktu</p>
+                    <p class="flow-text1">Return</p>
+                    <p class="flow-text2">Return the equipment on time</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="dash recent-order">
         <div class="dash1 recent-order-text">
-            <p>Peminjaman Terbaru</p>
+            <p>Recent Orders</p>
         </div>
         <div class="recent-order-product">
             <% if (latestOrders.length === 0) { %>
                 <div class="product no-orders">
                     <div class="product-text-info">
-                        <p class="text-info1">Belum ada riwayat peminjaman</p>
+                        <p class="text-info1">No Orders Yet</p>
                     </div>
                 </div>
             <% } %>
@@ -161,7 +161,7 @@
                     <div class="product-text">
                         <div class="product-text-info">
                             <p class="text-info1"><%= order.product_name %></p>
-                            <p class="text-info2"><%= order.category_name || 'Kategori tidak tersedia' %></p>
+                            <p class="text-info2"><%= order.category_name || 'Category not available' %></p>
                             <p class="text-info2"><%= order.tgl_pinjam %></p>
                         </div>
                         <div class="product-status <%= order.status === 'pending' || order.status === 'in use' ? 'green' : order.status === 'overdue' ? 'red' : order.status === 'completed' ? 'yellow' : '' %>">
