@@ -3,11 +3,45 @@
         <h2>Dashboard</h2>
         <p class="welcome">Selamat Datang, <%= user.username %>!</p>
     </div>
-    <div class="nav2">
-        <a href="/" class="notif"><i class="bi bi-bell-fill"></i></a>
-        <a href="/profile" class="profile-section"><img class="profile-img" src="/assets/sawako.jfif" alt="Profile"></a>
-        <p class="username"><%= user.username %></p>
+
+<div class="nav2">
+    <div class="notif-wrapper <%= reminders.length > 0 ? 'has-reminder' : '' %>">
+        <i class="bi bi-bell-fill" id="notifBtn"></i>
+        <% if(reminders.length > 0){ %>
+            <span class="notif-badge">
+                <%= reminders.length %>
+            </span>
+        <% } %>
+        <div id="reminderPopup" class="reminder-popup">
+            <% reminders.forEach(r => { %>
+                <div class="popup-item">
+                    <span class="popup-title">
+                        ⚠ Reminder
+                    </span>
+                    <p>
+                        Your loan for
+                        <strong><%= r.product_name %></strong>
+                        has been reminded by admin.
+                        Please return it as soon as possible.
+                    </p>
+                </div>
+            <% }) %>
+            <% if(reminders.length === 0){ %>
+                <div class="no-reminder">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>No reminders</span>
+                </div>
+            <% } %>
+
+        </div>
     </div>
+    <a href="/profile" class="profile-section">
+        <img class="profile-img" src="/Assets/profile.jpg" alt="Profile">
+    </a>
+    <p class="username">
+        <%= user.username %>
+    </p>
+</div>
 </nav>
 <div class="verification <%= user.ktp_status === 'verified' ? 'verified' : 'unverified' %>">
     <div class="verif-logo <%= user.ktp_status === 'verified' ? 'verified' : 'unverified' %>">
@@ -139,3 +173,33 @@
         </div>
     </div>
 </div>
+
+<script>
+const notifBtn = document.getElementById("notifBtn");
+const reminderPopup = document.getElementById("reminderPopup");
+
+if (notifBtn && reminderPopup) {
+
+  notifBtn.addEventListener("click", () => {
+
+    if(reminderPopup.style.display === "block"){
+      reminderPopup.style.display = "none";
+    } else {
+      reminderPopup.style.display = "block";
+    }
+
+  });
+
+  document.addEventListener("click", (e) => {
+
+    if(
+      !notifBtn.contains(e.target) &&
+      !reminderPopup.contains(e.target)
+    ){
+      reminderPopup.style.display = "none";
+    }
+
+  });
+
+}
+</script>

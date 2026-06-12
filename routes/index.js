@@ -1007,21 +1007,42 @@ router.get(
       const user = userRows[0];
 
       const sql = `
-        SELECT
-          p.id,
-          p.id_products,
-          p.status,
-          DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
-          DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
-          pr.name AS product_name,
-          pr.image AS product_image,
-          c.name AS category_name
-        FROM peminjaman p
-        LEFT JOIN products pr ON p.id_products = pr.id
-        LEFT JOIN category c ON pr.id_category = c.id
-        WHERE p.id_user = ?
-        ORDER BY p.tgl_pinjam DESC, p.id DESC
-      `;
+                SELECT
+                    p.id,
+                    p.id_products,
+                    p.status,
+
+                    DATE_FORMAT(p.tgl_pinjam,'%Y-%m-%d') AS tgl_pinjam,
+                    DATE_FORMAT(p.tgl_kembali,'%Y-%m-%d') AS tgl_kembali,
+
+                    pr.name AS product_name,
+                    pr.image AS product_image,
+
+                    c.name AS category_name,
+
+                    r.reminder_id
+
+                FROM peminjaman p
+
+                LEFT JOIN products pr
+                ON p.id_products = pr.id
+
+                LEFT JOIN category c
+                ON pr.id_category = c.id
+
+                LEFT JOIN (
+                    SELECT
+                        id_peminjaman,
+                        MAX(id) AS reminder_id
+                    FROM reminder
+                    GROUP BY id_peminjaman
+                ) r
+                ON r.id_peminjaman = p.id
+
+                WHERE p.id_user = ?
+
+                ORDER BY p.tgl_pinjam DESC, p.id DESC
+                `;
 
       db.query(sql, [userId], async (orderErr, orders) => {
         if (orderErr) {
@@ -1041,6 +1062,9 @@ router.get(
         ).size;
 
         const latestOrders = orders.slice(0, 3);
+        const reminders = orders.filter(
+          (o) => o.reminder_id && o.status !== "completed"
+        );
 
         const content = await ejs.renderFile(
           path.join(__dirname, "../views/pages/user/profile/dashboard.ejs"),
@@ -1053,6 +1077,7 @@ router.get(
               uniqueProducts,
             },
             latestOrders,
+            reminders,
           },
         );
 

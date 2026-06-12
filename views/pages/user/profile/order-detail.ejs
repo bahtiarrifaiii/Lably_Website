@@ -175,16 +175,19 @@ function formatTanggal(tanggal){
             { label: 'Barang diambil', date: order.picked_at || null },
             { label: 'Barang dikembalikan', date: order.returned_at || order.tgl_kembali || null }
         ];
-
-        const step0Done = Boolean(timelineSteps[0].date);
-        const step1Done = Boolean(timelineSteps[1].date);
-        const step2Done = Boolean(timelineSteps[2].date) || ['in use', 'overdue', 'completed', 'returned'].includes(status);
-        const step3Done = Boolean(timelineSteps[3].date) || ['completed', 'returned'].includes(status);
-        let completedCount = 0;
-        if (step0Done) completedCount++;
-        if (step1Done) completedCount++;
-        if (step2Done) completedCount++;
-        if (step3Done) completedCount++;
+        let completedCount = 1;
+        if (status === 'pending') {
+            completedCount = 2;
+        }
+        if (status === 'in use') {
+            completedCount = 3;
+        }
+        if (status === 'overdue') {
+            completedCount = 3;
+        }
+        if (status === 'completed') {
+            completedCount = 4;
+        }
     %>
 
     <div class="content order-timeline">
