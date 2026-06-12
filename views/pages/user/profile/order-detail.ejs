@@ -167,9 +167,54 @@ function formatTanggal(tanggal){
     </div>
 </div>  
 
+    <% 
+        const status = (order.status || '').toString().toLowerCase();
+        const timelineSteps = [
+            { label: 'Peminjaman dibuat', date: order.created_at || order.tgl_pinjam || null },
+            { label: 'Pembayaran Berhasil', date: order.paid_at || order.payment_date || null },
+            { label: 'Barang diambil', date: order.picked_at || null },
+            { label: 'Barang dikembalikan', date: order.returned_at || order.tgl_kembali || null }
+        ];
+
+        const step0Done = Boolean(timelineSteps[0].date);
+        const step1Done = Boolean(timelineSteps[1].date);
+        const step2Done = Boolean(timelineSteps[2].date) || ['in use', 'overdue', 'completed', 'returned'].includes(status);
+        const step3Done = Boolean(timelineSteps[3].date) || ['completed', 'returned'].includes(status);
+        let completedCount = 0;
+        if (step0Done) completedCount++;
+        if (step1Done) completedCount++;
+        if (step2Done) completedCount++;
+        if (step3Done) completedCount++;
+    %>
+
     <div class="content order-timeline">
         <div class="title">
             <h1>Timeline</h1>
+        </div>
+        <div class="timeline-container">
+            <div class="path">
+                <% timelineSteps.forEach(function(step, idx) { 
+                    const done = idx < completedCount; %>
+                    <div class="circle <%= done ? 'completed' : '' %>"></div>
+                    <% if (idx < timelineSteps.length - 1) { %>
+                        <div class="line <%= (idx + 2) <= completedCount ? 'completed' : '' %>"></div>
+                    <% } %>
+                <% }); %>
+            </div>
+            <div class="timeline-info">
+                <% timelineSteps.forEach(function(step, idx) { %>
+                    <div>
+                        <% if (idx < completedCount) { %>
+                            <% if (idx === 2) { %>
+                                <%= step.label %> (<%= status === 'overdue' ? 'Overdue' : 'In use' %>)
+                            <% } else { %>
+                                <%= step.label %>
+                            <% } %>
+                        <% } %>
+                    </div>
+                    <% if (idx < timelineSteps.length - 1) { %><div></div><% } %>
+                <% }); %>
+            </div>
         </div>
     </div>
 

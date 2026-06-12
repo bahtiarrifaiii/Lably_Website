@@ -260,6 +260,54 @@
     grid-area: order-timeline;
 }
 
+.timeline-container{
+    display: flex;
+    font-size: 12px;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.path{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.path .circle{
+    width: 13px;
+    height: 13px;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.path .line{
+    background-color: black;
+    height: 29px;
+    width: 2px;
+}
+
+.path .circle.completed{
+    background-color: var(--primary);
+}
+
+.path .line.completed{
+    background-color: var(--primary);
+}
+
+.timeline-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-info div{
+    height: 21px;
+    display: flex;
+    align-items: center;
+}
+
 .borrower-content{
     padding: 8px 12px;
 }
