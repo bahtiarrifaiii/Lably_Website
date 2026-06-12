@@ -225,6 +225,8 @@ function formatTanggal(tanggal){
         <div class="title">
             <h1>Informasi Pembayaran</h1>
         </div>
+        <p>dfd</p>
+        <p>dsfdf</p>
     </div>
 
     <div class="content return">
@@ -269,11 +271,7 @@ function formatTanggal(tanggal){
 
             <% } else { %>
 
-                <p>Pengembalian dilakukan sebelum atau pada</p>
-
-                <strong>
-                    <%= formatTanggal(order.tgl_kembali) %>
-                </strong>
+                <p>Pengembalian sebelum atau pada <span><%= formatTanggal(order.tgl_kembali) %></span></p>
 
             <% } %>
 

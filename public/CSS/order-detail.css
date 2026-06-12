@@ -60,7 +60,7 @@
                         "order-info order-timeline payment"
                         "order-info order-timeline return";
     grid-template-columns:1fr 0.75fr 0.75fr;
-    grid-template-rows: auto
+    grid-template-rows: min-content
                         auto
                         auto;
     gap:10px;
@@ -91,16 +91,14 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    align-items: center;
 }
 
 .tool-info-content .tool-img{
-    width:180px;
-    height:220px;
+    width:160px;
+    height:200px;
     background:#efefd8;
     border-radius:8px;
     overflow:hidden;
-
     display:flex;
     justify-content:center;
     align-items:center;
@@ -205,7 +203,6 @@
     display:flex;
     align-items:center;
     gap:10px;
-    min-height:56px;
 }
 
 .order-sum-text{
@@ -339,13 +336,13 @@
 }
 
 .return-content{
-    padding:10px 12px;
+    padding:0 0 0 10px;
 }
 
 .return-status{
-    font-size:13px;
+    font-size:12px;
     font-weight:600;
-    margin-bottom:10px;
+    margin-bottom:5px;
 }
 
 .returned{
@@ -363,13 +360,15 @@
 .return-date{
     font-size:11px;
     color:#666;
-    line-height:1.4;
 }
 
-.return-date strong{
-    display:block;
+.return-date p{
+    font-size: 12px;
+}
+
+.return-date span{
+    display:inline;
     margin-top:5px;
-    font-size:14px;
     color:#222;
     font-weight:600;
 }
