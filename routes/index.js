@@ -23,6 +23,7 @@ const productController = require("../controllers/productController");
 const {
   isLoggedIn,
   isAdmin,
+  ensureVerifiedCustomer,
   passLoginStatus,
 } = require("../middlewares/authMiddleware");
 
@@ -322,7 +323,7 @@ router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
 });
 
 // ROUTE FORM
-router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
+router.get("/form", isLoggedIn, passLoginStatus, ensureVerifiedCustomer, async (req, res) => {
   const formSpecificScript = "/JS/form-user.js";
   const message = req.session.message || null;
   req.session.message = null;
@@ -407,7 +408,7 @@ router.get("/form", isLoggedIn, passLoginStatus, async (req, res) => {
   });
 });
 
-router.post("/submit-data", isLoggedIn, (req, res) => {
+router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
   const {
     action_type,
     quantity,
@@ -631,7 +632,7 @@ router.post("/cart/clear", isLoggedIn, (req, res) => {
 });
 
 // CHECKOUT PAGE
-router.get("/checkout", isLoggedIn, passLoginStatus, async (req, res) => {
+router.get("/checkout", isLoggedIn, passLoginStatus, ensureVerifiedCustomer, async (req, res) => {
   const userId = req.session.user && req.session.user.id;
 
   Draft.getByUser(userId, async (err, rows) => {
@@ -705,7 +706,7 @@ router.post("/checkout/cancel", isLoggedIn, (req, res) => {
 });
 
 // Finalize checkout: create peminjaman rows for the logged-in user
-router.post("/checkout/complete", isLoggedIn, (req, res) => {
+router.post("/checkout/complete", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
   const userId = req.session.user && req.session.user.id;
   if (!userId) {
     req.session.message = { type: "error", text: "User session tidak valid." };
@@ -1113,6 +1114,8 @@ router.get(
       }
 
       const user = userRows[0];
+    const message = req.session.message || null;
+    req.session.message = null;
 
       const content = await ejs.renderFile(
         path.join(__dirname, "../views/pages/user/profile/profile-page.ejs"),
@@ -1123,6 +1126,8 @@ router.get(
         title: "Customer Profile | Lably",
         style: `<link rel="stylesheet" href="/CSS/profile-page.css" />`,
         content,
+        message,
+        showPopup: !!message,
         currentPage: req.path,
       });
     });

@@ -353,6 +353,7 @@
   display: flex;
   gap: 1.2rem;
   margin-left: 0.5rem;
+  font-size: 0.88rem;
 }
 
 .path {
@@ -362,6 +363,7 @@
 }
 
 .path .circle {
+  margin: 0.2rem 0;
   width: 12px;
   height: 12px;
   background-color: #dde3f0;
@@ -393,12 +395,14 @@
 .timeline-info {
   display: flex;
   flex-direction: column;
+  gap: 1.75rem; 
 }
 
 .timeline-info div {
-  height: 21px;
+  height: 20px;
   display: flex;
   align-items: center;
+  justify-content: start;
 }
 
 .borrower-content {

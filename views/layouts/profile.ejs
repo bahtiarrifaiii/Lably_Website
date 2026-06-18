@@ -30,6 +30,11 @@
             <%- content %>
         </div>
     </div>
+    <% const allowPopup = typeof showPopup !== "undefined" ? showPopup : true;
+       const popupMessage = typeof message !== "undefined" ? message : null; %>
+    <% if (allowPopup && popupMessage) { %>
+      <div class="popup <%= popupMessage.type %>"><%= popupMessage.text %></div>
+    <% } %>
     <% if (typeof scriptFile !== 'undefined' && scriptFile) { %>
     <script src="<%= scriptFile %>"></script>
     <% } %>
