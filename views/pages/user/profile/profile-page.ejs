@@ -4,20 +4,20 @@
   <!-- HEADER -->
   <div class="profile-header">
     <h1>Profile</h1>
-    <p>Kelola informasi akun Anda</p>
+    <p>Manage your account information</p>
   </div>
 
   <div class="profile-body">
     <!-- KIRI: Informasi Pribadi -->
     <div class="profile-card info-card">
       <div class="card-title">
-        <h2>Informasi Pribadi</h2>
-        <p>Perbarui informasi pribadi Anda</p>
+        <h2>Personal Information</h2>
+        <p>Update your personal information</p>
       </div>
 
       <form action="/profile-customer/update" method="POST">
         <div class="form-group">
-          <label for="nama">Nama Lengkap</label>
+          <label for="nama">Full Name</label>
           <input
             type="text"
             id="nama"
@@ -39,7 +39,7 @@
         </div>
 
         <div class="form-group">
-          <label for="phone">Nomor Telepon</label>
+          <label for="phone">Phone Number</label>
           <input
             type="text"
             id="phone"
@@ -51,7 +51,7 @@
 
         <div class="form-buttons">
           <button type="button" class="btn-edit" id="btnEdit">
-            Edit Profil
+            Edit Profile
           </button>
           <button
             type="submit"
@@ -59,7 +59,7 @@
             id="btnSave"
             style="display: none"
           >
-            Simpan Perubahan
+            Save Changes
           </button>
           <button
             type="button"
@@ -67,7 +67,7 @@
             id="btnCancel"
             style="display: none"
           >
-            Batal
+            Cancel
           </button>
         </div>
       </form>
@@ -83,15 +83,15 @@
             <i class="bi bi-camera"></i>
           </button>
         </div>
-        <p>Nama Member</p>
         <h3><%= user.username %></h3>
+        <p>Member Since <%= user.created_at ? new Date(user.created_at).getFullYear() : '-' %></p>
       </div>
 
       <!-- Keamanan Akun Card -->
       <div class="profile-card security-card">
         <div class="card-title">
-          <h2>Keamanan Akun</h2>
-          <p>Kelola keamanan akun Anda</p>
+          <h2>Account Security</h2>
+          <p>Manage your account security.</p>
         </div>
 
         <ul class="security-list">
@@ -99,8 +99,8 @@
             <div class="security-item">
               <i class="bi bi-lock"></i>
               <div>
-                <span class="security-label">Ubah Password</span>
-                <span class="security-desc">Perbarui pasword akun Anda</span>
+                <span class="security-label">Change Password</span>
+                <span class="security-desc">Update your account password</span>
               </div>
             </div>
             <i class="bi bi-chevron-right"></i>
@@ -123,26 +123,26 @@
     </div>
     <div class="help-text">
       <% if(user.ktp_status === 'verified') { %>
-        <h4>Identitas Terverifikasi</h4>
-        <p>Akun Anda telah berhasil diverifikasi.</p>
+        <h4>Identity Verified</h4>
+        <p>Your account has been successfully verified.</p>
       <% } else if(user.ktp_status === 'pending') { %>
-        <h4>Sedang Diverifikasi</h4>
-        <p>Kartu identitas Anda sedang ditinjau oleh admin. Mohon tunggu.</p>
+        <h4>Identity Pending</h4>
+        <p>Your identity card is being reviewed by the admin. Please wait.</p>
       <% } else if(user.ktp_status === 'rejected') { %>
-        <h4>Verifikasi Ditolak</h4>
-        <p>Kartu identitas Anda ditolak. Silakan upload ulang dokumen yang valid.</p>
+        <h4>Identity Rejected</h4>
+        <p>Your identity card is rejected. Please upload a valid document.</p>
       <% } else { %>
-        <h4>Verifikasi Lebih Lanjut</h4>
-        <p>Upload foto Kartu identitas Anda untuk verifikasi identitas lebih lanjut.</p>
+        <h4>Identity Verification</h4>
+        <p>Upload your identity card for further identity verification.</p>
       <% } %>
     </div>
 
     <% if(user.ktp_status === 'unverified') { %>
-      <button type="button" class="btn-support" id="btnVerifikasi">Verifikasi</button>
+      <button type="button" class="btn-support" id="btnVerifikasi">Identity Verification</button>
     <% } else if(user.ktp_status === 'pending') { %>
-      <button type="button" class="btn-support btn-pending" disabled>Sedang Diverifikasi</button>
+      <button type="button" class="btn-support btn-pending" disabled>Pending</button>
     <% } else if(user.ktp_status === 'rejected') { %>
-      <button type="button" class="btn-support btn-rejected" id="btnVerifikasi">Verifikasi Ulang</button>
+      <button type="button" class="btn-support btn-rejected" id="btnVerifikasi">Upload Again</button>
     <% } %>
   </div>
 
@@ -154,9 +154,9 @@
           <i class="bi bi-person-circle"></i>
         </div>
         <div>
-          <h3>Verifikasi Kartu Identitas</h3>
-          <p>Upload foto Kartu identitas Anda untuk verifikasi identitas lebih lanjut. Proses review dilakukan oleh admin secara manual.</p>
-          <span class="badge-pending"><i class="bi bi-clock"></i> Belum terverifikasi</span>
+          <h3>Identity Verification</h3>
+          <p>Upload your identity card for further identity verification. The review process is done manually by the admin.</p>
+          <span class="badge-pending"><i class="bi bi-clock"></i> Unverified</span>
         </div>
       </div>
 
@@ -164,13 +164,13 @@
         <div class="ktp-dropzone" id="ktpDropzone">
           <input type="file" id="ktpFile" name="ktp_image" accept=".jpg,.jpeg,.png,.pdf" hidden />
           <i class="bi bi-upload"></i>
-          <p>Klik atau seret foto kartu identitas ke sini</p>
+          <p>Click or drag your identity card photo here</p>
           <span>Format: JPG, PNG, PDF · Maks. 5 MB</span>
         </div>
-        <p class="ktp-note"><i class="bi bi-shield-lock"></i> Data Anda hanya akan diakses oleh admin terverifikasi.</p>
+        <p class="ktp-note"><i class="bi bi-shield-lock"></i> Your data will only be accessed by verified admins.</p>
         <div class="ktp-modal-actions">
-          <button type="button" class="btn-cancel-modal" id="btnCancelModal">Batal</button>
-          <button type="submit" class="btn-kirim"><i class="bi bi-send"></i> Kirim untuk Diverifikasi</button>
+          <button type="button" class="btn-cancel-modal" id="btnCancelModal">Cancel</button>
+          <button type="submit" class="btn-kirim"><i class="bi bi-send"></i> Send for Verification</button>
         </div>
       </form>
     </div>
@@ -184,6 +184,11 @@
   const btnCancel = document.getElementById("btnCancel");
   const inputs = document.querySelectorAll(".info-card input");
   const originalValues = {};
+  const btnVerifikasi = document.getElementById('btnVerifikasi');
+  const ktpModalOverlay = document.getElementById('ktpModalOverlay');
+  const btnCancelModal = document.getElementById('btnCancelModal');
+  const ktpDropzone = document.getElementById('ktpDropzone');
+  const ktpFile = document.getElementById('ktpFile');
 
   btnEdit.addEventListener("click", () => {
     inputs.forEach((input) => {
@@ -205,14 +210,24 @@
     btnCancel.style.display = "none";
   });
 
-  const btnVerifikasi = document.getElementById('btnVerifikasi');
-  const ktpModalOverlay = document.getElementById('ktpModalOverlay');
-  const btnCancelModal = document.getElementById('btnCancelModal');
-  const ktpDropzone = document.getElementById('ktpDropzone');
-  const ktpFile = document.getElementById('ktpFile');
-
   if (btnVerifikasi) {
     btnVerifikasi.addEventListener('click', () => {
+      const phone = '<%= user.phone %>';
+      const username = '<%= user.username %>';
+      const email = '<%= user.email %>';
+
+      if (!phone) {
+        // buat popup dynamic
+        const popup = document.createElement('div');
+        popup.className = 'popup error';
+        popup.textContent = 'Please complete your personal data first before verication.';
+        document.querySelector('.profile-content').appendChild(popup);
+
+        // hapus otomatis setelah animasi selesai
+        setTimeout(() => popup.remove(), 3200);
+        return;
+      }
+
       ktpModalOverlay.classList.add('show');
     });
   }

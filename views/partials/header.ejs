@@ -1,6 +1,4 @@
-<% const headerOnePages = ['home', 'catalogue', 'order-user']; const
-headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
-(headerOnePages.includes(currentPage)){ %> <% if (isLoggedIn) { %>
+<% if (isLoggedIn) { %>
 <!-- Header User -->
 <header class="main-header">
   <div class="header-content">
@@ -13,7 +11,7 @@ headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
       </nav>
       <div class="nav-icons" id="nav-icons">
         <a href="/cart"><i class="bi bi-bag-fill"></i></a>
-        <a href="/profile-customer"><i class="bi bi-person-fill"></i></a>
+        <a href="<%= user && user.ktp_status === 'verified' ? '/dashboard-customer' : '/profile-customer' %>"><i class="bi bi-person-fill"></i></a>
       </div>
     </div>
 
@@ -44,29 +42,4 @@ headerTwoPages = ['product', 'cart', 'checkout']; %> <% if
     </button>
   </div>
 </header>
-<% } %> <% } else if (headerTwoPages.includes(currentPage)) { %>
-<header class="main-header">
-  <div class="header-content">
-    <a href="javascript:history.back()" class="back-btn">
-      <i class="bi bi-arrow-left"></i>
-      <span>Back</span>
-    </a>
-
-    <div id="mobile-menu-wrapper" class="mobile-menu-wrapper">
-      <nav class="main-nav sec-nav" id="main-nav">
-        <a href="/" class="logo"> <span>Lab</span>Ly </a>
-      </nav>
-      <div class="nav-icons" id="nav-icons">
-        <a href="/cart"><i class="bi bi-bag-fill"></i></a>
-        <a href="/logout" class="logout-icon"
-          ><i class="bi bi-box-arrow-right"></i> <span>Logout</span></a
-        >
-      </div>
-    </div>
-
-    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
-      <i class="bi bi-list"></i>
-    </button>
-  </div>
-</header>
-<% } %>
+<% } %> 

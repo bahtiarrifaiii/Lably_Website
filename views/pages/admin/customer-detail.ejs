@@ -3,21 +3,21 @@
 <div class="profile-content">
   <!-- HEADER -->
   <div class="profile-header">
-    <a href="/customer" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
-    <h1>Detail Customer</h1>
-    <p>Informasi lengkap akun customer</p>
+    <a href="/customer" class="btn-back"><i class="bi bi-arrow-left"></i>Back</a>
+    <h1>Customer Details</h1>
+    <p>Customer Information Details</p>
   </div>
 
   <div class="profile-body">
     <!-- KIRI: Informasi Pribadi (readonly) -->
     <div class="profile-card info-card">
       <div class="card-title">
-        <h2>Informasi Pribadi</h2>
-        <p>Data akun customer</p>
+        <h2>User Information</h2>
+        <p>User Information Details</p>
       </div>
 
       <div class="form-group">
-        <label>Nama Lengkap</label>
+        <label>Full Name</label>
         <input type="text" value="<%= user.username %>" readonly />
       </div>
 
@@ -27,17 +27,17 @@
       </div>
 
       <div class="form-group">
-        <label>Nomor Telepon</label>
+        <label>Phone Number</label>
         <input type="text" value="<%= user.phone || '-' %>" readonly />
       </div>
 
       <div class="form-group">
-        <label>Status Akun</label>
+        <label>Account Status</label>
         <input type="text" value="<%= user.status %>" readonly />
       </div>
 
       <div class="form-group">
-        <label>Tanggal Bergabung</label>
+        <label>Join Date</label>
         <input type="text" value="<%= user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '-' %>" readonly />
       </div>
     </div>
@@ -47,11 +47,11 @@
       <div class="profile-card avatar-card">
         <% if(user.ktp_image) { %>
           <img src="<%= user.ktp_image %>" alt="Foto KTP" class="ktp-preview-img" />
-          <p class="ktp-label">Foto Kartu Identitas</p>
+          <p class="ktp-label">Identity Card</p>
         <% } else { %>
           <div class="ktp-empty">
             <i class="bi bi-person-vcard"></i>
-            <p>Belum ada foto KTP</p>
+            <p>No Identity Card Yet</p>
           </div>
         <% } %>
       </div>
@@ -59,18 +59,18 @@
       <!-- Status KTP -->
       <div class="profile-card security-card">
         <div class="card-title">
-          <h2>Status Verifikasi</h2>
-          <p>Status kartu identitas customer</p>
+          <h2>Verified Status</h2>
+          <p>Identity Card Status</p>
         </div>
         <div class="ktp-status-info">
           <% if(user.ktp_status === 'verified') { %>
-            <span class="ktp-badge verified"><i class="bi bi-check-circle"></i> Terverifikasi</span>
+            <span class="ktp-badge verified"><i class="bi bi-check-circle"></i> Verified</span>
           <% } else if(user.ktp_status === 'pending') { %>
-            <span class="ktp-badge pending"><i class="bi bi-clock"></i> Menunggu Verifikasi</span>
+            <span class="ktp-badge pending"><i class="bi bi-clock"></i> Pending</span>
           <% } else if(user.ktp_status === 'rejected') { %>
-            <span class="ktp-badge rejected"><i class="bi bi-x-circle"></i> Ditolak</span>
+            <span class="ktp-badge rejected"><i class="bi bi-x-circle"></i> Rejected</span>
           <% } else { %>
-            <span class="ktp-badge unverified"><i class="bi bi-dash-circle"></i> Belum Diverifikasi</span>
+            <span class="ktp-badge unverified"><i class="bi bi-dash-circle"></i> Unverified</span>
           <% } %>
         </div>
       </div>
@@ -95,17 +95,17 @@
 
     <div class="help-text">
       <% if(user.ktp_status === 'verified') { %>
-        <h4>Identitas Terverifikasi</h4>
-        <p>Customer ini telah berhasil diverifikasi.</p>
+        <h4>Identity Verified</h4>
+        <p>Customer has been successfully verified.</p>
       <% } else if(user.ktp_status === 'rejected') { %>
-        <h4>Verifikasi Ditolak</h4>
-        <p>Kartu identitas customer telah ditolak.</p>
+        <h4>Rejected</h4>
+        <p>Customer's identity card has been rejected.</p>
       <% } else if(user.ktp_status === 'pending') { %>
-        <h4>Menunggu Persetujuan</h4>
-        <p>Customer telah mengupload kartu identitas dan menunggu verifikasi admin.</p>
+        <h4>Pending</h4>
+        <p>Customer has uploaded an identity card and is waiting for admin verification.</p>
       <% } else { %>
-        <h4>Belum Diverifikasi</h4>
-        <p>Customer belum mengupload kartu identitas.</p>
+        <h4>Unverified</h4>
+        <p>Customer has not uploaded an identity card.</p>
       <% } %>
     </div>
 

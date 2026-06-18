@@ -265,15 +265,23 @@
 .btn-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 1rem;
   font-size: 0.85rem;
+  font-weight: 600;
   color: #1a3a6b;
   text-decoration: none;
   margin-bottom: 0.5rem;
+  transition: all 0.5s ease;
 }
 
-.btn-back:hover {
-  text-decoration: underline;
+.btn-back .bi {
+  font-size: 1rem;
+  transition: all 0.5s ease;
+}
+
+.btn-back:hover,
+.btn-back:hover .bi {
+  color: var(--btn-hover-blue);
 }
 
 /* ================================

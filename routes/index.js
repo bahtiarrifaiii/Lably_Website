@@ -150,16 +150,33 @@ router.get("/", passLoginStatus, async (req, res) => {
       },
     );
 
-    res.render("layouts/main", {
-      title: "Home | Lably Official Web",
-      currentPage: "home",
-      showFooter: true,
-      meta: `
-        <meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />
-      `,
-      style: `<link rel="stylesheet" href="/CSS/home.css" />`,
-      content,
-    });
+    // fetch user dari DB jika login
+    const userId = req.session.user?.id;
+    if (userId) {
+      User.getById(userId, (userErr, userRows) => {
+        const user = !userErr && userRows.length ? userRows[0] : null;
+
+        res.render("layouts/main", {
+          title: "Home | Lably Official Web",
+          currentPage: "home",
+          showFooter: true,
+          meta: `<meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />`,
+          style: `<link rel="stylesheet" href="/CSS/home.css" />`,
+          content,
+          user,
+        });
+      });
+    } else {
+      res.render("layouts/main", {
+        title: "Home | Lably Official Web",
+        currentPage: "home",
+        showFooter: true,
+        meta: `<meta name="description" content="LabLy: Solusi alat riset dan laboratorium." />`,
+        style: `<link rel="stylesheet" href="/CSS/home.css" />`,
+        content,
+        user: null,
+      });
+    }
   });
 });
 
@@ -258,17 +275,38 @@ router.get("/catalogue", (req, res) => {
               return res.status(500).send("EJS render error");
             }
 
-            res.render("layouts/main", {
-              title: "Catalogue | Lably Official Web",
-              currentPage: "catalogue",
-              showFooter: true,
-              meta: `
-                <meta name="description" content="Katalog alat laboratorium LabLy." />
-                <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-              `,
-              style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
-              content,
-            });
+            const userId = req.session.user?.id;
+            if (userId) {
+              User.getById(userId, (userErr, userRows) => {
+                const user = !userErr && userRows.length ? userRows[0] : null;
+
+                res.render("layouts/main", {
+                  title: "Catalogue | Lably Official Web",
+                  currentPage: "catalogue",
+                  showFooter: true,
+                  meta: `
+          <meta name="description" content="Katalog alat laboratorium LabLy." />
+          <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+        `,
+                  style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
+                  content,
+                  user,
+                });
+              });
+            } else {
+              res.render("layouts/main", {
+                title: "Catalogue | Lably Official Web",
+                currentPage: "catalogue",
+                showFooter: true,
+                meta: `
+        <meta name="description" content="Katalog alat laboratorium LabLy." />
+        <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+      `,
+                style: `<link rel="stylesheet" href="/CSS/catalogue.css" />`,
+                content,
+                user: null,
+              });
+            }
           },
         );
       });
@@ -307,106 +345,130 @@ router.get("/product/:id", isLoggedIn, passLoginStatus, (req, res) => {
       { product, message: popupMessage, showPopup: !!popupMessage },
     );
 
-    res.render("layouts/main", {
-      title: `${product.name} | Lably Web`,
-      currentPage: "product",
-      showFooter: true,
-      meta: `
-        <meta name="description" content="${product.name}"/>
-      `,
-      style: `<link rel="stylesheet" href="/CSS/product.css" />`,
-      content,
-      message: popupMessage,
-      showPopup: !!popupMessage,
-    });
+    const userId = req.session.user?.id;
+    if (userId) {
+      User.getById(userId, (userErr, userRows) => {
+        const user = !userErr && userRows.length ? userRows[0] : null;
+
+        res.render("layouts/main", {
+          title: `${product.name} | Lably Web`,
+          currentPage: "product",
+          showFooter: true,
+          meta: `<meta name="description" content="${product.name}"/>`,
+          style: `<link rel="stylesheet" href="/CSS/product.css" />`,
+          content,
+          user, // dari DB
+          message: popupMessage,
+          showPopup: !!popupMessage,
+        });
+      });
+    } else {
+      res.render("layouts/main", {
+        title: `${product.name} | Lably Web`,
+        currentPage: "product",
+        showFooter: true,
+        meta: `<meta name="description" content="${product.name}"/>`,
+        style: `<link rel="stylesheet" href="/CSS/product.css" />`,
+        content,
+        user: null,
+        message: popupMessage,
+        showPopup: !!popupMessage,
+      });
+    }
   });
 });
 
 // ROUTE FORM
-router.get("/form", isLoggedIn, passLoginStatus, ensureVerifiedCustomer, async (req, res) => {
-  const formSpecificScript = "/JS/form-user.js";
-  const message = req.session.message || null;
-  req.session.message = null;
+router.get(
+  "/form",
+  isLoggedIn,
+  passLoginStatus,
+  ensureVerifiedCustomer,
+  async (req, res) => {
+    const formSpecificScript = "/JS/form-user.js";
+    const message = req.session.message || null;
+    req.session.message = null;
 
-  const productId = req.query.product_id;
-  const qty = parseInt(req.query.qty) || 1;
-  const action = req.query.action;
+    const productId = req.query.product_id;
+    const qty = parseInt(req.query.qty) || 1;
+    const action = req.query.action;
 
-  if (!productId) {
-    req.session.message = "ID Produk tidak ditemukan.";
-    return res.redirect("/catalogue");
-  }
-
-  if (!action) {
-    req.session.message = "Aksi pemesanan tidak valid.";
-    return res.redirect("/catalogue");
-  }
-
-  Product.getById(productId, (err, productRows) => {
-    if (err) {
-      console.error("Database Error (Product):", err);
-      req.session.message =
-        "Terjadi kesalahan server saat mengambil data produk.";
+    if (!productId) {
+      req.session.message = "ID Produk tidak ditemukan.";
       return res.redirect("/catalogue");
     }
 
-    if (!productRows || productRows.length === 0) {
-      req.session.message = "Produk tidak ditemukan.";
+    if (!action) {
+      req.session.message = "Aksi pemesanan tidak valid.";
       return res.redirect("/catalogue");
     }
 
-    const product = productRows[0];
-    const priceTotal = product.price * qty;
-
-    User.getById(req.session.user.id, (err, userRows) => {
+    Product.getById(productId, (err, productRows) => {
       if (err) {
-        console.error("Database Error (User):", err);
+        console.error("Database Error (Product):", err);
         req.session.message =
-          "Terjadi kesalahan server saat mengambil data pengguna.";
-        return res.redirect("/login");
+          "Terjadi kesalahan server saat mengambil data produk.";
+        return res.redirect("/catalogue");
       }
 
-      if (!userRows || userRows.length === 0) {
-        req.session.message =
-          "Sesi pengguna tidak valid. Silakan login kembali.";
-        return res.redirect("/login");
+      if (!productRows || productRows.length === 0) {
+        req.session.message = "Produk tidak ditemukan.";
+        return res.redirect("/catalogue");
       }
 
-      const user = userRows[0];
+      const product = productRows[0];
+      const priceTotal = product.price * qty;
 
-      ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/form.ejs"),
-        {
-          message,
-          product,
-          qty,
-          priceTotal,
-          user,
-          action,
-        },
-        (err, content) => {
-          if (err) {
-            console.error("EJS Render Error:", err);
-            req.session.message =
-              "Terjadi kesalahan saat membuat tampilan formulir.";
-            return res.redirect("/catalogue");
-          }
+      User.getById(req.session.user.id, (err, userRows) => {
+        if (err) {
+          console.error("Database Error (User):", err);
+          req.session.message =
+            "Terjadi kesalahan server saat mengambil data pengguna.";
+          return res.redirect("/login");
+        }
 
-          res.render("layouts/forms", {
-            title: "Form | Lably",
-            meta: `
+        if (!userRows || userRows.length === 0) {
+          req.session.message =
+            "Sesi pengguna tidak valid. Silakan login kembali.";
+          return res.redirect("/login");
+        }
+
+        const user = userRows[0];
+
+        ejs.renderFile(
+          path.join(__dirname, "../views/pages/user/form.ejs"),
+          {
+            message,
+            product,
+            qty,
+            priceTotal,
+            user,
+            action,
+          },
+          (err, content) => {
+            if (err) {
+              console.error("EJS Render Error:", err);
+              req.session.message =
+                "Terjadi kesalahan saat membuat tampilan formulir.";
+              return res.redirect("/catalogue");
+            }
+
+            res.render("layouts/forms", {
+              title: "Form | Lably",
+              meta: `
               <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
               <meta name="keywords" content="LabLy, alat riset, laboratorium" />
             `,
-            style: "",
-            content,
-            scriptFile: formSpecificScript,
-          });
-        },
-      );
+              style: "",
+              content,
+              scriptFile: formSpecificScript,
+            });
+          },
+        );
+      });
     });
-  });
-});
+  },
+);
 
 router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
   const {
@@ -551,51 +613,57 @@ router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
 ============================================ */
 
 // CART PAGE
-router.get("/cart", isLoggedIn, passLoginStatus, async (req, res) => {
-  const userId = req.session.user && req.session.user.id;
+router.get(
+  "/cart",
+  isLoggedIn,
+  passLoginStatus,
+  ensureVerifiedCustomer,
+  async (req, res) => {
+    const userId = req.session.user && req.session.user.id;
 
-  Draft.getByUser(userId, async (err, rows) => {
-    if (err) {
-      console.error("Error get draft cart:", err);
-      return res.status(500).send("Error loading cart.");
-    }
+    Draft.getByUser(userId, async (err, rows) => {
+      if (err) {
+        console.error("Error get draft cart:", err);
+        return res.status(500).send("Error loading cart.");
+      }
 
-    // mapping ke bentuk yang cocok dengan cart.ejs lama
-    const cartItems = (rows || []).map((r) => ({
-      product_id: r.id_products,
-      name: r.product_name || "Produk",
-      price: Number(r.price) || 0,
-      image: r.product_image
-        ? `/uploads/${r.product_image}`
-        : "/Assets/default.png",
-      quantity: Number(r.qty) || 1,
+      // mapping ke bentuk yang cocok dengan cart.ejs lama
+      const cartItems = (rows || []).map((r) => ({
+        product_id: r.id_products,
+        name: r.product_name || "Produk",
+        price: Number(r.price) || 0,
+        image: r.product_image
+          ? `/uploads/${r.product_image}`
+          : "/Assets/default.png",
+        quantity: Number(r.qty) || 1,
 
-      // 🔥 format tanggal (HANYA YYYY-MM-DD)
-      borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
-      return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
+        // 🔥 format tanggal (HANYA YYYY-MM-DD)
+        borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+        return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
 
-      all_total: null,
-      all_total_raw: null,
-    }));
+        all_total: null,
+        all_total_raw: null,
+      }));
 
-    const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/cart.ejs"),
-      { cartItems },
-    );
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/cart.ejs"),
+        { cartItems },
+      );
 
-    res.render("layouts/main", {
-      title: "Cart | Lably",
-      currentPage: "cart",
-      showFooter: false,
-      meta: `
+      res.render("layouts/main", {
+        title: "Cart | Lably",
+        currentPage: "cart",
+        showFooter: false,
+        meta: `
         <meta name="description" content="Keranjang menyimpan alat laboratorium LabLy." />
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />
       `,
-      style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
-      content,
+        style: `<link rel="stylesheet" href="/CSS/cart.css" />`,
+        content,
+      });
     });
-  });
-});
+  },
+);
 
 // Remove a single item from cart (by product_id)
 router.post("/cart/remove", isLoggedIn, (req, res) => {
@@ -632,72 +700,80 @@ router.post("/cart/clear", isLoggedIn, (req, res) => {
 });
 
 // CHECKOUT PAGE
-router.get("/checkout", isLoggedIn, passLoginStatus, ensureVerifiedCustomer, async (req, res) => {
-  const userId = req.session.user && req.session.user.id;
+router.get(
+  "/checkout",
+  isLoggedIn,
+  passLoginStatus,
+  ensureVerifiedCustomer,
+  async (req, res) => {
+    const userId = req.session.user && req.session.user.id;
 
-  Draft.getByUser(userId, async (err, rows) => {
-    if (err) {
-      console.error("Error get draft for checkout:", err);
-      return res.status(500).send("Error loading checkout.");
-    }
-
-    function computeDays(borrow, ret) {
-      try {
-        if (!borrow || !ret) return 1;
-        const a = new Date(borrow);
-        const b = new Date(ret);
-        const diffMs = b - a;
-        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        return days > 0 ? days : 1;
-      } catch (e) {
-        return 1;
+    Draft.getByUser(userId, async (err, rows) => {
+      if (err) {
+        console.error("Error get draft for checkout:", err);
+        return res.status(500).send("Error loading checkout.");
       }
-    }
 
-    const items = (rows || []).map((r) => {
-      const price = Number(r.price) || 0; // harga satuan
-      const qty = Number(r.qty) || 1;
-      const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
-      const itemTotal = price * qty * days;
+      function computeDays(borrow, ret) {
+        try {
+          if (!borrow || !ret) return 1;
+          const a = new Date(borrow);
+          const b = new Date(ret);
+          const diffMs = b - a;
+          const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          return days > 0 ? days : 1;
+        } catch (e) {
+          return 1;
+        }
+      }
 
-      return {
-        product_id: r.id_products,
-        name: r.product_name || "Produk",
-        image: r.product_image
-          ? `/uploads/${r.product_image}`
-          : "/Assets/default.png",
-        price,
-        quantity: qty,
+      const items = (rows || []).map((r) => {
+        const price = Number(r.price) || 0; // harga satuan
+        const qty = Number(r.qty) || 1;
+        const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
+        const itemTotal = price * qty * days;
 
-        // 🔥 format tanggal
-        borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
-        return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
+        return {
+          product_id: r.id_products,
+          name: r.product_name || "Produk",
+          image: r.product_image
+            ? `/uploads/${r.product_image}`
+            : "/Assets/default.png",
+          price,
+          quantity: qty,
 
-        days,
-        itemTotal,
-      };
-    });
+          // 🔥 format tanggal
+          borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+          return_date: r.tgl_kembali
+            ? String(r.tgl_kembali).slice(0, 10)
+            : null,
 
-    const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
+          days,
+          itemTotal,
+        };
+      });
 
-    const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/checkout.ejs"),
-      { items, subtotal },
-    );
+      const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
 
-    res.render("layouts/main", {
-      title: "Checkout | Lably",
-      currentPage: "checkout",
-      showFooter: false,
-      meta: `
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/checkout.ejs"),
+        { items, subtotal },
+      );
+
+      res.render("layouts/main", {
+        title: "Checkout | Lably",
+        currentPage: "checkout",
+        showFooter: false,
+        meta: `
         <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />
       `,
-      style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
-      content,
+        style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
+        content,
+      });
     });
-  });
-});
+  },
+);
 
 // Cancel checkout (tidak hapus draft, cuma balik katalog)
 router.post("/checkout/cancel", isLoggedIn, (req, res) => {
@@ -706,129 +782,142 @@ router.post("/checkout/cancel", isLoggedIn, (req, res) => {
 });
 
 // Finalize checkout: create peminjaman rows for the logged-in user
-router.post("/checkout/complete", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
-  const userId = req.session.user && req.session.user.id;
-  if (!userId) {
-    req.session.message = { type: "error", text: "User session tidak valid." };
-    return res.redirect("/login");
-  }
-
-  Draft.getByUser(userId, (err, rows) => {
-    if (err) {
-      console.error("ERROR get draft for complete:", err);
+router.post(
+  "/checkout/complete",
+  isLoggedIn,
+  ensureVerifiedCustomer,
+  (req, res) => {
+    const userId = req.session.user && req.session.user.id;
+    if (!userId) {
       req.session.message = {
         type: "error",
-        text: "Gagal memproses checkout.",
+        text: "User session tidak valid.",
       };
-      return res.redirect("/checkout");
+      return res.redirect("/login");
     }
 
-    if (!rows || rows.length === 0) {
-      req.session.message = {
-        type: "error",
-        text: "Tidak ada item untuk checkout.",
-      };
-      return res.redirect("/cart");
-    }
-
-    function computeDays(borrow, ret) {
-      try {
-        if (!borrow || !ret) return 1;
-        const a = new Date(borrow);
-        const b = new Date(ret);
-        const diffMs = b - a;
-        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        return days > 0 ? days : 1;
-      } catch (e) {
-        return 1;
-      }
-    }
-
-    const itemsToInsert = rows.map((r) => {
-      const priceUnit = Number(r.price) || 0;
-      const qty = Number(r.qty) || 1;
-      const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
-      const itemTotal = priceUnit * qty * days;
-
-      return {
-        product_id: r.id_products,
-        quantity: qty,
-        borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
-        return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
-        itemTotal: itemTotal,
-        price: priceUnit,
-        phone: r.no_telp || "",
-        address: r.alamat || "",
-      };
-    });
-
-    Order.createOrders(userId, itemsToInsert, (err2, result) => {
-      if (err2) {
-        console.error("ERROR creating orders:", err2);
+    Draft.getByUser(userId, (err, rows) => {
+      if (err) {
+        console.error("ERROR get draft for complete:", err);
         req.session.message = {
           type: "error",
-          text: "Gagal menyimpan pesanan.",
+          text: "Gagal memproses checkout.",
         };
         return res.redirect("/checkout");
       }
 
-      /* =====================================================
+      if (!rows || rows.length === 0) {
+        req.session.message = {
+          type: "error",
+          text: "Tidak ada item untuk checkout.",
+        };
+        return res.redirect("/cart");
+      }
+
+      function computeDays(borrow, ret) {
+        try {
+          if (!borrow || !ret) return 1;
+          const a = new Date(borrow);
+          const b = new Date(ret);
+          const diffMs = b - a;
+          const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          return days > 0 ? days : 1;
+        } catch (e) {
+          return 1;
+        }
+      }
+
+      const itemsToInsert = rows.map((r) => {
+        const priceUnit = Number(r.price) || 0;
+        const qty = Number(r.qty) || 1;
+        const days = computeDays(r.tgl_pinjam, r.tgl_kembali);
+        const itemTotal = priceUnit * qty * days;
+
+        return {
+          product_id: r.id_products,
+          quantity: qty,
+          borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
+          return_date: r.tgl_kembali
+            ? String(r.tgl_kembali).slice(0, 10)
+            : null,
+          itemTotal: itemTotal,
+          price: priceUnit,
+          phone: r.no_telp || "",
+          address: r.alamat || "",
+        };
+      });
+
+      Order.createOrders(userId, itemsToInsert, (err2, result) => {
+        if (err2) {
+          console.error("ERROR creating orders:", err2);
+          req.session.message = {
+            type: "error",
+            text: "Gagal menyimpan pesanan.",
+          };
+          return res.redirect("/checkout");
+        }
+
+        /* =====================================================
          🔥 UPDATE STOK PRODUK SECARA REAL-TIME
       ===================================================== */
-      const updateStockPromises = itemsToInsert.map((item) => {
-        return new Promise((resolve, reject) => {
-          const sql = `
+        const updateStockPromises = itemsToInsert.map((item) => {
+          return new Promise((resolve, reject) => {
+            const sql = `
             UPDATE products 
             SET stock = stock - ?
             WHERE id = ? AND stock >= ?
           `;
-          db.query(
-            sql,
-            [item.quantity, item.product_id, item.quantity],
-            (err, result) => {
-              if (err) return reject(err);
+            db.query(
+              sql,
+              [item.quantity, item.product_id, item.quantity],
+              (err, result) => {
+                if (err) return reject(err);
 
-              if (result.affectedRows === 0) {
-                return reject(
-                  new Error(
-                    "Stok tidak mencukupi untuk produk ID " + item.product_id,
-                  ),
+                if (result.affectedRows === 0) {
+                  return reject(
+                    new Error(
+                      "Stok tidak mencukupi untuk produk ID " + item.product_id,
+                    ),
+                  );
+                }
+
+                resolve();
+              },
+            );
+          });
+        });
+
+        Promise.all(updateStockPromises)
+          .then(() => {
+            // kalau stok aman → hapus draft
+            Draft.deleteByUser(userId, (errDel) => {
+              if (errDel) {
+                console.error(
+                  "Gagal menghapus draft setelah checkout:",
+                  errDel,
                 );
               }
 
-              resolve();
-            },
-          );
-        });
-      });
-
-      Promise.all(updateStockPromises)
-        .then(() => {
-          // kalau stok aman → hapus draft
-          Draft.deleteByUser(userId, (errDel) => {
-            if (errDel) {
-              console.error("Gagal menghapus draft setelah checkout:", errDel);
-            }
+              req.session.message = {
+                type: "success",
+                text: "Checkout berhasil. Pesanan disimpan.",
+              };
+              return res.redirect("/notif-checkout");
+            });
+          })
+          .catch((errStock) => {
+            console.error("STOCK ERROR:", errStock);
 
             req.session.message = {
-              type: "success",
-              text: "Checkout berhasil. Pesanan disimpan.",
+              type: "error",
+              text: "Checkout gagal: stok salah satu produk sudah habis.",
             };
-            return res.redirect("/notif-checkout");
+            return res.redirect("/cart");
           });
-        })
-        .catch((errStock) => {
-          console.error("STOCK ERROR:", errStock);
-
-          req.session.message = {
-            type: "error",
-            text: "Checkout gagal: stok salah satu produk sudah habis.",
-          };
-          return res.redirect("/cart");
-        });
+      });
     });
-  });
-});
+  },
+);
 
 // NOTIF CHECKOUT PAGE
 router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
@@ -894,37 +983,41 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       return res.status(500).send("Error loading orders.");
     }
 
-    const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/profile/order.ejs"),
-      {
-        orders,
-        user: req.session.user,
-      },
-    );
+    User.getById(userId, async (userErr, userRows) => {
+      if (userErr || !userRows.length)
+        return res.status(500).send("Error loading user.");
+      const user = userRows[0];
 
-    res.render("layouts/profile", {
-      title: "My Orders | Lably",
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/profile/order.ejs"),
+        { orders, user },
+      );
 
-      style: `
-        <link rel="stylesheet" href="/CSS/dashboard-profile.css" />
-        <link rel="stylesheet" href="/CSS/order-user.css" />
-      `,
-
-      scriptFile: orderSpecificScript,
-
-      content,
-
-      currentPage: req.path,
+      res.render("layouts/profile", {
+        title: "My Orders | Lably",
+        style: `
+          <link rel="stylesheet" href="/CSS/dashboard-profile.css" />
+          <link rel="stylesheet" href="/CSS/order-user.css" />
+        `,
+        scriptFile: orderSpecificScript,
+        content,
+        currentPage: req.path,
+        user,
+      });
     });
   });
 });
 
 // ORDER DETAIL PAGE
-router.get("/order-detail/:id", isLoggedIn, passLoginStatus, async (req, res) => {
-  const orderId = req.params.id;
-  const userId = req.session.user.id;
+router.get(
+  "/order-detail/:id",
+  isLoggedIn,
+  passLoginStatus,
+  async (req, res) => {
+    const orderId = req.params.id;
+    const userId = req.session.user.id;
 
-  const sql = `
+    const sql = `
     SELECT
     p.id,
     p.id_products,
@@ -961,31 +1054,37 @@ WHERE p.id = ?
 AND p.id_user = ?
   `;
 
-  db.query(sql, [orderId, userId], async (err, results) => {
-    if (err) {
-      console.error("ORDER DETAIL LOAD ERROR:", err);
-      return res.status(500).send("Error loading order detail.");
-    }
+    db.query(sql, [orderId, userId], async (err, results) => {
+      if (err) {
+        console.error("ORDER DETAIL LOAD ERROR:", err);
+        return res.status(500).send("Error loading order detail.");
+      }
 
-    if (results.length === 0) {
-      return res.status(404).send("Order not found.");
-    }
+      if (results.length === 0) return res.status(404).send("Order not found.");
 
-    const order = results[0];
+      const order = results[0];
 
-    const content = await ejs.renderFile(
-      path.join(__dirname, "../views/pages/user/profile/order-detail.ejs"),
-      { order }
-    );
+      User.getById(userId, async (userErr, userRows) => {
+        if (userErr || !userRows.length)
+          return res.status(500).send("Error loading user.");
+        const user = userRows[0];
 
-    res.render("layouts/profile", {
-      title: "Order Detail | Lably",
-      style: `<link rel="stylesheet" href="/CSS/order-detail.css" />`,
-      content,
-      currentPage: req.path,
+        const content = await ejs.renderFile(
+          path.join(__dirname, "../views/pages/user/profile/order-detail.ejs"), // fix
+          { order, user }, // fix
+        );
+
+        res.render("layouts/profile", {
+          title: "Order Detail | Lably",
+          style: `<link rel="stylesheet" href="/CSS/order-detail.css" />`, // fix
+          content,
+          currentPage: "/order-user",
+          user,
+        });
+      });
     });
-  });
-});
+  },
+);
 
 // USER DASHBOARD CUSTOMER PAGE
 router.get(
@@ -1064,7 +1163,7 @@ router.get(
 
         const latestOrders = orders.slice(0, 3);
         const reminders = orders.filter(
-          (o) => o.reminder_id && o.status !== "completed"
+          (o) => o.reminder_id && o.status !== "completed",
         );
 
         const content = await ejs.renderFile(
@@ -1087,6 +1186,7 @@ router.get(
           style: `<link rel="stylesheet" href="/CSS/dashboard-profile.css" />`,
           content,
           currentPage: req.path,
+          user,
         });
       });
     });
@@ -1114,8 +1214,8 @@ router.get(
       }
 
       const user = userRows[0];
-    const message = req.session.message || null;
-    req.session.message = null;
+      const message = req.session.message || null;
+      req.session.message = null;
 
       const content = await ejs.renderFile(
         path.join(__dirname, "../views/pages/user/profile/profile-page.ejs"),
@@ -1129,6 +1229,7 @@ router.get(
         message,
         showPopup: !!message,
         currentPage: req.path,
+        user,
       });
     });
   },
@@ -1158,20 +1259,36 @@ router.post(
   isLoggedIn,
   upload.single("ktp_image"),
   (req, res) => {
-    if (!req.file) {
-      req.session.message = "File tidak ditemukan.";
-      return res.redirect("/profile-customer");
-    }
+    User.getById(req.session.user.id, (err, userRows) => {
+      if (err || !userRows.length) return res.redirect("/profile-customer");
 
-    const ktpPath = `/uploads/${req.file.filename}`;
-    User.uploadKtp(req.session.user.id, ktpPath, (err) => {
-      if (err) {
-        console.error("Database Error:", err);
-        req.session.message = "Gagal mengirim KTP.";
+      const user = userRows[0];
+
+      // cek kelengkapan profil
+      if (!user.phone || user.phone.trim() === "") {
+        req.session.message = {
+          type: "error",
+          text: "Harap lengkapi nomor telepon terlebih dahulu sebelum verifikasi KTP.",
+        };
+        return req.session.save(() => res.redirect("/profile-customer"));
+      }
+
+      if (!req.file) {
+        req.session.message = "File tidak ditemukan.";
         return res.redirect("/profile-customer");
       }
-      req.session.message = "KTP berhasil dikirim, menunggu verifikasi admin.";
-      res.redirect("/profile-customer");
+
+      const ktpPath = `/uploads/${req.file.filename}`;
+      User.uploadKtp(req.session.user.id, ktpPath, (err) => {
+        if (err) {
+          console.error("Database Error:", err);
+          req.session.message = "Gagal mengirim KTP.";
+          return res.redirect("/profile-customer");
+        }
+        req.session.message =
+          "KTP berhasil dikirim, menunggu verifikasi admin.";
+        res.redirect("/profile-customer");
+      });
     });
   },
 );
