@@ -552,3 +552,21 @@
 .btn-kirim:hover {
   background: #1d4ed8;
 }
+
+#phoneDisplay {
+  width: 100%;
+}
+
+.iti {
+  width: 100%;
+}
+
+.iti input {
+  width: 100% !important;
+}
+
+#phone {
+  display: none;
+}
+
+

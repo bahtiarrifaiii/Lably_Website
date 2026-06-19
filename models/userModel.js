@@ -2,11 +2,14 @@ const database = require("../config/database");
 
 const User = {
   create: (data, callback) => {
-    const sql = `
-            INSERT INTO users (username, email, password, status)
-            VALUES (?, ?, ?, 'active')
-        `;
-    database.query(sql, [data.username, data.email, data.password], callback);
+    const sql = ` INSERT INTO users (username, email, password, pp_image, status) VALUES (?, ?, ?, ?, 'active')
+    `;
+
+    database.query(
+      sql,
+      [ data.username, data.email,data.password, data.pp_image],
+      callback
+    );
   },
 
   findByEmail: (email, callback) => {
@@ -57,6 +60,20 @@ const User = {
       "UPDATE users SET ktp_image = ?, ktp_status = 'pending' WHERE id = ?";
     database.query(sql, [ktpPath, id], callback);
   },
+
+  updatePhoto: (id, photoPath, callback) => {
+    const sql =
+      "UPDATE users SET pp_image = ? WHERE id = ?";
+
+    database.query(sql, [photoPath, id], callback);
+  },
+
+  updatePassword: (id, password, callback) => {
+  const sql =
+    "UPDATE users SET password = ? WHERE id = ?";
+
+  database.query(sql, [password, id], callback);
+},
 };
 
 module.exports = User;

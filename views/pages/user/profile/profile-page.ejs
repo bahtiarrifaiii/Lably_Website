@@ -42,10 +42,21 @@
           <label for="phone">Phone Number</label>
           <input
             type="text"
+            id="phoneDisplay"
+            readonly
+          />
+
+          <input
+            type="tel"
             id="phone"
             name="phone"
             value="<%= user.phone %>"
-            readonly
+          />
+
+          <input
+            type="hidden"
+            id="fullPhone"
+            name="fullPhone"
           />
         </div>
 
@@ -78,8 +89,8 @@
       <!-- Avatar Card -->
       <div class="profile-card avatar-card">
         <div class="avatar-wrap">
-          <img src="/Assets/profile.jpg" alt="Avatar" class="avatar-img" />
-          <button class="avatar-edit-btn" type="button">
+          <img src="<%= user.pp_image || '/Assets/profile.jpg' %>" alt="Avatar" class="avatar-img"/>
+          <button class="avatar-edit-btn" type="button" id="btnChangePhoto" >
             <i class="bi bi-camera"></i>
           </button>
         </div>
@@ -95,7 +106,7 @@
         </div>
 
         <ul class="security-list">
-          <li>
+          <li id="changePasswordBtn">
             <div class="security-item">
               <i class="bi bi-lock"></i>
               <div>
@@ -175,10 +186,142 @@
       </form>
     </div>
   </div>
+
+  <div class="ktp-modal-overlay" id="photoModal">
+  <div class="ktp-modal">
+
+    <div class="ktp-modal-header">
+      <div class="ktp-modal-icon">
+        <i class="bi bi-image"></i>
+      </div>
+
+      <div>
+        <h3>Change Profile Picture</h3>
+        <p>Upload a new profile picture.</p>
+      </div>
+    </div>
+
+    <form
+      action="/profile-customer/change-photo"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+
+      <div class="ktp-dropzone" id="photoDropzone">
+
+        <input
+          type="file"
+          id="profileImage"
+          name="profile_image"
+          accept=".jpg,.jpeg,.png"
+          hidden
+        >
+
+        <i class="bi bi-upload"></i>
+        <p>Click to upload photo</p>
+
+      </div>
+
+      <div class="ktp-modal-actions">
+
+        <button
+          type="button"
+          class="btn-cancel-modal"
+          id="closePhotoModal"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn-kirim"
+        >
+          Save Photo
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<div class="ktp-modal-overlay" id="passwordModal">
+
+  <div class="ktp-modal">
+
+    <div class="ktp-modal-header">
+      <div class="ktp-modal-icon">
+        <i class="bi bi-lock"></i>
+      </div>
+
+      <div>
+        <h3>Change Password</h3>
+        <p>Update your account password.</p>
+      </div>
+    </div>
+
+    <form
+      action="/profile-customer/change-password"
+      method="POST"
+    >
+
+      <div class="form-group">
+        <label>Current Password</label>
+        <input
+          type="password"
+          name="oldPassword"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <input
+          type="password"
+          name="newPassword"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input
+          type="password"
+          name="confirmPassword"
+          required
+        >
+      </div>
+
+      <div class="ktp-modal-actions">
+
+        <button
+          type="button"
+          class="btn-cancel-modal"
+          id="closePasswordModal"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn-kirim"
+        >
+          Update Password
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
 </div>
 
 <!-- Script -->
 <script>
+  const originalPhone = "<%= user.phone || '' %>";
   const btnEdit = document.getElementById("btnEdit");
   const btnSave = document.getElementById("btnSave");
   const btnCancel = document.getElementById("btnCancel");
@@ -191,24 +334,59 @@
   const ktpFile = document.getElementById('ktpFile');
 
   btnEdit.addEventListener("click", () => {
-    inputs.forEach((input) => {
-      originalValues[input.id] = input.value;
-      input.removeAttribute("readonly");
-    });
-    btnEdit.style.display = "none";
-    btnSave.style.display = "block";
-    btnCancel.style.display = "block";
+
+  inputs.forEach((input) => {
+    originalValues[input.id] = input.value;
+    input.removeAttribute("readonly");
   });
 
+  document.getElementById("phoneDisplay").style.display = "none";
+  document.getElementById("phone").style.display = "block";
+
+  const itiWrapper = document.querySelector(".iti");
+
+  if (itiWrapper) {
+    itiWrapper.style.display = "block";
+  }
+
+  if (iti && originalPhone) {
+    iti.setNumber(originalPhone);
+  }
+
+  btnEdit.style.display = "none";
+  btnSave.style.display = "block";
+  btnCancel.style.display = "block";
+
+});
+
   btnCancel.addEventListener("click", () => {
-    inputs.forEach((input) => {
-      input.value = originalValues[input.id];
-      input.setAttribute("readonly", true);
-    });
-    btnEdit.style.display = "block";
-    btnSave.style.display = "none";
-    btnCancel.style.display = "none";
+
+  inputs.forEach((input) => {
+    input.value = originalValues[input.id];
+    input.setAttribute("readonly", true);
   });
+
+  document.getElementById("phoneDisplay").style.display = "block";
+  document.getElementById("phone").style.display = "none";
+
+  document.getElementById("phoneDisplay").value =
+    formatDisplayPhone(originalPhone);
+
+  const itiWrapper = document.querySelector(".iti");
+
+  if (itiWrapper) {
+    itiWrapper.style.display = "none";
+  }
+
+  if (iti && originalPhone) {
+    iti.setNumber(originalPhone);
+  }
+
+  btnEdit.style.display = "block";
+  btnSave.style.display = "none";
+  btnCancel.style.display = "none";
+
+});
 
   if (btnVerifikasi) {
     btnVerifikasi.addEventListener('click', () => {
@@ -246,4 +424,211 @@
       }
     });
   }
+
+  const btnChangePhoto =
+  document.getElementById("btnChangePhoto");
+
+const photoModal =
+  document.getElementById("photoModal");
+
+const closePhotoModal =
+  document.getElementById("closePhotoModal");
+
+const photoDropzone =
+  document.getElementById("photoDropzone");
+
+const profileImage =
+  document.getElementById("profileImage");
+
+if (btnChangePhoto) {
+
+  btnChangePhoto.addEventListener(
+    "click",
+    () => {
+      photoModal.classList.add("show");
+    }
+  );
+
+}
+
+if (closePhotoModal) {
+
+  closePhotoModal.addEventListener(
+    "click",
+    () => {
+      photoModal.classList.remove("show");
+    }
+  );
+
+}
+
+if (photoDropzone) {
+
+  photoDropzone.addEventListener(
+    "click",
+    () => profileImage.click()
+  );
+
+}
+
+if (profileImage) {
+
+  profileImage.addEventListener(
+    "change",
+    () => {
+
+      if (profileImage.files[0]) {
+
+        photoDropzone.querySelector("p")
+          .textContent =
+            profileImage.files[0].name;
+
+      }
+
+    }
+  );
+
+}
+
+const changePasswordBtn =
+  document.getElementById("changePasswordBtn");
+
+const passwordModal =
+  document.getElementById("passwordModal");
+
+const closePasswordModal =
+  document.getElementById("closePasswordModal");
+
+if (changePasswordBtn) {
+
+  changePasswordBtn.addEventListener(
+    "click",
+    () => {
+      passwordModal.classList.add("show");
+    }
+  );
+
+}
+
+if (closePasswordModal) {
+
+  closePasswordModal.addEventListener(
+    "click",
+    () => {
+      passwordModal.classList.remove("show");
+    }
+  );
+
+}
+let iti;
+
+window.addEventListener("load", () => {
+  document.getElementById(
+  "phoneDisplay"
+).value =
+  formatDisplayPhone(originalPhone);
+
+  const phoneInput =
+    document.querySelector("#phone");
+
+  if (
+    phoneInput &&
+    typeof window.intlTelInput !== "undefined"
+  ) {
+
+    iti = window.intlTelInput(
+      phoneInput,
+      {
+        initialCountry: "id",
+        preferredCountries: [
+          "id",
+          "sg",
+          "my",
+          "us",
+          "jp"
+        ],
+        separateDialCode: true
+      }
+    );
+
+    setTimeout(() => {
+
+  const itiWrapper =
+    document.querySelector(".iti");
+
+  if (itiWrapper) {
+    itiWrapper.style.display = "none";
+  }
+
+}, 50);
+
+  }
+
+});
+
+const profileForm =
+  document.querySelector(
+    'form[action="/profile-customer/update"]'
+  );
+
+if (profileForm) {
+
+  profileForm.addEventListener(
+    "submit",
+    () => {
+
+      let fullPhone =
+        iti.getNumber();
+
+      if (!fullPhone) {
+
+        const dialCode =
+          iti.getSelectedCountryData().dialCode;
+
+        const number =
+          document
+            .getElementById("phone")
+            .value
+            .replace(/\D/g, "");
+
+        fullPhone =
+          "+" + dialCode + number;
+      }
+
+      document.getElementById(
+        "fullPhone"
+      ).value =
+        fullPhone;
+
+    }
+  );
+
+}
+
+function formatDisplayPhone(phone) {
+
+  if (!phone) return "";
+
+  const clean = phone.replace(/\D/g, "");
+
+  let countryCode = "";
+  let number = "";
+
+  if (clean.startsWith("62")) {
+    countryCode = "62";
+    number = clean.substring(2);
+  } else {
+    countryCode = clean.substring(0, 3);
+    number = clean.substring(3);
+  }
+
+  return "+" +
+    countryCode +
+    " " +
+    number.replace(
+      /(\d{3})(\d{4})(\d+)/,
+    "$1-$2-$3"
+    );
+
+}
 </script>

@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <img src="/Assets/profile.jpg" alt="Profile" class="profile-avatar"/>
+  <img src="<%= user.pp_image || '/Assets/profile.jpg' %>" alt="Profile" class="profile-avatar"/>
   <span class="profile-name">
     <%= user.username %>
   </span>

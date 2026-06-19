@@ -20,6 +20,8 @@
     <!-- Page-specific CSS -->
     <% if (typeof style !== "undefined" && style) { %> <%- style %> <% } %>
     <title><%= typeof title !== 'undefined' ? title : 'Lably' %></title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/css/intlTelInput.css"/>
 </head>
 <body>
     <div class="container">
@@ -38,5 +40,10 @@
     <% if (typeof scriptFile !== 'undefined' && scriptFile) { %>
     <script src="<%= scriptFile %>"></script>
     <% } %>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/intlTelInput.min.js">
+    </script>
+    
 </body>
 </html>

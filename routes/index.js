@@ -1,6 +1,7 @@
 // routes/index.js
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 const ejs = require("ejs");
 const path = require("path");
 const multer = require("multer");
@@ -1237,9 +1238,9 @@ router.get(
 
 // USER PROFILE UPDATE
 router.post("/profile-customer/update", isLoggedIn, async (req, res) => {
-  const { username, email, phone } = req.body;
+  const { username, email, fullPhone } = req.body;
 
-  User.updateProfile(req.session.user.id, { username, email, phone }, (err) => {
+  User.updateProfile(req.session.user.id, { username, email, phone: fullPhone }, (err) => {
     if (err) {
       console.error("Database Error:", err);
       req.session.message = "Gagal memperbarui profil.";
@@ -1291,6 +1292,124 @@ router.post(
       });
     });
   },
+);
+
+router.post(
+  "/profile-customer/change-photo",
+  isLoggedIn,
+  upload.single("profile_image"),
+  (req, res) => {
+
+    if (!req.file) {
+      return res.redirect("/profile-customer");
+    }
+
+    const photoPath =
+      `/uploads/${req.file.filename}`;
+
+    User.updatePhoto(
+      req.session.user.id,
+      photoPath,
+      (err) => {
+
+        if (err) {
+          console.error(err);
+        }
+
+        req.session.message =
+          "Profile picture updated.";
+
+        res.redirect("/profile-customer");
+      }
+    );
+  }
+);
+
+router.post(
+  "/profile-customer/change-password",
+  isLoggedIn,
+  async (req, res) => {
+
+    const {
+      oldPassword,
+      newPassword,
+      confirmPassword
+    } = req.body;
+
+    if (newPassword !== confirmPassword) {
+
+      req.session.message = {
+        type: "error",
+        text: "New passwords do not match."
+      };
+
+      return res.redirect("/profile-customer");
+    }
+
+    User.getById(
+      req.session.user.id,
+      async (err, rows) => {
+
+        if (err || !rows.length) {
+          return res.redirect("/profile-customer");
+        }
+
+        const user = rows[0];
+
+        const match =
+          await bcrypt.compare(
+            oldPassword,
+            user.password
+          );
+
+        if (!match) {
+
+          req.session.message = {
+            type: "error",
+            text: "Current password is incorrect."
+          };
+
+          return res.redirect("/profile-customer");
+        }
+
+        const hashedPassword =
+          await bcrypt.hash(
+            newPassword,
+            10
+          );
+
+        User.updatePassword(
+          user.id,
+          hashedPassword,
+          (err) => {
+
+            if (err) {
+
+              req.session.message = {
+                type: "error",
+                text: "Failed to update password."
+              };
+
+              return res.redirect(
+                "/profile-customer"
+              );
+            }
+
+            req.session.message = {
+              type: "success",
+              text: "Password updated successfully."
+            };
+
+            res.redirect(
+              "/profile-customer"
+            );
+          }
+        );
+
+      }
+    );
+
+  }
 );
 
 /* ============================================

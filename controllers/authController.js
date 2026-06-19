@@ -125,7 +125,7 @@ module.exports = {
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) throw err;
 
-      const newUser = { username, email, password: hash };
+      const newUser = { username, email, password: hash, pp_image: "/Assets/profile.jpg" };
 
       User.create(newUser, (err) => {
         if (err) {
