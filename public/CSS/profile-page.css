@@ -569,4 +569,40 @@
   display: none;
 }
 
+.popup {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+
+  padding: 14px 18px;
+
+  border-radius: 10px;
+
+  color: white;
+  font-weight: 500;
+
+  animation: slideIn 0.3s ease;
+}
+
+.popup.error {
+  background: #dc3545;
+}
+
+.popup.success {
+  background: #198754;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 

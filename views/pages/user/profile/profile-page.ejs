@@ -565,6 +565,23 @@ window.addEventListener("load", () => {
   }
 
 });
+function showPopup(message, type = "error") {
+
+  const popup = document.createElement("div");
+
+  popup.className = `popup ${type}`;
+
+  popup.textContent = message;
+
+  document
+    .querySelector(".profile-content")
+    .appendChild(popup);
+
+  setTimeout(() => {
+    popup.remove();
+  }, 3000);
+
+}
 
 const profileForm =
   document.querySelector(
@@ -575,8 +592,51 @@ if (profileForm) {
 
   profileForm.addEventListener(
     "submit",
-    () => {
+    (e) => {
+      const nama =
+  document.getElementById("nama")
+    .value.trim();
 
+const email =
+  document.getElementById("email")
+    .value.trim();
+
+const phone =
+  document.getElementById("phone")
+    .value.trim();
+
+if (!nama) {
+
+  e.preventDefault();
+
+  showPopup(
+    "Full Name is required."
+  );
+
+  return;
+}
+
+if (!email) {
+
+  e.preventDefault();
+
+  showPopup(
+    "Email is required."
+  );
+
+  return;
+}
+
+if (!phone) {
+
+  e.preventDefault();
+
+  showPopup(
+    "Phone Number is required."
+  );
+
+  return;
+}
       let fullPhone =
         iti.getNumber();
 
