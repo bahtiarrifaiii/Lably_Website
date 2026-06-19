@@ -932,6 +932,7 @@ router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
       title: "Payment Success | Lably",
       currentPage: "notif-checkout",
       showFooter: false,
+      showHeader: false,
       meta: `
         <meta name="description" content="Notifikasi Checkout laboratorium LabLy." />
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />

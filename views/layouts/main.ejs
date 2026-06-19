@@ -35,7 +35,9 @@
 
   <body>
     <!-- Header Partial -->
-    <%- include('../partials/header') %>
+    <% if (typeof showHeader === 'undefined' || showHeader !== false) { %>
+      <%- include('../partials/header') %>
+    <% } %>
 
     <main><%- content %></main>
 

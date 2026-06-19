@@ -46,6 +46,15 @@ const ensureVerifiedCustomer = (req, res, next) => {
     }
 
     const user = userRows[0];
+    // If the database doesn't have the `ktp_status` column (undefined),
+    // avoid blocking the user — log a warning and allow the request to continue.
+    if (typeof user.ktp_status === "undefined") {
+      console.warn(
+        `Warning: user ${user.id} has no ktp_status column — skipping verification check.`,
+      );
+      return next();
+    }
+
     if (user.ktp_status !== "verified") {
       req.session.message = {
         type: "error",
@@ -81,8 +90,11 @@ const isAdmin = (req, res, next) => {
 const passLoginStatus = (req, res, next) => {
   // isLoggedIn status menjadi true jika ada sesi user ATAU admin
   res.locals.isLoggedIn = !!req.session.user || !!req.session.admin;
-  res.locals.userSession = req.session.user || req.session.admin || null;
-  res.locals.isAdmin = !!req.session.admin; // Tambahkan status admin untuk header
+  // Provide `user` for templates (some views expect `user` variable)
+  res.locals.user = req.session.user || req.session.admin || null;
+  // keep legacy name for compatibility
+  res.locals.userSession = res.locals.user;
+  res.locals.isAdmin = !!req.session.admin;
   next();
 };
 
