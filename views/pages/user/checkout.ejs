@@ -1,6 +1,9 @@
 <div class="container checkout-container">
   <div id="qris-container" style="display:none;">
-    <%- include('./payment/qris') %>
+  <%- include('./payment/qris', { subtotal, invoiceNumber }) %>
+  </div>
+  <div id="card-container" style="display:none;">
+  <%- include('./payment/card', { subtotal, invoiceNumber, user}) %>
   </div>
   <section class="checkout-details">
     <h2 class="section-title">Check Out</h2>
@@ -57,7 +60,7 @@
     <div class="btn-action">
       <form method="post" action="/checkout/complete" style="flex: 1;" id="checkout-form">
         <input type="hidden" name="payment_method" id="payment_method" value="" />
-        <button class="btn btn-primary checkout-btn" id="checkout-submit-btn" type="button">Check Out</button>
+        <button class="btn btn-primary checkout-btn" id="checkout-submit-btn" type="button"> Segera lakukan pembayaran </button>
       </form>
     </div>
   </section>
@@ -66,6 +69,9 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
   (function(){
+    const paymentMethodInput = document.getElementById('payment_method');
+    const checkoutForm = document.getElementById('checkout-form');
+    const checkoutButton = document.getElementById('checkout-submit-btn');
     const methodButtons = document.querySelectorAll('.method-btn');
     let selectedMethod = null;
     methodButtons.forEach(btn => {
@@ -73,16 +79,22 @@
         methodButtons.forEach(b=>b.classList.remove('active'));
         this.classList.add('active');
         selectedMethod = this.textContent.trim();
+        checkoutButton.textContent = 'Bayar menggunakan ' + selectedMethod;
       });
     });
 
-    const paymentMethodInput = document.getElementById('payment_method');
-    const checkoutForm = document.getElementById('checkout-form');
-    const checkoutButton = document.getElementById('checkout-submit-btn');
     let qrisConfirmed = false;
+    let cardConfirmed = false;
 
     if (checkoutButton){
       checkoutButton.addEventListener('click', function(){
+        if (
+      (selectedMethod === 'QRIS' && qrisConfirmed) ||
+      (selectedMethod === 'Credit Card' && cardConfirmed)
+  ){
+      checkoutForm.submit();
+      return;
+  }
         if (!selectedMethod) {
           alert('Pilih metode pembayaran terlebih dahulu.');
           return;
@@ -140,6 +152,34 @@
           return;
         }
 
+        if (selectedMethod === 'Credit Card'){
+
+  const cardContainer =
+  document.getElementById('card-container');
+
+  if (!document.getElementById('card-css')){
+    const link = document.createElement('link');
+
+    link.rel = 'stylesheet';
+    link.href = '/CSS/card.css';
+    link.id = 'card-css';
+
+    document.head.appendChild(link);
+  }
+
+  cardContainer.style.display = 'block';
+
+  cardContainer.style.position = 'fixed';
+  cardContainer.style.top = '50%';
+  cardContainer.style.left = '50%';
+  cardContainer.style.transform =
+    'translate(-50%, -50%)';
+
+  cardContainer.style.zIndex = '9999';
+
+  return;
+}
+
         if (checkoutForm) {
           checkoutForm.submit();
         }
@@ -173,8 +213,25 @@
           qrisContainer.style.overflow = 'hidden';
         }
         qrisConfirmed = true;
-        if (checkoutForm) checkoutForm.submit();
+        checkoutButton.textContent = 'Checkout';
       }
+
+      if (e.target && e.target.id === 'card-paid-btn'){
+
+  const cardContainer =
+  document.getElementById('card-container');
+
+  if(cardContainer){
+
+    cardContainer.style.display = 'none';
+
+  }
+
+  cardConfirmed = true;
+
+  checkoutButton.textContent =
+  'Checkout';
+}
     });
   })();
 </script>

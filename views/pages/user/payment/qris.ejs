@@ -10,9 +10,9 @@
     </div>
 
     <div class="cost">
-        <p>Total Payment</p>
-        <h2>Rp 150.000</h2>
-        <p>INV-206477-2388</p>
+    <p>Total Payment</p>
+    <h2>Rp <%= Number(subtotal).toLocaleString('id-ID') %></h2>
+    <p><%= invoiceNumber %></p>
     </div>
 
     <div class="text">

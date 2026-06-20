@@ -756,9 +756,22 @@ router.get(
 
       const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
 
+      const invoiceNumber = "INV-LABLY-" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+
+      User.getById(userId, async (userErr, userRows) => {
+
+      const user =
+        !userErr && userRows.length
+          ? userRows[0]
+          : null;
       const content = await ejs.renderFile(
         path.join(__dirname, "../views/pages/user/checkout.ejs"),
-        { items, subtotal },
+        {
+          items,
+          subtotal,
+          invoiceNumber,
+          user
+        }
       );
 
       res.render("layouts/main", {
@@ -770,9 +783,10 @@ router.get(
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />
       `,
         style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
-        content,
+        content, user
       });
     });
+  });
   },
 );
 
