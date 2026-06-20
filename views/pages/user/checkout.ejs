@@ -1,4 +1,7 @@
 <div class="container checkout-container">
+  <div id="qris-container" style="display:none;">
+    <%- include('./payment/qris') %>
+  </div>
   <section class="checkout-details">
     <h2 class="section-title">Check Out</h2>
 
@@ -52,9 +55,126 @@
       </div>
     </div>
     <div class="btn-action">
-      <form method="post" action="/checkout/complete" style="flex: 1;">
-        <button class="btn btn-primary checkout-btn" type="submit">Check Out</button>
+      <form method="post" action="/checkout/complete" style="flex: 1;" id="checkout-form">
+        <input type="hidden" name="payment_method" id="payment_method" value="" />
+        <button class="btn btn-primary checkout-btn" id="checkout-submit-btn" type="button">Check Out</button>
       </form>
     </div>
   </section>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+  (function(){
+    const methodButtons = document.querySelectorAll('.method-btn');
+    let selectedMethod = null;
+    methodButtons.forEach(btn => {
+      btn.addEventListener('click', function(){
+        methodButtons.forEach(b=>b.classList.remove('active'));
+        this.classList.add('active');
+        selectedMethod = this.textContent.trim();
+      });
+    });
+
+    const paymentMethodInput = document.getElementById('payment_method');
+    const checkoutForm = document.getElementById('checkout-form');
+    const checkoutButton = document.getElementById('checkout-submit-btn');
+    let qrisConfirmed = false;
+
+    if (checkoutButton){
+      checkoutButton.addEventListener('click', function(){
+        if (!selectedMethod) {
+          alert('Pilih metode pembayaran terlebih dahulu.');
+          return;
+        }
+
+        paymentMethodInput.value = selectedMethod;
+
+        if (selectedMethod === 'QRIS'){
+          const qrisContainer = document.getElementById('qris-container');
+          if (!document.getElementById('qris-css')){
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/CSS/QRIS.css';
+            link.id = 'qris-css';
+            document.head.appendChild(link);
+          }
+
+          if (!document.getElementById('qris-backdrop')){
+            const bd = document.createElement('div');
+            bd.id = 'qris-backdrop';
+            bd.style.position = 'fixed';
+            bd.style.top = 0;
+            bd.style.left = 0;
+            bd.style.width = '100%';
+            bd.style.height = '100%';
+            bd.style.background = 'rgba(0,0,0,0.4)';
+            bd.style.zIndex = 9998;
+            document.body.appendChild(bd);
+          }
+
+          qrisContainer.style.display = 'block';
+          qrisContainer.style.position = 'fixed';
+          qrisContainer.style.top = '50%';
+          qrisContainer.style.left = '50%';
+          qrisContainer.style.transform = 'translate(-50%, -50%)';
+          qrisContainer.style.zIndex = 9999;
+          qrisContainer.style.maxWidth = '95%';
+          qrisContainer.style.maxHeight = '95%';
+          qrisContainer.style.overflow = 'hidden';
+
+          setTimeout(()=>{
+            const qrcodeEl = document.getElementById('qrcode');
+            if (qrcodeEl && qrcodeEl.children.length === 0){
+              new QRCode(qrcodeEl, {
+                text: "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214INVOICE2064775204541153033605802ID5910MyMerchant6007Jakarta6105123456304ABCD",
+                width: 160,
+                height: 160,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+              });
+            }
+          }, 50);
+          document.getElementById('qris-container').scrollIntoView({behavior: 'smooth', block: 'start'});
+          return;
+        }
+
+        if (checkoutForm) {
+          checkoutForm.submit();
+        }
+      });
+    }
+
+    if (checkoutForm){
+      checkoutForm.addEventListener('submit', function(e){
+        if (selectedMethod === 'QRIS' && !qrisConfirmed){
+          e.preventDefault();
+          return;
+        }
+      });
+    }
+
+    // when user clicks "I already paid" submit the form (remove overlay first)
+    document.addEventListener('click', function(e){
+      if (e.target && e.target.id === 'qris-paid-btn'){
+        const bd = document.getElementById('qris-backdrop');
+        if (bd) bd.remove();
+        const qrisContainer = document.getElementById('qris-container');
+        if (qrisContainer){
+          qrisContainer.style.display = 'none';
+          qrisContainer.style.position = '';
+          qrisContainer.style.top = '';
+          qrisContainer.style.left = '';
+          qrisContainer.style.transform = '';
+          qrisContainer.style.zIndex = '';
+          qrisContainer.style.maxWidth = '';
+          qrisContainer.style.maxHeight = '';
+          qrisContainer.style.overflow = 'hidden';
+        }
+        qrisConfirmed = true;
+        if (checkoutForm) checkoutForm.submit();
+      }
+    });
+  })();
+</script>
