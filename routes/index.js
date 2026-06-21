@@ -790,34 +790,6 @@ router.get(
   },
 );
 
-// ROUTE: QRIS PAYMENT (standalone view)
-router.get(
-  "/payment/qris",
-  passLoginStatus,
-  async (req, res) => {
-    try {
-      const content = await ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/payment/qris.ejs"),
-        {},
-      );
-
-      return res.render("layouts/main", {
-        title: "QRIS Payment | Lably",
-        currentPage: "payment",
-        showFooter: false,
-        meta: `
-          <meta name="description" content="QRIS payment preview" />
-        `,
-        style: `<link rel="stylesheet" href="/CSS/QRIS.css" />`,
-        content,
-      });
-    } catch (err) {
-      console.error("Error rendering QRIS page:", err);
-      return res.status(500).send("Error rendering QRIS page.");
-    }
-  },
-);
-
 // Cancel checkout (tidak hapus draft, cuma balik katalog)
 router.post("/checkout/cancel", isLoggedIn, (req, res) => {
   req.session.message = { type: "info", text: "Checkout cancelled." };
@@ -989,6 +961,63 @@ router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
     return res.redirect("/order-user");
   }
 });
+
+// PREVIEW PAGES FOR PAYMENT PARTIALS (USEFUL FOR DEV / DIRECT ACCESS)
+router.get(
+  "/preview/ewallet",
+  passLoginStatus,
+  async (req, res) => {
+    try {
+      const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
+      const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
+
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/payment/e-wallet.ejs"),
+        { subtotal, invoiceNumber },
+      );
+
+      return res.render("layouts/main", {
+        title: "E-Wallet Preview | Lably",
+        currentPage: "preview-ewallet",
+        showFooter: false,
+        meta: "",
+        style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet.css\" />`,
+        content,
+      });
+    } catch (err) {
+      console.error("Error rendering e-wallet preview:", err);
+      return res.status(500).send("Error rendering e-wallet preview.");
+    }
+  },
+);
+
+router.get(
+  "/preview/ewallet-qr",
+  passLoginStatus,
+  async (req, res) => {
+    try {
+      const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
+      const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
+
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/payment/e-wallet_QR.ejs"),
+        { subtotal, invoiceNumber },
+      );
+
+      return res.render("layouts/main", {
+        title: "E-Wallet QR Preview | Lably",
+        currentPage: "preview-ewallet-qr",
+        showFooter: false,
+        meta: "",
+        style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet_QR.css\" />`,
+        content,
+      });
+    } catch (err) {
+      console.error("Error rendering e-wallet-qr preview:", err);
+      return res.status(500).send("Error rendering e-wallet-qr preview.");
+    }
+  },
+);
 
 // ORDER PAGE
 router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {

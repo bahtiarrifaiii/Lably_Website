@@ -19,7 +19,7 @@
         <p>Please scan the following QR Code using your e-wallet or mobile banking app.</p>
     </div>
 
-    <div class="QR-code" id="qrcode">
+    <div class="QR-code" id="qris-qrcode">
         <span class="corner top-left"></span>
         <span class="corner top-right"></span>
         <span class="corner bottom-left"></span>
@@ -44,7 +44,7 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const qrcodeElement = document.getElementById('qrcode');
+    const qrcodeElement = document.getElementById('qris-qrcode');
     if (!qrcodeElement) return;
 
     const existingQr = qrcodeElement.querySelector('img, canvas');
