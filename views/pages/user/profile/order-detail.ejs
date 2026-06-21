@@ -1,341 +1,225 @@
 <%
-function formatTanggal(tanggal){
-    const bulan = [
-        "Januari","Februari","Maret","April",
-        "Mei","Juni","Juli","Agustus",
-        "September","Oktober","November","Desember"
-    ];
-
-    const d = new Date(tanggal);
-
-    return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+function formatTanggal(tanggal) {
+  const bulan = [
+    "January","February","March","April",
+    "May","June","July","August",
+    "September","October","November","December"
+  ];
+  const d = new Date(tanggal);
+  return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
 }
+
+const status = (order.status || '').toString().toLowerCase();
+
+const timelineSteps = [
+  { label: 'Payment Verified' },
+  { label: 'Waiting for Approval' },
+  { label: 'Item Picked Up' },
+  { label: 'Item Returned' }
+];
+
+let completedCount = 1;
+if (status === 'pending')   completedCount = 3;
+if (status === 'in use')    completedCount = 4;
+if (status === 'overdue')   completedCount = 4;
+if (status === 'completed') completedCount = 5;
 %>
 
+<!-- ===== TOP BAR ===== -->
 <div class="top-bar">
-    <div class="temp back">
-        <a href="/order-user">
-            <i class="bi bi-arrow-left"></i>
-            <p>Back</p>
-        </a>
-    </div>
-    <div class="temp title">
-        <p>Order Detail</p>
-    </div>
-    <div class="temp logo-title">
-        <h1>Lab<span>Ly</span></h1>
+    <a href="/order-user" class="btn-back">
+      <i class="bi bi-arrow-left"></i>
+      <span>Back to Order List</span>
+    </a>
+    <div class="top-bar-title">
+        <h1>Order Detail</h1>
+        <span class="order-id-badge">#TRX-<%= order.id %></span>
     </div>
 </div>
 
-<div class="main-content">
-    <div class="content tool-info">
-        <div class="title">
-            <h1>Informasi Alat</h1>
-        </div>
-        <div class="tool-info-content">
-            <div class="tool-img">
-                <img src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>" alt="">
-            </div>
-            <div class="tool-text">
-                <div class="tool-name"><%= order.product_name %></div>
-                <div class="tool">
-                    <p class="title-info">Kode alat</p>
-                    <p class="title-name">LAB-MIC-<%= String(order.id_products).padStart(3,'0') %></p>
-                </div>
-                <div class="tool">
-                    <div class="title-info">Kategori</div>
-                    <div class="title-name"><%= order.category_name %></div>
-                </div>
-                <div class="tool">
-                    <div class="title-info">Kondisi</div>
-                    <div class="title-name"><%= order.kondisi %></div>
-                </div>
-            </div>
-        </div>
+<!-- ===== MAIN GRID ===== -->
+<div class="detail-grid">
+
+  <!-- Card: Informasi Alat -->
+  <div class="card card-tool-info">
+    <div class="card-header">
+      <h2>Tool Information</h2>
     </div>
-
-    <div class="content order-summary">
-        <div class="title">
-            <h1>Ringkasan Peminjaman</h1>
+    <div class="tool-info-body">
+      <div class="tool-img-wrap">
+        <img
+          src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>"
+          alt="<%= order.product_name %>"
+        />
+      </div>
+      <div class="tool-meta">
+        <h3 class="tool-name"><%= order.product_name %></h3>
+        <div class="tool-meta-row">
+          <span class="meta-label">Tool Code</span>
+          <span class="meta-value primary">LAB-MIC-<%= String(order.id_products).padStart(3, '0') %></span>
         </div>
-        <div class="order-summary-content">
-            <div class="order-status">
-                <p>Status Order</p>
-                <p class="info-status
-                    <%= order.status === 'completed'
-                    ? 'status-complete'
-                    : order.status === 'overdue'
-                    ? 'status-overdue'
-                    : 'status-active' %>">
-
-                    <%= order.status === 'completed'
-                        ? 'Returned'
-                        : order.status === 'overdue'
-                        ? 'Overdue'
-                        : order.status === 'pending'
-                        ? 'Paid'
-                        : 'In Use'
-                    %>
-                </p>
-            </div>
-            <div class="order-sum-info">
-                <div class="order-sum1">
-                    <div class="order-sum qty">
-                        <i class="bi bi-command"></i>
-                        <div class="order-sum-text">
-                            <p>QTY yang dipinjam</p>
-                            <p class="sum-info"><%= order.qty %> Unit</p>
-                        </div>
-                    </div>
-                    <div class="order-sum cost">
-                        <i class="bi bi-coin"></i>
-                        <div class="order-sum-text">
-                            <p>Biaya Peminjaman</p>
-                            <p class="sum-info">
-                            Rp. <%= Number(order.product_price).toLocaleString('id-ID') %>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-sum2">
-                    <div class="order-sum duration">
-                        <i class="bi bi-clock"></i>
-                        <div class="order-sum-text">
-                            <p>Durasi Peminjaman</p>
-                            <p class="sum-info">
-                            <%= formatTanggal(order.tgl_pinjam) %> - <%= formatTanggal(order.tgl_kembali) %>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="order-sum total">
-                        <i class="bi bi-wallet"></i>
-                        <div class="order-sum-text">
-                            <p>Total Biaya</p>
-                            <p class="sum-info">
-                            Rp. <%= Number(order.price).toLocaleString('id-ID') %>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="add-duration">
-                <button><i class="bi bi-plus"></i> Tambah Durasi Peminjaman</button>
-            </div>
+        <div class="tool-meta-row">
+          <span class="meta-label">Category</span>
+          <span class="meta-value"><%= order.category_name %></span>
         </div>
+        <div class="tool-meta-row">
+          <span class="meta-label">Condition</span>
+          <span class="badge-kondisi"><%= order.kondisi %></span>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="content order-info">
-    <div class="title">
-        <h1>Informasi Peminjam</h1>
+  <!-- Card: Ringkasan Peminjaman -->
+  <div class="card card-summary">
+    <div class="card-header between">
+      <h2>Loan Summery</h2>
     </div>
-
-    <div class="borrower-content">
-
-        <div class="borrow-item">
-            <div class="borrow-label">
-                <i class="bi bi-person-fill"></i>
-                <span>Nama</span>
-            </div>
-
-            <div class="borrow-value">
-                <%= order.username %>
-            </div>
-        </div>
-
-        <div class="borrow-item">
-            <div class="borrow-label">
-                <i class="bi bi-envelope-fill"></i>
-                <span>Email</span>
-            </div>
-
-            <div class="borrow-value">
-                <%= order.email %>
-            </div>
-        </div>
-
-        <div class="borrow-item">
-            <div class="borrow-label">
-                <i class="bi bi-telephone-fill"></i>
-                <span>Nomor HP</span>
-            </div>
-
-            <div class="borrow-value">
-                <%= order.phone || '-' %>
-            </div>
-        </div>
-
-    </div>
-</div>  
-
-    <% 
-        const status = (order.status || '').toString().toLowerCase();
-        const timelineSteps = [
-            { label: 'Peminjaman dibuat' },
-            { label: 'Pembayaran Berhasil' },
-            { label: 'Menunggu Persetujuan' },
-            { label: 'Barang diambil' },
-            { label: 'Barang dikembalikan' }
-        ];
-        let completedCount = 1;
-
-if(status === 'pending'){
-    completedCount = 3;
-}
-
-if(status === 'in use'){
-    completedCount = 4;
-}
-
-if(status === 'overdue'){
-    completedCount = 4;
-}
-
-if(status === 'completed'){
-    completedCount = 5;
-}
-    %>
-
-    <div class="content order-timeline">
-        <div class="title">
-            <h1>Timeline</h1>
-        </div>
-        <div class="timeline-container">
-            <div class="path">
-                <% timelineSteps.forEach(function(step, idx) { 
-                    const done = idx < completedCount; %>
-                    <div class="circle <%= done ? 'completed' : '' %>"></div>
-                    <% if (idx < timelineSteps.length - 1) { %>
-                        <div class="line <%= (idx + 2) <= completedCount ? 'completed' : '' %>"></div>
-                    <% } %>
-
-                <% }); %>
-            </div>
-            <div class="timeline-info">
-
-    <% timelineSteps.forEach(function(step, idx) { %>
-
+    <div class="summary-grid">
+      <div class="summary-item">
+        <i class="bi bi-archive-fill"></i>
         <div>
-
-            <% if(idx < completedCount){ %>
-
-                <% if(idx === 2){ %>
-
-                    <%= step.label %>
-                    <span class="timeline-status paid">(Paid)</span>
-
-                <% } else if(idx === 3){ %>
-
-                    <%= step.label %>
-
-                    <% if(status === 'overdue'){ %>
-                        <span class="timeline-status overdue">(Overdue)</span>
-                    <% } else { %>
-                        <span class="timeline-status active">(In Use)</span>
-                    <% } %>
-
-                <% } else { %>
-
-                    <%= step.label %>
-
+          <p class="summary-label">Quantity Borrowed</p>
+          <p class="summary-value"><%= order.qty %> Unit</p>
+        </div>
+      </div>
+      <div class="summary-item">
+        <i class="bi bi-calendar-check-fill"></i>
+        <div>
+          <p class="summary-label">Duration of Borrowing</p>
+          <p class="summary-value"><%= order.tgl_pinjam.replace(/-/g, '/') %> - <%= order.tgl_kembali.replace(/-/g, '/') %></p>
+        </div>
+      </div>
+      <div class="summary-item">
+        <i class="bi bi-currency-exchange"></i>
+        <div>
+          <p class="summary-label">Cost of Borrowing</p>
+          <p class="summary-value">Rp <%= Number(order.product_price).toLocaleString('id-ID') %></p>
+        </div>
+      </div>
+      <div class="summary-item">
+        <i class="bi bi-currency-exchange"></i>
+        <div>
+          <p class="summary-label">Total Cost</p>
+          <p class="summary-value accent">Rp <%= Number(order.price).toLocaleString('id-ID') %></p>
+        </div>
+      </div>
+    </div>
+    <div class="card-action">
+        <div class="status-barang-wrap">
+            <span class="status-barang-label">Item Status</span>
+            <span class="status-chip
+                <%= status === 'completed' ? 'chip-complete'
+                    : status === 'overdue'   ? 'chip-overdue'
+                    : status === 'pending'   ? 'chip-paid'
+                    : 'chip-active' %>">
+                <% if (status === 'completed') { %><i class="bi bi-check-circle-fill"></i> Returned
+                <% } else if (status === 'overdue') { %><i class="bi bi-exclamation-circle-fill"></i> Overdue
+                <% } else if (status === 'pending') { %><i class="bi bi-clock-fill"></i> Paid
+                <% } else { %><i class="bi bi-clock-history"></i> In Use
                 <% } %>
-
-            <% } %>
-
-        </div>
-
-    <% }); %>
-
-</div>
-        </div>
-    </div>
-
-    <div class="content payment">
-    <div class="title">
-        <h1>Informasi Pembayaran</h1>
-    </div>
-
-    <div class="payment-content">
-
-        <div class="payment-item">
-            <span class="payment-label">Status Pembayaran</span>
-            <span class="payment-status paid">PAID</span>
-        </div>
-
-        <div class="payment-item">
-            <span class="payment-label">Metode Pembayaran</span>
-            <span class="payment-value">QRIS</span>
-        </div>
-
-        <div class="payment-item">
-            <span class="payment-label">Tanggal Pembayaran</span>
-            <span class="payment-value">
-                <%= formatTanggal(order.tgl_pinjam) %>
             </span>
         </div>
-
-        <div class="payment-item">
-            <span class="payment-label">No. Transaksi</span>
-            <span class="payment-value">
-                TRX-<%= order.id %>
-            </span>
-        </div>
-
-        <button class="payment-proof">
-            <i class="bi bi-receipt"></i>
-            Lihat Bukti Pembayaran
-        </button>
-
+      <button class="btn-tambah">
+        <i class="bi bi-plus-circle"></i> Add Borrowing Duration
+      </button>
     </div>
-</div>
+  </div>
 
-    <div class="content return">
-    <div class="title">
-        <h1>Informasi Pengembalian</h1>
+  <!-- Card: Timeline + Pembayaran + Pengembalian (3 kolom bawah) -->
+  <div class="middle-row">
+    <!-- Card: Informasi Peminjam -->
+    <div class="card card-borrower">
+      <div class="card-header">
+        <h2>Borrower Data</h2>
+      </div>
+      <div class="borrower-list">
+        <div class="borrower-row">
+          <span class="borrower-label"><i class="bi bi-person-fill"></i>Name</span>
+          <span class="borrower-value"><%= order.username %></span>
+        </div>
+        <div class="borrower-row">
+          <span class="borrower-label"><i class="bi bi-envelope-fill"></i>Email</span>
+          <span class="borrower-value"><%= order.email %></span>
+        </div>
+        <div class="borrower-row">
+          <span class="borrower-label"><i class="bi bi-telephone-fill"></i>Phone Number</span>
+          <span class="borrower-value"><%= order.phone || '-' %></span>
+        </div>
+      </div>
     </div>
 
-    <div class="return-content">
-
-        <div class="return-status">
-
-            <% if(order.status === 'completed'){ %>
-
-                <span class="returned">
-                    <i class="bi bi-check-circle-fill"></i>
-                    Sudah Dikembalikan
-                </span>
-
-            <% } else if(order.status === 'overdue'){ %>
-
-                <span class="overdue">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    Terlambat Dikembalikan
-                </span>
-
-            <% } else { %>
-
-                <span class="not-returned">
-                    <i class="bi bi-clock-fill"></i>
-                    Belum Dikembalikan
-                </span>
-
-            <% } %>
-
-        </div>
-
-        <div class="return-date">
-
-            <% if(order.status === 'completed'){ %>
-
-                <p>Barang sudah dikembalikan dengan aman.</p>
-
-            <% } else { %>
-
-                <p>Pengembalian sebelum atau pada <span><%= formatTanggal(order.tgl_kembali) %></span></p>
-
-            <% } %>
-
-        </div>
-
+    <!-- Timeline -->
+    <div class="card card-timeline">
+      <div class="card-header">
+        <h2>Loan Timeline</h2>
+      </div>
+      <div class="timeline">
+        <% timelineSteps.forEach(function(step, idx) {
+          const done = idx < completedCount; %>
+          <div class="tl-step">
+            <div class="tl-dot-wrap">
+              <div class="tl-dot <%= done ? 'done' : '' %>">
+                <% if (done) { %><i class="bi bi-check-lg"></i><% } %>
+              </div>
+              <% if (idx < timelineSteps.length - 1) { %>
+                <div class="tl-line <%= (idx + 2) <= completedCount ? 'done' : '' %>"></div>
+              <% } %>
+            </div>
+            <div class="tl-label <%= done ? 'label-done' : 'label-pending' %>">
+              <%= step.label %>
+              <% if (done) { %>
+                <% if (idx === 0) { %>
+                  <span class="tl-badge paid">Paid</span>
+                <% } else if (idx === 2) { %>
+                  <% if (status === 'overdue') { %>
+                    <span class="tl-badge overdue">Overdue</span>
+                  <% } else { %>
+                    <span class="tl-badge active">In Use</span>
+                  <% } %>
+                <% } %>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
     </div>
-</div>      
+
+    <!-- Pembayaran -->
+    <div class="card card-payment">
+      <div class="card-header">
+        <h2>Payment Information</h2>
+      </div>
+      <div class="payment-list">
+        <div class="payment-row">
+          <span class="payment-label">Status</span>
+          <span class="badge-paid">PAID</span>
+        </div>
+        <div class="payment-row">
+          <span class="payment-label">Method</span>
+          <span class="payment-val">QRIS</span>
+        </div>
+        <div class="payment-row">
+          <span class="payment-label">Date</span>
+          <span class="payment-val"><%= formatTanggal(order.tgl_pinjam) %></span>
+        </div>
+        <div class="payment-row">
+          <span class="payment-label">Transaction Number</span>
+          <span class="payment-val mono">TRX-<%= order.id %></span>
+        </div>
+      </div>
+      <button class="btn-proof">
+        <i class="bi bi-receipt"></i> View Payment Proof
+      </button>
+    </div>
+  </div>
+
+    <!-- Pengembalian -->
+    <div class="card card-return">
+      <div class="card-header">
+        <h2>Return Information</h2>
+        <p class="return-note">Return before or on <strong><%= formatTanggal(order.tgl_kembali) %></strong></p>
+      </div>
+    </div>
+
 </div>

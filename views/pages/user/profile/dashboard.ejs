@@ -4,45 +4,46 @@
         <p class="welcome">Hello There, <%= user.username %>!</p>
     </div>
 
-<div class="nav2">
-    <div class="notif-wrapper <%= reminders.length > 0 ? 'has-reminder' : '' %>">
-        <i class="bi bi-bell-fill" id="notifBtn"></i>
-        <% if(reminders.length > 0){ %>
-            <span class="notif-badge">
-                <%= reminders.length %>
-            </span>
-        <% } %>
-        <div id="reminderPopup" class="reminder-popup">
-            <% reminders.forEach(r => { %>
-                <div class="popup-item">
-                    <span class="popup-title">
-                        ⚠ Reminder
-                    </span>
-                    <p>
-                        Your loan for
-                        <strong><%= r.product_name %></strong>
-                        has been reminded by admin.
-                        Please return it as soon as possible.
-                    </p>
-                </div>
-            <% }) %>
-            <% if(reminders.length === 0){ %>
-                <div class="no-reminder">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span>No reminders</span>
-                </div>
+    <div class="nav2">
+        <div class="notif-wrapper <%= reminders.length > 0 ? 'has-reminder' : '' %>">
+            <i class="bi bi-bell-fill" id="notifBtn"></i>
+            <% if(reminders.length > 0){ %>
+                <span class="notif-badge">
+                    <%= reminders.length %>
+                </span>
             <% } %>
+            <div id="reminderPopup" class="reminder-popup">
+                <% reminders.forEach(r => { %>
+                    <div class="popup-item">
+                        <span class="popup-title">
+                            Reminder
+                        </span>
+                        <p>
+                            Your loan for
+                            <strong><%= r.product_name %></strong>
+                            has been reminded by admin.
+                            Please return it as soon as possible.
+                        </p>
+                    </div>
+                <% }) %>
+                <% if(reminders.length === 0){ %>
+                    <div class="no-reminder">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>No reminders</span>
+                    </div>
+                <% } %>
 
+            </div>
         </div>
+        <a href="/profile-customer" class="profile-section">
+            <img src="<%= user.pp_image || '/Assets/profile.jpg' %>" alt="Profile" class="profile-img"/>
+        </a>
+        <p class="username">
+            <%= user.username %>
+        </p>
     </div>
-    <a href="/profile" class="profile-section">
-        <img src="<%= user.pp_image || '/Assets/profile.jpg' %>" alt="Profile" class="profile-img"/>
-    </a>
-    <p class="username">
-        <%= user.username %>
-    </p>
-</div>
 </nav>
+
 <div class="verification <%= user.ktp_status === 'verified' ? 'verified' : 'unverified' %>">
     <div class="verif-logo <%= user.ktp_status === 'verified' ? 'verified' : 'unverified' %>">
         <% if (user.ktp_status === 'verified') { %>

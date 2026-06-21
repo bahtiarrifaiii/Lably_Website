@@ -519,7 +519,7 @@
 .btn-cancel-modal {
   flex: 1;
   padding: 0.7rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: #dc3545;
   color: #fff;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 0.5rem;
@@ -529,7 +529,7 @@
 }
 
 .btn-cancel-modal:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #b02a37;
 }
 
 .btn-kirim {
@@ -551,6 +551,43 @@
 
 .btn-kirim:hover {
   background: #1d4ed8;
+}
+
+.form-group-pass {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-group-pass label {
+  font-size: 0.85rem;
+  color: var(--base-white);
+  font-weight: 500;
+}
+
+.form-group-pass input {
+  padding: 0.65rem 1rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--base-white);
+  background-color: rgba(255, 255, 255, 0.1);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group-pass input::placeholder {
+  color: #aab4c8;
+  font-size: 0.85rem;
+}
+
+.form-group-pass input:focus {
+  border-color: var(--base-white);
+}
+
+.new-pass {
+  margin-bottom: 2rem;
 }
 
 #phoneDisplay {
@@ -604,5 +641,3 @@
     transform: translateX(0);
   }
 }
-
-
