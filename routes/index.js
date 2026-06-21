@@ -790,6 +790,34 @@ router.get(
   },
 );
 
+// ROUTE: QRIS PAYMENT (standalone view)
+router.get(
+  "/payment/qris",
+  passLoginStatus,
+  async (req, res) => {
+    try {
+      const content = await ejs.renderFile(
+        path.join(__dirname, "../views/pages/user/payment/qris.ejs"),
+        {},
+      );
+
+      return res.render("layouts/main", {
+        title: "QRIS Payment | Lably",
+        currentPage: "payment",
+        showFooter: false,
+        meta: `
+          <meta name="description" content="QRIS payment preview" />
+        `,
+        style: `<link rel="stylesheet" href="/CSS/QRIS.css" />`,
+        content,
+      });
+    } catch (err) {
+      console.error("Error rendering QRIS page:", err);
+      return res.status(500).send("Error rendering QRIS page.");
+    }
+  },
+);
+
 // Cancel checkout (tidak hapus draft, cuma balik katalog)
 router.post("/checkout/cancel", isLoggedIn, (req, res) => {
   req.session.message = { type: "info", text: "Checkout cancelled." };
