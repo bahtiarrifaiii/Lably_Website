@@ -113,13 +113,6 @@
 
         if (selectedMethod === 'QRIS'){
           const qrisContainer = document.getElementById('qris-container');
-          if (!document.getElementById('qris-css')){
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '/CSS/QRIS.css';
-            link.id = 'qris-css';
-            document.head.appendChild(link);
-          }
 
           if (!document.getElementById('qris-backdrop')){
             const bd = document.createElement('div');
@@ -163,13 +156,6 @@
 
         if (selectedMethod === 'E-Wallet'){
           const ewalletContainer = document.getElementById('ewallet-container');
-          if (!document.getElementById('ewallet-css')){
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '/CSS/e-wallet.css';
-            link.id = 'ewallet-css';
-            document.head.appendChild(link);
-          }
 
           if (!document.getElementById('ewallet-backdrop')){
             const bd = document.createElement('div');
@@ -201,16 +187,6 @@
 
   const cardContainer =
   document.getElementById('card-container');
-
-  if (!document.getElementById('card-css')){
-    const link = document.createElement('link');
-
-    link.rel = 'stylesheet';
-    link.href = '/CSS/card.css';
-    link.id = 'card-css';
-
-    document.head.appendChild(link);
-  }
 
   cardContainer.style.display = 'block';
 
@@ -264,14 +240,6 @@
         }
         if (walletLabel) {
           walletLabel.textContent = wallet;
-        }
-
-        if (!document.getElementById('ewallet-qr-css')){
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = '/CSS/e-wallet_QR.css';
-          link.id = 'ewallet-qr-css';
-          document.head.appendChild(link);
         }
 
         if (!document.getElementById('ewallet-backdrop')){

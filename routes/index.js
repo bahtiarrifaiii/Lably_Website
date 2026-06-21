@@ -782,7 +782,13 @@ router.get(
         <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />
       `,
-        style: `<link rel="stylesheet" href="/CSS/checkout.css" />`,
+        style: `
+          <link rel="stylesheet" href="/CSS/checkout.css" />
+          <link rel="stylesheet" href="/CSS/e-wallet.css" />
+          <link rel="stylesheet" href="/CSS/e-wallet_QR.css" />
+          <link rel="stylesheet" href="/CSS/QRIS.css" />
+          <link rel="stylesheet" href="/CSS/card.css" />
+        `,
         content, user
       });
     });
