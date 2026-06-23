@@ -13,6 +13,7 @@ const User = require("../models/userModel");
 const Customer = require("../models/customerModel");
 const Order = require("../models/orderModel");
 const Draft = require("../models/draftModel"); // <— pakai draft
+const Payment = require("../models/paymentModel");
 
 // Controllers
 const authController = require("../controllers/authController");
@@ -896,6 +897,9 @@ router.post(
         };
       });
 
+      const paymentMethod = req.body.payment_method || "Unknown";
+      const ewalletProvider = req.body.ewallet_provider || null;
+
       Order.createOrders(userId, itemsToInsert, (err2, result) => {
         if (err2) {
           console.error("ERROR creating orders:", err2);
@@ -938,21 +942,39 @@ router.post(
 
         Promise.all(updateStockPromises)
           .then(() => {
-            // kalau stok aman → hapus draft
-            Draft.deleteByUser(userId, (errDel) => {
-              if (errDel) {
-                console.error(
-                  "Gagal menghapus draft setelah checkout:",
-                  errDel,
-                );
-              }
+            // simpan detail payment untuk setiap item checkout
+            Payment.createPayments(
+              userId,
+              paymentMethod,
+              ewalletProvider,
+              itemsToInsert,
+              (errPayment) => {
+                if (errPayment) {
+                  console.error("ERROR saving payment records:", errPayment);
+                  req.session.message = {
+                    type: "error",
+                    text: "Gagal menyimpan data pembayaran.",
+                  };
+                  return res.redirect("/checkout");
+                }
 
-              req.session.message = {
-                type: "success",
-                text: "Checkout berhasil. Pesanan disimpan.",
-              };
-              return res.redirect("/notif-checkout");
-            });
+                // kalau stok aman → hapus draft
+                Draft.deleteByUser(userId, (errDel) => {
+                  if (errDel) {
+                    console.error(
+                      "Gagal menghapus draft setelah checkout:",
+                      errDel,
+                    );
+                  }
+
+                  req.session.message = {
+                    type: "success",
+                    text: "Checkout berhasil. Pesanan disimpan.",
+                  };
+                  return res.redirect("/notif-checkout");
+                });
+              },
+            );
           })
           .catch((errStock) => {
             console.error("STOCK ERROR:", errStock);

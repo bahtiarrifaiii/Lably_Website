@@ -66,6 +66,7 @@
     <div class="btn-action">
       <form method="post" action="/checkout/complete" style="flex: 1;" id="checkout-form">
         <input type="hidden" name="payment_method" id="payment_method" value="" />
+        <input type="hidden" name="ewallet_provider" id="ewallet_provider" value="" />
         <button class="btn btn-primary checkout-btn" id="checkout-submit-btn" type="button"> Segera lakukan pembayaran </button>
       </form>
     </div>
@@ -110,6 +111,7 @@
         }
 
         paymentMethodInput.value = selectedMethod;
+        document.getElementById('ewallet_provider').value = '';
 
         if (selectedMethod === 'QRIS'){
           const qrisContainer = document.getElementById('qris-container');
@@ -227,7 +229,8 @@
         if (!wallet) return;
 
         selectedWallet = wallet;
-        paymentMethodInput.value = 'E-Wallet (' + wallet + ')';
+        paymentMethodInput.value = 'E-Wallet';
+        document.getElementById('ewallet_provider').value = wallet;
 
         const ewalletContainer = document.getElementById('ewallet-container');
         const ewalletQrContainer = document.getElementById('ewallet-qr-container');
