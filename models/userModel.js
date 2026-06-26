@@ -7,8 +7,8 @@ const User = {
 
     database.query(
       sql,
-      [ data.username, data.email,data.password, data.pp_image],
-      callback
+      [data.username, data.email, data.password, data.pp_image],
+      callback,
     );
   },
 
@@ -49,10 +49,10 @@ const User = {
     database.query(sql, [id], callback);
   },
 
-  updateProfile: (id, { username, email, phone }, callback) => {
+  updateProfile: (id, { username, email, phone, address }, callback) => {
     const sql =
-      "UPDATE users SET username = ?, email = ?, phone = ? WHERE id = ?";
-    database.query(sql, [username, email, phone, id], callback);
+      "UPDATE users SET username = ?, email = ?, phone = ?, address = ? WHERE id = ?";
+    database.query(sql, [username, email, phone, address, id], callback);
   },
 
   uploadKtp: (id, ktpPath, callback) => {
@@ -62,18 +62,22 @@ const User = {
   },
 
   updatePhoto: (id, photoPath, callback) => {
-    const sql =
-      "UPDATE users SET pp_image = ? WHERE id = ?";
+    const sql = "UPDATE users SET pp_image = ? WHERE id = ?";
 
     database.query(sql, [photoPath, id], callback);
   },
 
   updatePassword: (id, password, callback) => {
-  const sql =
-    "UPDATE users SET password = ? WHERE id = ?";
+    const sql = "UPDATE users SET password = ? WHERE id = ?";
 
-  database.query(sql, [password, id], callback);
-},
+    database.query(sql, [password, id], callback);
+  },
+
+  updateEmail: (id, email, callback) => {
+    const sql = "UPDATE users SET email = ? WHERE id = ?";
+
+    database.query(sql, [email, id], callback);
+  },
 };
 
 module.exports = User;

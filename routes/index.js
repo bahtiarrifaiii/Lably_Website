@@ -757,73 +757,70 @@ router.get(
 
       const subtotal = items.reduce((s, it) => s + (it.itemTotal || 0), 0);
 
-      const invoiceNumber = "INV-LABLY-" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+      const invoiceNumber =
+        "INV-LABLY-" +
+        Math.floor(Math.random() * 1000000)
+          .toString()
+          .padStart(6, "0");
 
       User.getById(userId, async (userErr, userRows) => {
+        const user = !userErr && userRows.length ? userRows[0] : null;
+        const content = await ejs.renderFile(
+          path.join(__dirname, "../views/pages/user/checkout.ejs"),
+          {
+            items,
+            subtotal,
+            invoiceNumber,
+            user,
+          },
+        );
 
-      const user =
-        !userErr && userRows.length
-          ? userRows[0]
-          : null;
-      const content = await ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/checkout.ejs"),
-        {
-          items,
-          subtotal,
-          invoiceNumber,
-          user
-        }
-      );
-
-      res.render("layouts/main", {
-        title: "Checkout | Lably",
-        currentPage: "checkout",
-        showFooter: false,
-        meta: `
+        res.render("layouts/main", {
+          title: "Checkout | Lably",
+          currentPage: "checkout",
+          showFooter: false,
+          meta: `
         <meta name="description" content="Bayar untuk peminjaman alat laboratorium LabLy." />
         <meta name="keywords" content="LabLy, alat riset, laboratorium" />
       `,
-        style: `
+          style: `
           <link rel="stylesheet" href="/CSS/checkout.css" />
           <link rel="stylesheet" href="/CSS/e-wallet.css" />
           <link rel="stylesheet" href="/CSS/e-wallet_QR.css" />
           <link rel="stylesheet" href="/CSS/QRIS.css" />
           <link rel="stylesheet" href="/CSS/card.css" />
         `,
-        content, user
+          content,
+          user,
+        });
       });
     });
-  });
   },
 );
 
 // ROUTE: QRIS PAYMENT (standalone view)
-router.get(
-  "/payment/qris",
-  passLoginStatus,
-  async (req, res) => {
-    try {
-      const content = await ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/payment/qris.ejs"),
-        {},
-      );
+router.get("/payment/qris", passLoginStatus, async (req, res) => {
+  try {
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/payment/qris.ejs"),
+      {},
+    );
 
-      return res.render("layouts/main", {
-        title: "QRIS Payment | Lably",
-        currentPage: "payment",
-        showFooter: false,
-        meta: `
+    return res.render("layouts/main", {
+      title: "QRIS Payment | Lably",
+      currentPage: "payment",
+      showFooter: false,
+      meta: `
           <meta name="description" content="QRIS payment preview" />
         `,
-        style: `<link rel="stylesheet" href="/CSS/QRIS.css" />`,
-        content,
-      });
-    } catch (err) {
-      console.error("Error rendering QRIS page:", err);
-      return res.status(500).send("Error rendering QRIS page.");
-    }
-  },
-);
+      style: `<link rel="stylesheet" href="/CSS/QRIS.css" />`,
+      content,
+    });
+  } catch (err) {
+    console.error("Error rendering QRIS page:", err);
+    return res.status(500).send("Error rendering QRIS page.");
+  }
+});
 
 // Cancel checkout (tidak hapus draft, cuma balik katalog)
 router.post("/checkout/cancel", isLoggedIn, (req, res) => {
@@ -1019,61 +1016,53 @@ router.get("/notif-checkout", isLoggedIn, passLoginStatus, async (req, res) => {
 });
 
 // PREVIEW PAGES FOR PAYMENT PARTIALS (USEFUL FOR DEV / DIRECT ACCESS)
-router.get(
-  "/preview/ewallet",
-  passLoginStatus,
-  async (req, res) => {
-    try {
-      const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
-      const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
+router.get("/preview/ewallet", passLoginStatus, async (req, res) => {
+  try {
+    const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
+    const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
 
-      const content = await ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/payment/e-wallet.ejs"),
-        { subtotal, invoiceNumber },
-      );
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/payment/e-wallet.ejs"),
+      { subtotal, invoiceNumber },
+    );
 
-      return res.render("layouts/main", {
-        title: "E-Wallet Preview | Lably",
-        currentPage: "preview-ewallet",
-        showFooter: false,
-        meta: "",
-        style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet.css\" />`,
-        content,
-      });
-    } catch (err) {
-      console.error("Error rendering e-wallet preview:", err);
-      return res.status(500).send("Error rendering e-wallet preview.");
-    }
-  },
-);
+    return res.render("layouts/main", {
+      title: "E-Wallet Preview | Lably",
+      currentPage: "preview-ewallet",
+      showFooter: false,
+      meta: "",
+      style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet.css\" />`,
+      content,
+    });
+  } catch (err) {
+    console.error("Error rendering e-wallet preview:", err);
+    return res.status(500).send("Error rendering e-wallet preview.");
+  }
+});
 
-router.get(
-  "/preview/ewallet-qr",
-  passLoginStatus,
-  async (req, res) => {
-    try {
-      const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
-      const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
+router.get("/preview/ewallet-qr", passLoginStatus, async (req, res) => {
+  try {
+    const subtotal = req.query.subtotal ? Number(req.query.subtotal) : 10000;
+    const invoiceNumber = req.query.invoiceNumber || "INV-DEV-000001";
 
-      const content = await ejs.renderFile(
-        path.join(__dirname, "../views/pages/user/payment/e-wallet_QR.ejs"),
-        { subtotal, invoiceNumber },
-      );
+    const content = await ejs.renderFile(
+      path.join(__dirname, "../views/pages/user/payment/e-wallet_QR.ejs"),
+      { subtotal, invoiceNumber },
+    );
 
-      return res.render("layouts/main", {
-        title: "E-Wallet QR Preview | Lably",
-        currentPage: "preview-ewallet-qr",
-        showFooter: false,
-        meta: "",
-        style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet_QR.css\" />`,
-        content,
-      });
-    } catch (err) {
-      console.error("Error rendering e-wallet-qr preview:", err);
-      return res.status(500).send("Error rendering e-wallet-qr preview.");
-    }
-  },
-);
+    return res.render("layouts/main", {
+      title: "E-Wallet QR Preview | Lably",
+      currentPage: "preview-ewallet-qr",
+      showFooter: false,
+      meta: "",
+      style: `<link rel=\"stylesheet\" href=\"/CSS/e-wallet_QR.css\" />`,
+      content,
+    });
+  } catch (err) {
+    console.error("Error rendering e-wallet-qr preview:", err);
+    return res.status(500).send("Error rendering e-wallet-qr preview.");
+  }
+});
 
 // ORDER PAGE
 router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
@@ -1375,20 +1364,24 @@ router.get(
 
 // USER PROFILE UPDATE
 router.post("/profile-customer/update", isLoggedIn, async (req, res) => {
-  const { username, email, fullPhone } = req.body;
+  const { username, email, fullPhone, address } = req.body;
 
-  User.updateProfile(req.session.user.id, { username, email, phone: fullPhone }, (err) => {
-    if (err) {
-      console.error("Database Error:", err);
-      req.session.message = "Gagal memperbarui profil.";
-      return res.redirect("/profile-customer");
-    }
+  User.updateProfile(
+    req.session.user.id,
+    { username, email, phone: fullPhone, address },
+    (err) => {
+      if (err) {
+        console.error("Database Error:", err);
+        req.session.message = "Gagal memperbarui profil.";
+        return res.redirect("/profile-customer");
+      }
 
-    req.session.user.username = username;
-    req.session.user.email = email;
-    req.session.message = "Profil berhasil diperbarui.";
-    res.redirect("/profile-customer");
-  });
+      req.session.user.username = username;
+      req.session.user.email = email;
+      req.session.message = "Profil berhasil diperbarui.";
+      res.redirect("/profile-customer");
+    },
+  );
 });
 
 // Upload KTP User
@@ -1436,117 +1429,144 @@ router.post(
   isLoggedIn,
   upload.single("profile_image"),
   (req, res) => {
-
     if (!req.file) {
       return res.redirect("/profile-customer");
     }
 
-    const photoPath =
-      `/uploads/${req.file.filename}`;
+    const photoPath = `/uploads/${req.file.filename}`;
 
-    User.updatePhoto(
-      req.session.user.id,
-      photoPath,
-      (err) => {
-
-        if (err) {
-          console.error(err);
-        }
-
-        req.session.message =
-          "Profile picture updated.";
-
-        res.redirect("/profile-customer");
+    User.updatePhoto(req.session.user.id, photoPath, (err) => {
+      if (err) {
+        console.error(err);
       }
-    );
-  }
+
+      req.session.message = "Profile picture updated.";
+
+      res.redirect("/profile-customer");
+    });
+  },
 );
 
 router.post(
   "/profile-customer/change-password",
   isLoggedIn,
   async (req, res) => {
-
-    const {
-      oldPassword,
-      newPassword,
-      confirmPassword
-    } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-
       req.session.message = {
         type: "error",
-        text: "New passwords do not match."
+        text: "New passwords do not match.",
       };
 
       return res.redirect("/profile-customer");
     }
 
-    User.getById(
-      req.session.user.id,
-      async (err, rows) => {
+    User.getById(req.session.user.id, async (err, rows) => {
+      if (err || !rows.length) {
+        return res.redirect("/profile-customer");
+      }
 
-        if (err || !rows.length) {
-          return res.redirect("/profile-customer");
-        }
+      const user = rows[0];
 
-        const user = rows[0];
+      const match = await bcrypt.compare(oldPassword, user.password);
 
-        const match =
-          await bcrypt.compare(
-            oldPassword,
-            user.password
-          );
+      if (!match) {
+        req.session.message = {
+          type: "error",
+          text: "Current password is incorrect.",
+        };
 
-        if (!match) {
+        return res.redirect("/profile-customer");
+      }
 
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      User.updatePassword(user.id, hashedPassword, (err) => {
+        if (err) {
           req.session.message = {
             type: "error",
-            text: "Current password is incorrect."
+            text: "Failed to update password.",
           };
 
           return res.redirect("/profile-customer");
         }
 
-        const hashedPassword =
-          await bcrypt.hash(
-            newPassword,
-            10
-          );
+        req.session.message = {
+          type: "success",
+          text: "Password updated successfully.",
+        };
 
-        User.updatePassword(
-          user.id,
-          hashedPassword,
-          (err) => {
+        res.redirect("/profile-customer");
+      });
+    });
+  },
+);
 
-            if (err) {
+router.post(
+  "/profile-customer/change-email",
+  isLoggedIn,
+  async (req, res) => {
+    const { currentEmail, newEmail, confirmEmail } = req.body;
 
-              req.session.message = {
-                type: "error",
-                text: "Failed to update password."
-              };
+    if (newEmail !== confirmEmail) {
+      req.session.message = {
+        type: "error",
+        text: "New email addresses do not match.",
+      };
+      return res.redirect("/profile-customer");
+    }
 
-              return res.redirect(
-                "/profile-customer"
-              );
-            }
-
-            req.session.message = {
-              type: "success",
-              text: "Password updated successfully."
-            };
-
-            res.redirect(
-              "/profile-customer"
-            );
-          }
-        );
-
+    User.getById(req.session.user.id, async (err, rows) => {
+      if (err || !rows.length) {
+        return res.redirect("/profile-customer");
       }
-    );
 
-  }
+      const user = rows[0];
+
+      // Verifikasi currentEmail cocok dengan email di DB
+      if (!currentEmail || currentEmail.toLowerCase() !== user.email.toLowerCase()) {
+        req.session.message = {
+          type: "error",
+          text: "Current email is incorrect.",
+        };
+        return res.redirect("/profile-customer");
+      }
+
+      // Cek apakah email baru sudah dipakai user lain
+      User.findByEmail(newEmail, (err, existing) => {
+        if (err) {
+          req.session.message = { type: "error", text: "Database error." };
+          return res.redirect("/profile-customer");
+        }
+
+        if (existing.length > 0 && existing[0].id !== user.id) {
+          req.session.message = {
+            type: "error",
+            text: "Email is already in use by another account.",
+          };
+          return res.redirect("/profile-customer");
+        }
+
+        User.updateEmail(user.id, newEmail, (err) => {
+          if (err) {
+            req.session.message = {
+              type: "error",
+              text: "Failed to update email.",
+            };
+            return res.redirect("/profile-customer");
+          }
+
+          req.session.user.email = newEmail;
+          req.session.message = {
+            type: "success",
+            text: "Email updated successfully.",
+          };
+          res.redirect("/profile-customer");
+        });
+      });
+    });
+  },
 );
 
 /* ============================================

@@ -35,7 +35,19 @@
     <% const allowPopup = typeof showPopup !== "undefined" ? showPopup : true;
        const popupMessage = typeof message !== "undefined" ? message : null; %>
     <% if (allowPopup && popupMessage) { %>
-      <div class="popup <%= popupMessage.type %>"><%= popupMessage.text %></div>
+      <div class="popup <%= popupMessage.type %>" id="serverPopup"><%= popupMessage.text %></div>
+      <script>
+        (function() {
+          const p = document.getElementById('serverPopup');
+          if (p) {
+            setTimeout(() => {
+              p.style.transition = 'opacity 0.4s ease';
+              p.style.opacity = '0';
+              setTimeout(() => p.remove(), 400);
+            }, 3000);
+          }
+        })();
+      </script>
     <% } %>
     <% if (typeof scriptFile !== 'undefined' && scriptFile) { %>
     <script src="<%= scriptFile %>"></script>

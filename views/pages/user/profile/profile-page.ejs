@@ -16,6 +16,9 @@
       </div>
 
       <form action="/profile-customer/update" method="POST">
+        <!-- Hidden: email agar tidak terhapus di DB -->
+        <input type="hidden" name="email" value="<%= user.email %>" />
+
         <div class="form-group">
           <label for="nama">Full Name</label>
           <input
@@ -29,38 +32,19 @@
         </div>
 
         <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            value="<%= user.email %>"
-            readonly
-          />
+          <label for="phone">Phone Number</label>
+          <input type="text" id="phoneDisplay" readonly />
+          <input type="tel" id="phone" name="phone"
+            placeholder="Enter your phone number"
+            value="<%= user.phone || '' %>" />
+          <input type="hidden" id="fullPhone" name="fullPhone" />
         </div>
 
         <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input
-            type="text"
-            id="phoneDisplay"
-            readonly
-          />
-
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            placeholder="Enter your phone number"
-            value="<%= user.phone %>"
-          />
-
-          <input
-            type="hidden"
-            id="fullPhone"
-            name="fullPhone"
-          />
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address"
+            placeholder="Enter your address"
+            value="<%= user.address || '' %>" readonly />
         </div>
 
         <div class="form-buttons">
@@ -109,6 +93,24 @@
         </div>
 
         <ul class="security-list">
+          <li id="changeEmailBtn">
+            <div class="security-item">
+              <i class="bi bi-envelope-at"></i>
+              <div>
+                <span class="security-label">Email</span>
+                <span class="security-desc"><%=
+                  (() => {
+                    const e = user.email;
+                    const [local, domain] = e.split('@');
+                    const visible = local.slice(0, 3);
+                    const masked = visible + '*'.repeat(Math.max(local.length - 3, 2)) + '@' + domain;
+                    return masked;
+                  })()
+                %></span>
+              </div>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </li>
           <li id="changePasswordBtn">
             <div class="security-item">
               <i class="bi bi-lock"></i>
@@ -325,7 +327,82 @@
 </div>
 </div>
 
-<!-- Script -->
+<!-- Modal Change Email -->
+<div class="ktp-modal-overlay" id="emailModal">
+
+  <div class="ktp-modal">
+
+    <div class="ktp-modal-header">
+      <div class="ktp-modal-icon">
+        <i class="bi bi-envelope-at"></i>
+      </div>
+
+      <div>
+        <h3>Change Email</h3>
+        <p>Update your account email address.</p>
+      </div>
+    </div>
+
+    <form
+      action="/profile-customer/change-email"
+      method="POST"
+    >
+
+      <div class="form-group-pass">
+        <label>Current Email</label>
+        <input
+          type="email"
+          name="currentEmail"
+          placeholder="Enter your current email"
+          required
+        >
+      </div>
+
+      <div class="form-group-pass">
+        <label>New Email</label>
+        <input
+          type="email"
+          name="newEmail"
+          placeholder="Enter new email address"
+          required
+        >
+      </div>
+
+      <div class="form-group-pass new-pass">
+        <label>Confirm New Email</label>
+        <input
+          type="email"
+          name="confirmEmail"
+          placeholder="Confirm new email address"
+          required
+        >
+      </div>
+
+      <div class="ktp-modal-actions">
+
+        <button
+          type="button"
+          class="btn-cancel-modal"
+          id="closeEmailModal"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn-kirim"
+        >
+          Update Email
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
 <script>
   const originalPhone = "<%= user.phone || '' %>";
   const btnEdit = document.getElementById("btnEdit");
@@ -338,363 +415,212 @@
   const btnCancelModal = document.getElementById('btnCancelModal');
   const ktpDropzone = document.getElementById('ktpDropzone');
   const ktpFile = document.getElementById('ktpFile');
+  let iti;
 
+  // === EDIT PROFILE ===
   btnEdit.addEventListener("click", () => {
+    inputs.forEach((input) => {
+      originalValues[input.id] = input.value;
+      input.removeAttribute("readonly");
+    });
 
-  inputs.forEach((input) => {
-    originalValues[input.id] = input.value;
-    input.removeAttribute("readonly");
+    document.getElementById("phoneDisplay").style.display = "none";
+    document.getElementById("phone").style.display = "block";
+
+    const itiWrapper = document.querySelector(".iti");
+    if (itiWrapper) itiWrapper.style.display = "block";
+    
+    setTimeout(() => {
+      if (iti && originalPhone) iti.setNumber(originalPhone);
+    }, 50);
+
+    btnEdit.style.display = "none";
+    btnSave.style.display = "block";
+    btnCancel.style.display = "block";
   });
 
-  document.getElementById("phoneDisplay").style.display = "none";
-  document.getElementById("phone").style.display = "block";
-
-  const itiWrapper = document.querySelector(".iti");
-
-  if (itiWrapper) {
-    itiWrapper.style.display = "block";
-  }
-
-  if (iti && originalPhone) {
-    iti.setNumber(originalPhone);
-  }
-
-  btnEdit.style.display = "none";
-  btnSave.style.display = "block";
-  btnCancel.style.display = "block";
-
-});
-
+  // === CANCEL EDIT ===
   btnCancel.addEventListener("click", () => {
+    inputs.forEach((input) => {
+      input.value = originalValues[input.id];
+      input.setAttribute("readonly", true);
+    });
 
-  inputs.forEach((input) => {
-    input.value = originalValues[input.id];
-    input.setAttribute("readonly", true);
+    document.getElementById("phoneDisplay").style.display = "block";
+    document.getElementById("phone").style.display = "none";
+    document.getElementById("phoneDisplay").value = formatDisplayPhone(originalPhone);
+
+    const itiWrapper = document.querySelector(".iti");
+    if (itiWrapper) itiWrapper.style.display = "none";
+    if (iti && originalPhone) iti.setNumber(originalPhone);
+
+    btnEdit.style.display = "block";
+    btnSave.style.display = "none";
+    btnCancel.style.display = "none";
   });
 
-  document.getElementById("phoneDisplay").style.display = "block";
-  document.getElementById("phone").style.display = "none";
-
-  document.getElementById("phoneDisplay").value =
-    formatDisplayPhone(originalPhone);
-
-  const itiWrapper = document.querySelector(".iti");
-
-  if (itiWrapper) {
-    itiWrapper.style.display = "none";
-  }
-
-  if (iti && originalPhone) {
-    iti.setNumber(originalPhone);
-  }
-
-  btnEdit.style.display = "block";
-  btnSave.style.display = "none";
-  btnCancel.style.display = "none";
-
-});
-
+  // === VERIFIKASI KTP ===
   if (btnVerifikasi) {
     btnVerifikasi.addEventListener('click', () => {
-      const phone = '<%= user.phone %>';
-      const username = '<%= user.username %>';
-      const email = '<%= user.email %>';
-
+      const phone = '<%= user.phone || "" %>';
       if (!phone) {
-        // buat popup dynamic
-        const popup = document.createElement('div');
-        popup.className = 'popup error';
-        popup.textContent = 'Please complete your personal data first before verication.';
-        document.querySelector('.profile-content').appendChild(popup);
-
-        // hapus otomatis setelah animasi selesai
-        setTimeout(() => popup.remove(), 3200);
+        showPopup('Please complete your personal data first before verification.');
         return;
       }
-
       ktpModalOverlay.classList.add('show');
     });
   }
 
   if (btnCancelModal) {
-    btnCancelModal.addEventListener('click', () => {
-      ktpModalOverlay.classList.remove('show');
-    });
+    btnCancelModal.addEventListener('click', () => ktpModalOverlay.classList.remove('show'));
   }
 
   if (ktpDropzone) {
     ktpDropzone.addEventListener('click', () => ktpFile.click());
     ktpFile.addEventListener('change', () => {
-      if (ktpFile.files[0]) {
-        ktpDropzone.querySelector('p').textContent = ktpFile.files[0].name;
-      }
+      if (ktpFile.files[0]) ktpDropzone.querySelector('p').textContent = ktpFile.files[0].name;
     });
   }
 
-  const btnChangePhoto =
-  document.getElementById("btnChangePhoto");
+  // === GANTI FOTO ===
+  const btnChangePhoto = document.getElementById("btnChangePhoto");
+  const photoModal = document.getElementById("photoModal");
+  const closePhotoModal = document.getElementById("closePhotoModal");
+  const photoDropzone = document.getElementById("photoDropzone");
+  const profileImage = document.getElementById("profileImage");
 
-const photoModal =
-  document.getElementById("photoModal");
+  if (btnChangePhoto) btnChangePhoto.addEventListener("click", () => photoModal.classList.add("show"));
+  if (closePhotoModal) closePhotoModal.addEventListener("click", () => photoModal.classList.remove("show"));
+  if (photoDropzone) photoDropzone.addEventListener("click", () => profileImage.click());
+  if (profileImage) {
+    profileImage.addEventListener("change", () => {
+      if (profileImage.files[0]) photoDropzone.querySelector("p").textContent = profileImage.files[0].name;
+    });
+  }
 
-const closePhotoModal =
-  document.getElementById("closePhotoModal");
+  // === GANTI PASSWORD ===
+  const changePasswordBtn = document.getElementById("changePasswordBtn");
+  const passwordModal = document.getElementById("passwordModal");
+  const closePasswordModal = document.getElementById("closePasswordModal");
 
-const photoDropzone =
-  document.getElementById("photoDropzone");
+  if (changePasswordBtn) changePasswordBtn.addEventListener("click", () => passwordModal.classList.add("show"));
+  if (closePasswordModal) closePasswordModal.addEventListener("click", () => passwordModal.classList.remove("show"));
 
-const profileImage =
-  document.getElementById("profileImage");
+  // === GANTI EMAIL ===
+  const changeEmailBtn = document.getElementById("changeEmailBtn");
+  const emailModal = document.getElementById("emailModal");
+  const closeEmailModal = document.getElementById("closeEmailModal");
 
-if (btnChangePhoto) {
+  if (changeEmailBtn) changeEmailBtn.addEventListener("click", () => emailModal.classList.add("show"));
+  if (closeEmailModal) closeEmailModal.addEventListener("click", () => emailModal.classList.remove("show"));
 
-  btnChangePhoto.addEventListener(
-    "click",
-    () => {
-      photoModal.classList.add("show");
-    }
-  );
+  // === LOAD ===
+  window.addEventListener("load", () => {
+    document.getElementById("phoneDisplay").value = formatDisplayPhone(originalPhone);
 
-}
-
-if (closePhotoModal) {
-
-  closePhotoModal.addEventListener(
-    "click",
-    () => {
-      photoModal.classList.remove("show");
-    }
-  );
-
-}
-
-if (photoDropzone) {
-
-  photoDropzone.addEventListener(
-    "click",
-    () => profileImage.click()
-  );
-
-}
-
-if (profileImage) {
-
-  profileImage.addEventListener(
-    "change",
-    () => {
-
-      if (profileImage.files[0]) {
-
-        photoDropzone.querySelector("p")
-          .textContent =
-            profileImage.files[0].name;
-
-      }
-
-    }
-  );
-
-}
-
-const changePasswordBtn =
-  document.getElementById("changePasswordBtn");
-
-const passwordModal =
-  document.getElementById("passwordModal");
-
-const closePasswordModal =
-  document.getElementById("closePasswordModal");
-
-if (changePasswordBtn) {
-
-  changePasswordBtn.addEventListener(
-    "click",
-    () => {
-      passwordModal.classList.add("show");
-    }
-  );
-
-}
-
-if (closePasswordModal) {
-
-  closePasswordModal.addEventListener(
-    "click",
-    () => {
-      passwordModal.classList.remove("show");
-    }
-  );
-
-}
-let iti;
-
-window.addEventListener("load", () => {
-  document.getElementById(
-  "phoneDisplay"
-).value =
-  formatDisplayPhone(originalPhone);
-
-  const phoneInput =
-    document.querySelector("#phone");
-
-  if (
-    phoneInput &&
-    typeof window.intlTelInput !== "undefined"
-  ) {
-
-    iti = window.intlTelInput(
-      phoneInput,
-      {
+    const phoneInput = document.querySelector("#phone");
+    if (phoneInput && typeof window.intlTelInput !== "undefined") {
+      iti = window.intlTelInput(phoneInput, {
         initialCountry: "id",
-        preferredCountries: [
-          "id",
-          "sg",
-          "my",
-          "us",
-          "jp"
-        ],
-        separateDialCode: true
-      }
-    );
+        preferredCountries: ["id", "sg", "my", "us", "jp"],
+        separateDialCode: true,
+        loadUtilsOnInit: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/utils.js"
+      });
 
-    setTimeout(() => {
-
-  const itiWrapper =
-    document.querySelector(".iti");
-
-  if (itiWrapper) {
-    itiWrapper.style.display = "none";
-  }
-
-}, 50);
-
-  }
-
-});
-function showPopup(message, type = "error") {
-
-  const popup = document.createElement("div");
-
-  popup.className = `popup ${type}`;
-
-  popup.textContent = message;
-
-  document
-    .querySelector(".profile-content")
-    .appendChild(popup);
-
-  setTimeout(() => {
-    popup.remove();
-  }, 3000);
-
-}
-
-const profileForm =
-  document.querySelector(
-    'form[action="/profile-customer/update"]'
-  );
-
-if (profileForm) {
-
-  profileForm.addEventListener(
-    "submit",
-    (e) => {
-      const nama =
-  document.getElementById("nama")
-    .value.trim();
-
-const email =
-  document.getElementById("email")
-    .value.trim();
-
-const phone =
-  document.getElementById("phone")
-    .value.trim();
-
-if (!nama) {
-
-  e.preventDefault();
-
-  showPopup(
-    "Full Name is required."
-  );
-
-  return;
-}
-
-if (!email) {
-
-  e.preventDefault();
-
-  showPopup(
-    "Email is required."
-  );
-
-  return;
-}
-
-if (!phone) {
-
-  e.preventDefault();
-
-  showPopup(
-    "Phone Number is required."
-  );
-
-  return;
-}
-      let fullPhone =
-        iti.getNumber();
-
-      if (!fullPhone) {
-
-        const dialCode =
-          iti.getSelectedCountryData().dialCode;
-
-        const number =
-          document
-            .getElementById("phone")
-            .value
-            .replace(/\D/g, "");
-
-        fullPhone =
-          "+" + dialCode + number;
-      }
-
-      document.getElementById(
-        "fullPhone"
-      ).value =
-        fullPhone;
-
+      setTimeout(() => {
+        const itiWrapper = document.querySelector(".iti");
+        if (itiWrapper) itiWrapper.style.display = "none";
+      }, 50);
     }
-  );
+  });
 
-}
+  // === HELPER: ambil nomor lengkap dari iti ===
+  function getFullPhoneNumber() {
+    if (!iti) return "";
 
-function formatDisplayPhone(phone) {
+    // Coba getNumber() dulu (butuh utils script)
+    let num = "";
+    try {
+      num = iti.getNumber();
+    } catch (e) {
+      num = "";
+    }
 
-  if (!phone) return "";
+    // Fallback: jika getNumber() gagal atau hanya return dial code,
+    // konstruksi manual dari dial code + input value
+    if (!num || num === "+" || /^\+\d{1,3}$/.test(num)) {
+      const phoneInput = document.getElementById("phone");
+      const inputVal = phoneInput ? phoneInput.value.replace(/\D/g, "") : "";
+      if (inputVal) {
+        const selectedData = iti.getSelectedCountryData();
+        const dialCode = selectedData ? selectedData.dialCode : "";
+        num = "+" + dialCode + inputVal;
+      }
+    }
 
-  const clean = phone.replace(/\D/g, "");
-
-  let countryCode = "";
-  let number = "";
-
-  if (clean.startsWith("62")) {
-    countryCode = "62";
-    number = clean.substring(2);
-  } else {
-    countryCode = clean.substring(0, 3);
-    number = clean.substring(3);
+    return num;
   }
 
-  return "+" +
-    countryCode +
-    " " +
-    number.replace(
-      /(\d{3})(\d{4})(\d+)/,
-    "$1-$2-$3"
-    );
+  // === SHOW POPUP ===
+  function showPopup(message, type = "error") {
+    const popup = document.createElement("div");
+    popup.className = `popup ${type}`;
+    popup.textContent = message;
+    document.querySelector(".profile-content").appendChild(popup);
+    setTimeout(() => popup.remove(), 3000);
+  }
 
-}
+  // === FORM SUBMIT VALIDASI ===
+  const profileForm = document.querySelector('form[action="/profile-customer/update"]');
+
+  if (profileForm) {
+    profileForm.addEventListener("submit", (e) => {
+      const nama = document.getElementById("nama").value.trim();
+      const address = document.getElementById("address").value.trim();
+      
+      let fullPhoneVal = getFullPhoneNumber();
+      if (!fullPhoneVal || fullPhoneVal === "+") {
+        fullPhoneVal = originalPhone;
+      }
+
+      if (!nama) {
+        e.preventDefault();
+        showPopup("Full Name is required.");
+        return;
+      }
+
+      if (!address) {
+        e.preventDefault();
+        showPopup("Address is required.");
+        return;
+      }
+
+      if (!fullPhoneVal) {
+        e.preventDefault();
+        showPopup("Phone Number is required.");
+        return;
+      }
+
+      // set fullPhone ke hidden input sebelum submit
+      document.getElementById("fullPhone").value = fullPhoneVal;
+    });
+  }
+
+  // === FORMAT DISPLAY PHONE ===
+  function formatDisplayPhone(phone) {
+    if (!phone) return "";
+    const clean = phone.replace(/\D/g, "");
+    let countryCode = "";
+    let number = "";
+
+    if (clean.startsWith("62")) {
+      countryCode = "62";
+      number = clean.substring(2);
+    } else {
+      countryCode = clean.substring(0, 3);
+      number = clean.substring(3);
+    }
+
+    return "+" + countryCode + " " + number.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+  }
 </script>
