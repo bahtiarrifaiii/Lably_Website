@@ -1156,6 +1156,7 @@ router.get(
     u.username,
     u.email,
     u.phone,
+    u.address,
 
     pmt.metode_payment AS payment_method,
     pmt.ewallet_provider
@@ -1211,6 +1212,104 @@ AND p.id_user = ?
       });
     });
   },
+);
+
+router.get(
+  "/receipt/:id",
+  isLoggedIn,
+  passLoginStatus,
+  async (req, res) => {
+    const orderId = req.params.id;
+    const userId = req.session.user.id;
+
+    const sql = `
+      SELECT
+        p.id,
+        p.id_products,
+        p.qty,
+        p.price,
+        p.status,
+
+        DATE_FORMAT(p.tgl_pinjam, '%Y-%m-%d') AS tgl_pinjam,
+        DATE_FORMAT(p.tgl_kembali, '%Y-%m-%d') AS tgl_kembali,
+
+        pr.name AS product_name,
+        pr.image AS product_image,
+        pr.price AS product_price,
+
+        u.username,
+        u.email,
+        u.phone,
+        u.address,
+
+        pmt.metode_payment AS payment_method,
+        pmt.ewallet_provider
+
+      FROM peminjaman p
+
+      LEFT JOIN products pr
+      ON p.id_products = pr.id
+
+      LEFT JOIN users u
+      ON p.id_user = u.id
+
+      LEFT JOIN payment pmt
+      ON p.id_user = pmt.id_user
+      AND p.id_products = pmt.id_product
+      AND p.tgl_pinjam = pmt.tgl_pinjam
+      AND p.tgl_kembali = pmt.tgl_kembali
+
+      WHERE p.id = ?
+      AND p.id_user = ?
+
+      LIMIT 1
+    `;
+
+    db.query(sql, [orderId, userId], async (err, results) => {
+
+      if (err) {
+        console.error("RECEIPT LOAD ERROR:", err);
+        return res.status(500).send("Error loading receipt.");
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send("Receipt not found.");
+      }
+
+      const order = results[0];
+
+      User.getById(userId, async (userErr, userRows) => {
+
+        if (userErr || !userRows.length) {
+          return res.status(500).send("Error loading user.");
+        }
+
+        const user = userRows[0];
+
+        const content = await ejs.renderFile(
+    path.join(__dirname, "../views/pages/user/profile/receipt.ejs"),
+    {
+        order,
+        user,
+    }
+);
+
+res.render("layouts/profile", {
+    title: "Payment Receipt | LabLy",
+    currentPage: "/order-user",
+    user,
+    style: `
+        <link rel="stylesheet" href="/CSS/dashboard-profile.css">
+        <link rel="stylesheet" href="/CSS/receipt.css">
+    `,
+    content,
+});
+
+      });
+
+    });
+
+  }
 );
 
 // USER DASHBOARD CUSTOMER PAGE

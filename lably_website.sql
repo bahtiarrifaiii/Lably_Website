@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 23, 2026 at 12:20 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Jun 26, 2026 at 02:53 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,7 +32,7 @@ CREATE TABLE `admin` (
   `username` varchar(250) NOT NULL,
   `email` varchar(250) NOT NULL,
   `password` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `admin`
@@ -50,7 +50,7 @@ INSERT INTO `admin` (`id`, `username`, `email`, `password`) VALUES
 CREATE TABLE `category` (
   `id` int(50) NOT NULL,
   `name` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `category`
@@ -79,14 +79,13 @@ CREATE TABLE `d_peminjaman` (
   `alamat` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `d_peminjaman`
 --
 
 INSERT INTO `d_peminjaman` (`id`, `id_user`, `id_products`, `price`, `tgl_pinjam`, `tgl_kembali`, `status`, `qty`, `no_telp`, `alamat`, `created_at`, `updated_at`) VALUES
-(58, 9, 24, '1000000', '2026-06-19', '2026-06-25', 'draft', 1, '', 'jhug', '2026-06-19 06:24:49', '2026-06-19 06:24:49'),
 (84, 10, 6, '1200000', '2026-06-21', '2026-06-22', 'draft', 1, '', 'Bekasi', '2026-06-21 03:19:15', '2026-06-21 03:19:15');
 
 -- --------------------------------------------------------
@@ -106,7 +105,14 @@ CREATE TABLE `payment` (
   `price` int(50) NOT NULL,
   `qty` int(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`id_payment`, `tgl_pinjam`, `tgl_kembali`, `metode_payment`, `ewallet_provider`, `id_user`, `id_product`, `price`, `qty`, `created_at`) VALUES
+(1, '2026-06-26', '2026-06-27', 'Credit Card', NULL, 9, 23, 650000, 1, '2026-06-26 11:04:50');
 
 -- --------------------------------------------------------
 
@@ -125,7 +131,7 @@ CREATE TABLE `peminjaman` (
   `qty` int(50) NOT NULL,
   `no_telp` varchar(255) NOT NULL,
   `alamat` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `peminjaman`
@@ -176,7 +182,8 @@ INSERT INTO `peminjaman` (`id`, `id_user`, `id_products`, `price`, `tgl_pinjam`,
 (56, 13, 11, '100000', '2026-06-21', '2026-06-22', 'pending', 1, '-', 'Bekasi'),
 (57, 13, 9, '250000', '2026-06-21', '2026-06-22', 'pending', 1, '-', 'Bekasi'),
 (58, 13, 12, '150000', '2026-06-23', '2026-06-24', 'completed', 1, '-', 'Bekasi'),
-(59, 13, 9, '250000', '2026-06-23', '2026-06-24', 'pending', 1, '-', 'Bekasi');
+(59, 13, 9, '250000', '2026-06-23', '2026-06-24', 'pending', 1, '-', 'Bekasi'),
+(60, 9, 23, '650000', '2026-06-26', '2026-06-27', 'in use', 1, '-', '-');
 
 -- --------------------------------------------------------
 
@@ -193,7 +200,7 @@ CREATE TABLE `products` (
   `kondisi` varchar(250) NOT NULL,
   `price` int(50) NOT NULL,
   `image` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `products`
@@ -216,7 +223,7 @@ INSERT INTO `products` (`id`, `name`, `id_category`, `description`, `stock`, `ko
 (20, 'FTIR', 23, 'Spektrometer infra merah untuk mengidentifikasi struktur molekuler dan gugus fungsi kimia dalam sampel (padat, cair, gas).', 8, 'Sangat Baik', 800000, '1765300462155-FTIR.png'),
 (21, 'UV–Vis Spectrophotometer', 23, 'Alat spektroskopi untuk mengukur penyerapan cahaya ultraviolet/visible oleh larutan, yang membantu kuantifikasi konsentrasi senyawa berdasarkan absorbansi.', 9, 'Sangat Baik', 300000, '1765300454605-UVS.png'),
 (22, 'Universal Testing Machine', 23, 'Mesin uji material (tarik, tekan, lentur) untuk menguji sifat mekanik suatu bahan (kuat tarik, modul elastisitas, deformasi, kekuatan material).', 8, 'Sangat Baik', 750000, '1765300447539-UTM.png'),
-(23, 'Differential Scanning Calorimeter', 23, 'Alat analisis termal untuk menentukan transisi termal material (misalnya titik leleh, glass transition, reaksi endoterm/eksoterm).', 3, 'Sangat Baik', 650000, '1765300438895-DSC.png'),
+(23, 'Differential Scanning Calorimeter', 23, 'Alat analisis termal untuk menentukan transisi termal material (misalnya titik leleh, glass transition, reaksi endoterm/eksoterm).', 2, 'Sangat Baik', 650000, '1765300438895-DSC.png'),
 (24, 'Rheometer', 23, 'Alat untuk mengukur viskositas atau sifat aliran fluida/polimer/larutan (bagaimana material mengalir/berehologi di bawah gaya geser atau tekanan).', 8, 'Sangat Baik', 1000000, '1765300431109-Rheometer.png');
 
 -- --------------------------------------------------------
@@ -229,7 +236,7 @@ CREATE TABLE `reminder` (
   `id` int(50) NOT NULL,
   `sent_at` datetime NOT NULL,
   `id_peminjaman` int(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `reminder`
@@ -254,21 +261,22 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_login` datetime DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
   `ktp_image` varchar(255) DEFAULT NULL,
   `ktp_status` enum('unverified','pending','verified','rejected') DEFAULT 'unverified'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `pp_image`, `status`, `created_at`, `last_login`, `phone`, `ktp_image`, `ktp_status`) VALUES
-(8, 'Bima', 'bima@gmail.com', '$2b$10$FmCL.PkghfWzndZ5.QUwI.Kvopfbo8V9XEDPvPSiOQWqucrz6KKy6', '/uploads/1781832767953-a7a3c193f8819c212fe2231f13e46732.jpg', 'inactive', '2025-11-20 15:52:39', '2025-11-20 23:02:33', NULL, NULL, 'unverified'),
-(9, 'Fikri Ahmad', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', '/uploads/1781833445777-2f49dfa3f97e24eec56d24e9d704c43b.jpg', 'active', '2025-11-20 16:01:38', '2026-06-19 13:24:21', '+6281298765432', '/uploads/1781789161999-Bukti Solve.jpeg', 'verified'),
-(10, 'Hanni Pham', 'hanni@gmail.com', '$2b$10$ISb9CGqUchgBigd50UkngOGzRxVN/B27lfOezVcnGA9GP05csbwfu', '/uploads/1781832767953-a7a3c193f8819c212fe2231f13e46732.jpg', 'active', '2025-12-01 12:24:04', '2026-06-21 10:18:32', '-', '/uploads/1780643635582-Gemini_Generated_Image_jdk60gjdk60gjdk6.png', 'verified'),
-(11, 'Jung Ahyeon', 'ahyeon@gmail.com', '$2b$10$ARK4bGdrwKfyrveYqmaiAO0OKBaqTK/Fjk3TBe1t5Jfqui/ddfrOe', '/uploads/1781832767953-a7a3c193f8819c212fe2231f13e46732.jpg', 'active', '2025-12-12 00:12:39', '2026-06-05 16:37:54', '+82 852-7056-1191', '/uploads/1780641830027-Gemini_Generated_Image_3t0tyg3t0tyg3t0t.png', 'rejected'),
-(12, 'Ruru', 'ruru@gmail.com', '$2b$10$ibx4MmUjaPG208hSUDWo2e30RQtwUvGeTI76ZVwSGq/4JgIK0OS8G', '/uploads/1781848470546-2f49dfa3f97e24eec56d24e9d704c43b.jpg', 'active', '2026-06-19 01:13:43', '2026-06-19 13:13:02', '+3585522195', '/uploads/1781848504241-a7a3c193f8819c212fe2231f13e46732.jpg', 'pending'),
-(13, 'Ohim', 'ohim@gmail.com', '$2b$10$dk033.zQ5cF/CPF.WeblLOqrwJCI0Oa270ETCU1pe5YO3Mmpx603i', '/uploads/1781880987287-raja Ohim.png', 'active', '2026-06-19 14:51:42', '2026-06-23 17:03:02', '+6283176549876', '/uploads/1781880740522-ohim.jpeg', 'verified');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `pp_image`, `status`, `created_at`, `last_login`, `phone`, `address`, `ktp_image`, `ktp_status`) VALUES
+(8, 'Bima', 'bima@gmail.com', '$2b$10$FmCL.PkghfWzndZ5.QUwI.Kvopfbo8V9XEDPvPSiOQWqucrz6KKy6', '/uploads/1781832767953-a7a3c193f8819c212fe2231f13e46732.jpg', 'inactive', '2025-11-20 15:52:39', '2025-11-20 23:02:33', NULL, NULL, NULL, 'unverified'),
+(9, 'Fikri Ahmad', 'fikri@gmail.com', '$2b$10$UebE8MYFCGC9QApehlZaCeS2TOq5sLMZO6kdw9eKbj8xMtzS4xw8y', '/uploads/1781833445777-2f49dfa3f97e24eec56d24e9d704c43b.jpg', 'active', '2025-11-20 16:01:38', '2026-06-26 19:45:54', '+6281298765432', 'Bekasi Barat, Jl.Hobi-Hobi 38565', '/uploads/1781789161999-Bukti Solve.jpeg', 'verified'),
+(10, 'Hanni Pham', 'hanni@gmail.com', '$2b$10$ISb9CGqUchgBigd50UkngOGzRxVN/B27lfOezVcnGA9GP05csbwfu', '/uploads/1782467017928-download (50).jpeg', 'active', '2025-12-01 12:24:04', '2026-06-26 18:08:38', '+821096743434', '380 Yeouidaebang-ro, Yeongdeungpo-gu, Seoul, 07342, South Korea', '/uploads/1780643635582-Gemini_Generated_Image_jdk60gjdk60gjdk6.png', 'verified'),
+(11, 'Jung Ahyeon', 'ahyeon@gmail.com', '$2b$10$ARK4bGdrwKfyrveYqmaiAO0OKBaqTK/Fjk3TBe1t5Jfqui/ddfrOe', '/uploads/1782463694761-download (51).jpeg', 'active', '2025-12-12 00:12:39', '2026-06-26 15:48:04', '+821098765432', NULL, '/uploads/1780641830027-Gemini_Generated_Image_3t0tyg3t0tyg3t0t.png', 'rejected'),
+(12, 'Ruru', 'ruru@gmail.com', '$2b$10$ibx4MmUjaPG208hSUDWo2e30RQtwUvGeTI76ZVwSGq/4JgIK0OS8G', '/uploads/1781848470546-2f49dfa3f97e24eec56d24e9d704c43b.jpg', 'active', '2026-06-19 01:13:43', '2026-06-19 13:13:02', '+3585522195', NULL, '/uploads/1781848504241-a7a3c193f8819c212fe2231f13e46732.jpg', 'pending'),
+(13, 'Ohim', 'ohim@gmail.com', '$2b$10$dk033.zQ5cF/CPF.WeblLOqrwJCI0Oa270ETCU1pe5YO3Mmpx603i', '/uploads/1781880987287-raja Ohim.png', 'active', '2026-06-19 14:51:42', '2026-06-23 17:03:02', '+6283176549876', NULL, '/uploads/1781880740522-ohim.jpeg', 'verified');
 
 --
 -- Indexes for dumped tables
@@ -351,19 +359,19 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `d_peminjaman`
 --
 ALTER TABLE `d_peminjaman`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `id_payment` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_payment` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `products`

@@ -136,9 +136,19 @@ if (status === 'completed') completedCount = 5;
                 <% } %>
             </span>
         </div>
-      <button class="btn-tambah">
-        <i class="bi bi-plus-circle"></i> Add Borrowing Duration
-      </button>
+      <% const disableExtend = status === 'completed'; %>
+
+<button
+    class="btn-tambah <%= disableExtend ? 'btn-disabled' : '' %>"
+    <%= disableExtend ? 'disabled' : '' %>>
+    <i class="bi bi-plus-circle"></i>
+
+    <% if (disableExtend) { %>
+        Borrowing Completed
+    <% } else { %>
+        Add Borrowing Duration
+    <% } %>
+</button>
     </div>
   </div>
 
@@ -161,6 +171,10 @@ if (status === 'completed') completedCount = 5;
         <div class="borrower-row">
           <span class="borrower-label"><i class="bi bi-telephone-fill"></i>Phone Number</span>
           <span class="borrower-value"><%= order.phone || '-' %></span>
+        </div>
+        <div class="borrower-row address-row">
+          <span class="borrower-label"><i class="bi bi-geo-alt-fill"></i>Address</span>
+          <span class="borrower-value"><%= order.address || '-' %></span>
         </div>
       </div>
     </div>
@@ -224,18 +238,74 @@ if (status === 'completed') completedCount = 5;
           <span class="payment-val mono">TRX-<%= order.id %></span>
         </div>
       </div>
-      <button class="btn-proof">
-        <i class="bi bi-receipt"></i> View Payment Proof
-      </button>
+      <a href="/receipt/<%= order.id %>" class="btn-proof">
+    <i class="bi bi-receipt"></i>
+    Print Payment Proof
+</a>
     </div>
   </div>
 
-    <!-- Pengembalian -->
-    <div class="card card-return">
-      <div class="card-header">
-        <h2>Return Information</h2>
-        <p class="return-note">Return before or on <strong><%= formatTanggal(order.tgl_kembali) %></strong></p>
+    <!-- Return Information -->
+<div class="card card-return">
+  <div class="card-header">
+    <h2>Return Information</h2>
+
+    <% if (status === 'completed') { %>
+
+      <div class="return-message success">
+        <i class="bi bi-check-circle-fill"></i>
+        <div>
+          <h4>Item Successfully Returned</h4>
+          <p>
+            Your borrowed item has been returned safely.
+            Thank you for trusting our laboratory equipment lending service.
+          </p>
+        </div>
       </div>
-    </div>
+
+    <% } else if (status === 'overdue') { %>
+
+      <div class="return-message overdue">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+          <h4>Return Overdue</h4>
+          <p>
+            The return deadline has passed.
+            Please return the borrowed item as soon as possible to avoid additional penalties.
+          </p>
+        </div>
+      </div>
+
+    <% } else if (status === 'in use') { %>
+
+      <div class="return-message active">
+        <i class="bi bi-clock-history"></i>
+        <div>
+          <h4>Borrowing in Progress</h4>
+          <p>
+            Please return the borrowed item on or before
+            <strong><%= formatTanggal(order.tgl_kembali) %></strong>.
+            Ensure the item is returned in good condition.
+          </p>
+        </div>
+      </div>
+
+    <% } else { %>
+
+      <div class="return-message pending">
+        <i class="bi bi-hourglass-split"></i>
+        <div>
+          <h4>Waiting for Approval</h4>
+          <p>
+            Your borrowing request is currently being reviewed.
+            Return information will be available after your request has been approved.
+          </p>
+        </div>
+      </div>
+
+    <% } %>
+
+  </div>
+</div>
 
 </div>
