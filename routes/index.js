@@ -1166,7 +1166,10 @@ router.get(
 
     u.username,
     u.email,
-    u.phone
+    u.phone,
+
+    pmt.metode_payment AS payment_method,
+    pmt.ewallet_provider
 
 FROM peminjaman p
 
@@ -1178,6 +1181,12 @@ ON pr.id_category = c.id
 
 LEFT JOIN users u
 ON p.id_user = u.id
+
+LEFT JOIN payment pmt
+ON p.id_user = pmt.id_user
+AND p.id_products = pmt.id_product
+AND p.tgl_pinjam = pmt.tgl_pinjam
+AND p.tgl_kembali = pmt.tgl_kembali
 
 WHERE p.id = ?
 AND p.id_user = ?

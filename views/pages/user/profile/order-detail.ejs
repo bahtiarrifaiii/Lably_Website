@@ -10,6 +10,22 @@ function formatTanggal(tanggal) {
 }
 
 const status = (order.status || '').toString().toLowerCase();
+const paymentMethodRaw = (order.payment_method || '').toString();
+let paymentStatus = paymentMethodRaw ? 'PAID' : 'UNPAID';
+
+if (status === 'completed') {
+  paymentStatus = 'RETURNED';
+} else if (status === 'overdue') {
+  paymentStatus = 'OVERDUE';
+} else if (status === 'in use') {
+  paymentStatus = paymentMethodRaw ? 'PAID' : 'UNPAID';
+} else if (status === 'pending') {
+  paymentStatus = paymentMethodRaw ? 'PAID' : 'UNPAID';
+}
+
+const paymentMethod = paymentMethodRaw.toLowerCase() === 'e-wallet'
+  ? `ewallet - (${order.ewallet_provider || 'Unknown'})`
+  : paymentMethodRaw || 'Unknown';
 
 const timelineSteps = [
   { label: 'Payment Verified' },
@@ -193,11 +209,11 @@ if (status === 'completed') completedCount = 5;
       <div class="payment-list">
         <div class="payment-row">
           <span class="payment-label">Status</span>
-          <span class="badge-paid">PAID</span>
+          <span class="badge-paid"><%= paymentStatus %></span>
         </div>
         <div class="payment-row">
           <span class="payment-label">Method</span>
-          <span class="payment-val">QRIS</span>
+          <span class="payment-val"><%= paymentMethod %></span>
         </div>
         <div class="payment-row">
           <span class="payment-label">Date</span>
