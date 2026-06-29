@@ -35,12 +35,13 @@ const Order = {
         qty,
         telp,
         alamat,
+        it.extend_from || null,
       ];
     });
 
     const sql = `
       INSERT INTO peminjaman
-      (id_user, id_products, price, tgl_pinjam, tgl_kembali, status, qty, no_telp, alamat)
+      (id_user, id_products, price, tgl_pinjam, tgl_kembali, status, qty, no_telp, alamat, extend_from)
       VALUES ?
     `;
 
