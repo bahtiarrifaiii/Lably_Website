@@ -35,10 +35,16 @@ const timelineSteps = [
 ];
 
 let completedCount = 1;
-if (status === 'pending')   completedCount = 3;
-if (status === 'in use')    completedCount = 4;
-if (status === 'overdue')   completedCount = 4;
-if (status === 'completed') completedCount = 5;
+
+if (status === 'pending') {
+    completedCount = 2;
+} else if (status === 'in use') {
+    completedCount = 3;
+} else if (status === 'overdue') {
+    completedCount = 3;
+} else if (status === 'completed' || status === 'returned') {
+    completedCount = 4;
+}
 %>
 
 <!-- ===== TOP BAR ===== -->
