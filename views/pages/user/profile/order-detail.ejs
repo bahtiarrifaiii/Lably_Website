@@ -144,11 +144,8 @@ if (status === 'pending') {
         </div>
       <%
         const hasPendingExtend = Number(order.pending_extend) > 0;
-
-        const disableExtend =
-            status === "completed" ||
-            hasPendingExtend;
-        %>
+        const canExtend = status === "in use" && !hasPendingExtend;
+      %>
 
 <% if (hasPendingExtend) { %>
 
@@ -157,18 +154,39 @@ if (status === 'pending') {
     Extension Request Pending
 </a>
 
-<% } else if (status === "completed") { %>
+<% } else if (status === "pending") { %>
+
+<a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
+    <i class="bi bi-hourglass-split"></i>
+    Waiting for Admin Approval
+</a>
+
+<% } else if (status === "completed" || status === "returned") { %>
 
 <a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
     <i class="bi bi-check-circle"></i>
     Borrowing Completed
 </a>
 
-<% } else { %>
+<% } else if (status === "overdue") { %>
+
+<a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
+    <i class="bi bi-exclamation-circle"></i>
+    Approved Loan Required
+</a>
+
+<% } else if (canExtend) { %>
 
 <a href="/form?action=extend&product_id=<%= order.id_products %>&qty=<%= order.qty %>&borrow_date=<%= order.tgl_kembali %>&extend_order_id=<%= order.id %>" class="btn-tambah">
     <i class="bi bi-plus-circle"></i>
     Add Borrowing Duration
+</a>
+
+<% } else { %>
+
+<a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
+    <i class="bi bi-lock-fill"></i>
+    Approved Loan Required
 </a>
 
 <% } %>

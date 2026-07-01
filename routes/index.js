@@ -419,75 +419,132 @@ router.get(
       return res.redirect("/catalogue");
     }
 
-    Product.getById(productId, (err, productRows) => {
-      if (err) {
-        console.error("Database Error (Product):", err);
-        req.session.message =
-          "Terjadi kesalahan server saat mengambil data produk.";
-        return res.redirect("/catalogue");
-      }
-
-      if (!productRows || productRows.length === 0) {
-        req.session.message = "Produk tidak ditemukan.";
-        return res.redirect("/catalogue");
-      }
-
-      const product = productRows[0];
-      const priceTotal = product.price * qty;
-
-      User.getById(req.session.user.id, (err, userRows) => {
+    const proceedToRenderForm = () => {
+      Product.getById(productId, (err, productRows) => {
         if (err) {
-          console.error("Database Error (User):", err);
+          console.error("Database Error (Product):", err);
           req.session.message =
-            "Terjadi kesalahan server saat mengambil data pengguna.";
-          return res.redirect("/login");
+            "Terjadi kesalahan server saat mengambil data produk.";
+          return res.redirect("/catalogue");
         }
 
-        if (!userRows || userRows.length === 0) {
-          req.session.message =
-            "Sesi pengguna tidak valid. Silakan login kembali.";
-          return res.redirect("/login");
+        if (!productRows || productRows.length === 0) {
+          req.session.message = "Produk tidak ditemukan.";
+          return res.redirect("/catalogue");
         }
 
-        const user = userRows[0];
+        const product = productRows[0];
+        const priceTotal = product.price * qty;
 
-        ejs.renderFile(
-          path.join(__dirname, "../views/pages/user/form.ejs"),
-          {
-            message,
-            product,
-            qty,
-            priceTotal,
-            user,
-            action,
-            borrowDate,
-            extendOrderId,
-          },
-          (err, content) => {
-            if (err) {
-              console.error("EJS Render Error:", err);
-              req.session.message =
-                "Terjadi kesalahan saat membuat tampilan formulir.";
-              return res.redirect("/catalogue");
-            }
+        User.getById(req.session.user.id, (err, userRows) => {
+          if (err) {
+            console.error("Database Error (User):", err);
+            req.session.message =
+              "Terjadi kesalahan server saat mengambil data pengguna.";
+            return res.redirect("/login");
+          }
 
-            res.render("layouts/forms", {
-              title: "Form | Lably",
-              meta: `
-              <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
-              <meta name="keywords" content="LabLy, alat riset, laboratorium" />
-            `,
-              style: "",
-              content,
-              scriptFile: formSpecificScript,
-            });
-          },
-        );
+          if (!userRows || userRows.length === 0) {
+            req.session.message =
+              "Sesi pengguna tidak valid. Silakan login kembali.";
+            return res.redirect("/login");
+          }
+
+          const user = userRows[0];
+
+          ejs.renderFile(
+            path.join(__dirname, "../views/pages/user/form.ejs"),
+            {
+              message,
+              product,
+              qty,
+              priceTotal,
+              user,
+              action,
+              borrowDate,
+              extendOrderId,
+            },
+            (err, content) => {
+              if (err) {
+                console.error("EJS Render Error:", err);
+                req.session.message =
+                  "Terjadi kesalahan saat membuat tampilan formulir.";
+                return res.redirect("/catalogue");
+              }
+
+              res.render("layouts/forms", {
+                title: "Form | Lably",
+                meta: `
+                <meta name="description" content="Form peminjaman alat laboratorium LabLy." />
+                <meta name="keywords" content="LabLy, alat riset, laboratorium" />
+              `,
+                style: "",
+                content,
+                scriptFile: formSpecificScript,
+              });
+            },
+          );
+        });
       });
-    });
+    };
+
+    if (action === "extend") {
+      if (!extendOrderId) {
+        req.session.message = "ID peminjaman tidak ditemukan.";
+        return res.redirect("/order-user");
+      }
+
+      const extendCheckSql = `
+        SELECT
+          p.id,
+          p.status,
+          (
+            SELECT COUNT(*)
+            FROM peminjaman x
+            WHERE x.extend_from = p.id
+            AND x.status = 'pending'
+          ) AS pending_extend
+        FROM peminjaman p
+        WHERE p.id = ?
+        AND p.id_user = ?
+        LIMIT 1
+      `;
+
+      return db
+        .promise()
+        .query(extendCheckSql, [extendOrderId, req.session.user.id])
+        .then(([orderRows]) => {
+          const order = orderRows && orderRows[0];
+
+          if (!order) {
+            req.session.message = "Peminjaman tidak ditemukan.";
+            return res.redirect("/order-user");
+          }
+
+          if (
+            String(order.status).toLowerCase() !== "in use" ||
+            Number(order.pending_extend) > 0
+          ) {
+            req.session.message = {
+              type: "warning",
+              text: "Perpanjangan hanya dapat diajukan setelah barang disetujui dan sedang dipinjam.",
+            };
+            return res.redirect(`/order-detail/${extendOrderId}`);
+          }
+
+          return proceedToRenderForm();
+        })
+        .catch((err) => {
+          console.error("Database Error (Extend Check):", err);
+          req.session.message = "Gagal memeriksa status peminjaman.";
+          return res.redirect("/order-user");
+        });
+    }
+
+    return proceedToRenderForm();
   },
 );
-router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
+router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, async (req, res) => {
   const {
     action_type,
     quantity,
@@ -652,16 +709,49 @@ console.log("=================================");
     if (action_type === "extend") {
 
       const checkSql = `
-        SELECT id
-        FROM peminjaman
-        WHERE extend_from = ?
-        AND status = 'pending'
+        SELECT
+          p.id,
+          p.status,
+          (
+            SELECT COUNT(*)
+            FROM peminjaman x
+            WHERE x.extend_from = p.id
+            AND x.status = 'pending'
+          ) AS pending_extend
+        FROM peminjaman p
+        WHERE p.id = ?
+        AND p.id_user = ?
         LIMIT 1
       `;
 
-      db.query(checkSql, [extend_order_id], (errCheck, rows) => {
+      db.promise()
+        .query(checkSql, [extend_order_id, userId])
+        .then(([rows]) => {
+          const order = rows && rows[0];
 
-        if (errCheck) {
+          if (!order) {
+            req.session.message = {
+              type: "warning",
+              text: "Peminjaman tidak ditemukan.",
+            };
+            return res.redirect(`/order-detail/${extend_order_id}`);
+          }
+
+          if (
+            String(order.status).toLowerCase() !== "in use" ||
+            Number(order.pending_extend) > 0
+          ) {
+            req.session.message = {
+              type: "warning",
+              text: "Perpanjangan hanya dapat diajukan setelah barang disetujui dan sedang dipinjam.",
+            };
+
+            return res.redirect(`/order-detail/${extend_order_id}`);
+          }
+
+          saveDraft();
+        })
+        .catch((errCheck) => {
           console.error(errCheck);
 
           req.session.message = {
@@ -670,21 +760,7 @@ console.log("=================================");
           };
 
           return res.redirect(`/order-detail/${extend_order_id}`);
-        }
-
-        if (rows.length > 0) {
-
-          req.session.message = {
-            type: "warning",
-            text: "Extension request is still pending.",
-          };
-
-          return res.redirect(`/order-detail/${extend_order_id}`);
-        }
-
-        saveDraft();
-
-      });
+        });
 
     } else {
 
