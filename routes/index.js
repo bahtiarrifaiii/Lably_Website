@@ -576,12 +576,6 @@ router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, async (req, res)
     extend_order_id,
   } = req.body;
 
-  console.log("========== SUBMIT DATA ==========");
-console.log(req.body);
-console.log("action_type :", action_type);
-console.log("extend_order_id :", extend_order_id);
-console.log("=================================");
-
   const userId = req.session.user && req.session.user.id;
 
   // helper to parse formatted currency like "Rp1.234.000" or "1234000" into number
@@ -639,17 +633,12 @@ console.log("=================================");
         extend_from: null,
       };
 
-      console.log("Draft Data:");
-      console.log(draftData);
-
       Draft.add(userId, draftData, (err2) => {
         if (err2) {
           console.error("Gagal simpan draft:", err2);
           req.session.message = "Gagal menyimpan ke keranjang.";
           return res.redirect("/catalogue");
         }
-
-        console.log("Draft cart tersimpan untuk user:", userId);
         return res.redirect("/cart");
       });
     });
@@ -715,8 +704,6 @@ console.log("=================================");
 
             return res.redirect("/catalogue");
           }
-
-          console.log("Draft loan/extend tersimpan untuk user:", userId);
           return res.redirect("/checkout");
 
         });
@@ -901,17 +888,20 @@ router.get(
       }
 
       function computeDays(borrow, ret) {
-        try {
-          if (!borrow || !ret) return 1;
-          const a = new Date(borrow);
-          const b = new Date(ret);
-          const diffMs = b - a;
-          const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-          return days > 0 ? days : 1;
-        } catch (e) {
-          return 1;
-        }
-      }
+    if (!borrow || !ret) return 1;
+
+    const borrowDate = String(borrow).slice(0, 10);
+    const returnDate = String(ret).slice(0, 10);
+
+    const a = new Date(borrowDate + "T00:00:00");
+    const b = new Date(returnDate + "T00:00:00");
+
+    const diff =
+        (b.getTime() - a.getTime()) /
+        (1000 * 60 * 60 * 24);
+
+    return diff > 0 ? diff : 1;
+}
 
       const items = (rows || []).map((r) => {
         const price = Number(r.price) || 0; // harga satuan
@@ -1028,9 +1018,6 @@ router.post(
     }
 
     Draft.getByUser(userId, (err, rows) => {
-      console.log("========== DRAFT ==========");
-console.log(rows);
-console.log("===========================");
       if (err) {
         console.error("ERROR get draft for complete:", err);
         req.session.message = {
@@ -1081,9 +1068,6 @@ console.log("===========================");
           extend_from: r.extend_from || null,
         };
       });
-      console.log("========== ITEMS ==========");
-console.log(itemsToInsert);
-console.log("===========================");
 
       const paymentMethod = req.body.payment_method || "Unknown";
       const ewalletProvider = req.body.ewallet_provider || null;
@@ -1109,13 +1093,22 @@ console.log("===========================");
               }
 
               const originalOrder = orderRows && orderRows[0];
-              const originalPrice = Number(originalOrder?.price) || 0;
-              const originalDays = computeDays(originalOrder?.tgl_pinjam, originalOrder?.tgl_kembali);
-              const extensionDays = computeDays(originalOrder?.tgl_kembali, returnDate);
-              const extensionCost = originalDays > 0
-                ? (originalPrice / originalDays) * extensionDays
-                : Number(item.itemTotal) || 0;
-              const priceValue = String(Math.round(originalPrice + extensionCost));
+              const qty = Number(originalOrder?.qty) || 1;
+              const unitPrice = Number(item.price);
+
+              // Ambil tanggal tanpa timezone
+              const borrowDate = String(originalOrder.tgl_pinjam)
+                .slice(0, 10);
+
+              const start = new Date(`${borrowDate}T00:00:00`);
+              const end = new Date(`${returnDate}T00:00:00`);
+
+              const totalDays = Math.max(
+                1,
+                Math.round((end - start) / (1000 * 60 * 60 * 24))
+              );
+
+              const priceValue = String(unitPrice * qty * totalDays);
 
               db.query(
                 "UPDATE peminjaman SET original_tgl_kembali = COALESCE(original_tgl_kembali, tgl_kembali), original_price = COALESCE(original_price, price), tgl_kembali = ?, price = ?, status = 'waiting' WHERE id = ? AND id_user = ?",
@@ -2383,7 +2376,9 @@ router.get("/analytics", isAdmin, (req, res) => {
 
         // Total income (sum of price from peminjaman)
         db.query(
-          `SELECT COALESCE(SUM(CAST(price AS DECIMAL(15, 2))), 0) AS total FROM peminjaman`,
+          `SELECT COALESCE(SUM(CAST(price AS DECIMAL(15, 2))), 0) AS total FROM peminjaman WHERE extend_from IS NULL
+   OR status <> 'pending'`,
+          
           (err3, result3) => {
             if (err3) {
               console.error("Error sum income:", err3);

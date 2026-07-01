@@ -4,7 +4,10 @@ const db = mysql.createConnection({
     host: "localhost",     // phpMyAdmin host default
     user: "root",          // user default
     password: "",          // default kosong
-    database: "lably_website"
+    database: "lably_website",
+
+    timezone: "+07:00",
+    dateStrings: true
 });
 
 db.connect(err => {
