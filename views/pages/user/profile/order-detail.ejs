@@ -142,18 +142,35 @@ if (status === 'pending') {
                 <% } %>
             </span>
         </div>
-      <% const disableExtend = status === 'completed'; %>
+      <%
+        const hasPendingExtend = Number(order.pending_extend) > 0;
 
-<% if (disableExtend) { %>
-  <a href="#" class="btn-tambah btn-disabled" style="pointer-events: none;">
-      <i class="bi bi-plus-circle"></i>
-      Borrowing Completed
-  </a>
+        const disableExtend =
+            status === "completed" ||
+            hasPendingExtend;
+        %>
+
+<% if (hasPendingExtend) { %>
+
+<a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
+    <i class="bi bi-hourglass-split"></i>
+    Extension Request Pending
+</a>
+
+<% } else if (status === "completed") { %>
+
+<a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
+    <i class="bi bi-check-circle"></i>
+    Borrowing Completed
+</a>
+
 <% } else { %>
-  <a href="/form?action=extend&product_id=<%= order.id_products %>&qty=<%= order.qty %>&borrow_date=<%= order.tgl_kembali %>&extend_order_id=<%= order.id %>" class="btn-tambah">
-      <i class="bi bi-plus-circle"></i>
-      Add Borrowing Duration
-  </a>
+
+<a href="/form?action=extend&product_id=<%= order.id_products %>&qty=<%= order.qty %>&borrow_date=<%= order.tgl_kembali %>&extend_order_id=<%= order.id %>" class="btn-tambah">
+    <i class="bi bi-plus-circle"></i>
+    Add Borrowing Duration
+</a>
+
 <% } %>
     </div>
   </div>

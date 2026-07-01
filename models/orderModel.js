@@ -48,6 +48,27 @@ const Order = {
     database.query(sql, [values], callback);
   },
 
+  updateExtension: (orderId, data, callback) => {
+  const sql = `
+    UPDATE peminjaman
+    SET
+      tgl_kembali = ?,
+      price = ?,
+      status = 'pending'
+    WHERE id = ?
+  `;
+
+  database.query(
+    sql,
+    [
+      data.return_date,
+      String(data.itemTotal),
+      orderId,
+    ],
+    callback
+  );
+},
+
   getAll: (callback) => {
     database.query("SELECT * FROM peminjaman ORDER BY id DESC", callback);
   },

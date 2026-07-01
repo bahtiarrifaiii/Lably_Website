@@ -501,6 +501,12 @@ router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
     extend_order_id,
   } = req.body;
 
+  console.log("========== SUBMIT DATA ==========");
+console.log(req.body);
+console.log("action_type :", action_type);
+console.log("extend_order_id :", extend_order_id);
+console.log("=================================");
+
   const userId = req.session.user && req.session.user.id;
 
   // helper to parse formatted currency like "Rp1.234.000" or "1234000" into number
@@ -558,6 +564,9 @@ router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
         extend_from: null,
       };
 
+      console.log("Draft Data:");
+      console.log(draftData);
+
       Draft.add(userId, draftData, (err2) => {
         if (err2) {
           console.error("Gagal simpan draft:", err2);
@@ -570,65 +579,126 @@ router.post("/submit-data", isLoggedIn, ensureVerifiedCustomer, (req, res) => {
       });
     });
   } else if (action_type === "loan" || action_type === "extend") {
-    // ⬇⬇ Loan now / Extend: bersihkan draft lama, simpan 1 item, lalu ke checkout
-    Product.getById(product_id, (err, productRows) => {
-      if (err) {
-        console.error("Database Error (Product):", err);
-        req.session.message = "Gagal memproses peminjaman.";
-        return res.redirect("/catalogue");
+
+  Product.getById(product_id, (err, productRows) => {
+
+    if (err) {
+      console.error("Database Error (Product):", err);
+      req.session.message = "Gagal memproses peminjaman.";
+      return res.redirect("/catalogue");
+    }
+
+    const product = productRows && productRows[0];
+
+    if (!product) {
+      req.session.message = "Produk tidak ditemukan.";
+      return res.redirect("/catalogue");
+    }
+
+    const qtyNum = Number(quantity) || 1;
+
+    // Validasi stok hanya untuk peminjaman baru
+    if (action_type !== "extend") {
+      if (qtyNum <= 0 || qtyNum > Number(product.stock)) {
+        req.session.message = {
+          type: "error",
+          text: "Jumlah yang diminta melebihi stok tersedia.",
+        };
+        return res.redirect(`/product/${product.id}`);
       }
+    }
 
-      const product = productRows && productRows[0];
-      if (!product) {
-        req.session.message = "Produk tidak ditemukan.";
-        return res.redirect("/catalogue");
-      }
+    const draftData = {
+      product_id: product.id,
+      price: product.price,
+      borrow_date: borrow_date || null,
+      return_date: return_date || null,
+      quantity: qtyNum,
+      phone: phone || "",
+      address: address || "",
+      extend_from: action_type === "extend"
+        ? Number(extend_order_id)
+        : null,
+    };
 
-      // Validasi: pastikan quantity tidak melebihi stock (lewati jika perpanjangan)
-      const qtyNum = Number(quantity) || 1;
-      if (action_type !== "extend") {
-        if (qtyNum <= 0 || qtyNum > Number(product.stock)) {
-          req.session.message = {
-            type: "error",
-            text: "Jumlah yang diminta melebihi stok tersedia.",
-          };
-          return res.redirect(`/product/${product.id}`);
-        }
-      }
-
-      const draftData = {
-        product_id: product.id,
-        price: product.price,
-        borrow_date: borrow_date || null,
-        return_date: return_date || null,
-        quantity: qtyNum,
-        phone: phone || "",
-        address: address || "",
-        extend_from: action_type === "extend" ? (extend_order_id || null) : null,
-      };
-
-      // hapus semua draft lama user (supaya loan now/extend hanya item ini)
+    const saveDraft = () => {
       Draft.deleteByUser(userId, (errDel) => {
+
         if (errDel) {
           console.error("Gagal menghapus draft lama:", errDel);
         }
 
         Draft.add(userId, draftData, (err2) => {
+
           if (err2) {
-            console.error("Gagal simpan draft loan:", err2);
-            req.session.message = "Gagal menyimpan peminjaman.";
+            console.error("Gagal simpan draft:", err2);
+
+            req.session.message = {
+              type: "error",
+              text: "Gagal menyimpan peminjaman.",
+            };
+
             return res.redirect("/catalogue");
           }
 
           console.log("Draft loan/extend tersimpan untuk user:", userId);
           return res.redirect("/checkout");
+
         });
+
       });
-    });
-  } else {
-    res.status(400).send("Aksi tidak valid.");
+    };
+
+    if (action_type === "extend") {
+
+      const checkSql = `
+        SELECT id
+        FROM peminjaman
+        WHERE extend_from = ?
+        AND status = 'pending'
+        LIMIT 1
+      `;
+
+      db.query(checkSql, [extend_order_id], (errCheck, rows) => {
+
+        if (errCheck) {
+          console.error(errCheck);
+
+          req.session.message = {
+            type: "error",
+            text: "Terjadi kesalahan.",
+          };
+
+          return res.redirect(`/order-detail/${extend_order_id}`);
+        }
+
+        if (rows.length > 0) {
+
+          req.session.message = {
+            type: "warning",
+            text: "Extension request is still pending.",
+          };
+
+          return res.redirect(`/order-detail/${extend_order_id}`);
+        }
+
+        saveDraft();
+
+      });
+
+    } else {
+
+      saveDraft();
+
+    }
+
+  });
+    } else {
+    return res.status(400).send("Aksi tidak valid.");
   }
 });
+
+
 
 /* ============================================
   PAGES (LOGIN REQUIRED)
@@ -864,6 +934,9 @@ router.post(
     }
 
     Draft.getByUser(userId, (err, rows) => {
+      console.log("========== DRAFT ==========");
+console.log(rows);
+console.log("===========================");
       if (err) {
         console.error("ERROR get draft for complete:", err);
         req.session.message = {
@@ -914,6 +987,9 @@ router.post(
           extend_from: r.extend_from || null,
         };
       });
+      console.log("========== ITEMS ==========");
+console.log(itemsToInsert);
+console.log("===========================");
 
       const paymentMethod = req.body.payment_method || "Unknown";
       const ewalletProvider = req.body.ewallet_provider || null;
@@ -1115,6 +1191,10 @@ router.get("/order-user", isLoggedIn, passLoginStatus, async (req, res) => {
       GROUP BY id_peminjaman
     ) r ON r.id_peminjaman = p.id
     WHERE p.id_user = ?
+AND NOT (
+    p.extend_from IS NOT NULL
+    AND p.status = 'pending'
+)
     ORDER BY p.id DESC
   `;
 
@@ -1182,7 +1262,14 @@ router.get(
     u.address,
 
     pmt.metode_payment AS payment_method,
-    pmt.ewallet_provider
+    pmt.ewallet_provider,
+
+    (
+        SELECT COUNT(*)
+        FROM peminjaman x
+        WHERE x.extend_from = p.id
+        AND x.status = 'pending'
+    ) AS pending_extend
 
 FROM peminjaman p
 
