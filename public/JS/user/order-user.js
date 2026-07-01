@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const paginationContainer = document.querySelector(".pagination");
 
   const filterMap = {
-    all: ["paid", "in-use", "overdue", "complete"],
-    loaned: ["in-use", "overdue"],
+    all: ["paid", "in-use", "waiting", "overdue", "complete"],
+    loaned: ["in-use", "waiting", "overdue"],
     completed: ["complete"],
   };
 

@@ -147,14 +147,14 @@ if (status === 'pending') {
         const canExtend = status === "in use" && !hasPendingExtend;
       %>
 
-<% if (hasPendingExtend) { %>
+<% if (hasPendingExtend || status === "waiting") { %>
 
 <a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
     <i class="bi bi-hourglass-split"></i>
     Extension Request Pending
 </a>
 
-<% } else if (status === "pending") { %>
+<% } else if (status === "pending" || status === "waiting") { %>
 
 <a href="#" class="btn-tambah btn-disabled" style="pointer-events:none;">
     <i class="bi bi-hourglass-split"></i>

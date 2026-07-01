@@ -179,15 +179,21 @@
 
     let actionButtons = "";
 
-    if (o.status === "pending") {
+    const isPendingApproval = o.status === "pending" || o.status === "waiting";
+
+    if (isPendingApproval) {
+      const confirmMessage = o.status === "waiting"
+        ? "Do you want to approve this extension request?"
+        : "Do you want to approve this order?";
+
       actionButtons = `
         <button type="button" class="btn-approve"
-          onclick="showPopup('/order/approve/${o.id}', 'Do you want to approve this order?')">
+          onclick="showPopup('/order/approve/${o.id}', '${confirmMessage}')">
           Approve
         </button>
 
         <button type="button" class="btn-reject"
-          onclick="showPopup('/order/reject/${o.id}', 'This action will permanently delete this order.')">
+          onclick="showPopup('/order/reject/${o.id}', '${o.status === "waiting" ? "This extension request will be rejected." : "This action will permanently delete this order."}')">
           Reject
         </button>`;
     }

@@ -260,6 +260,10 @@
   background-color: #a61818;
 }
 
+.status-badge.waiting {
+  background-color: #d08a00;
+}
+
 .status-badge.complete {
   background-image: var(--button-gradient);
 }

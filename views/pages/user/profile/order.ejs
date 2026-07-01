@@ -57,6 +57,7 @@
     <div class="order-card" data-status="<%= 
             order.status === 'pending' ? 'paid' : 
             order.status === 'in use' ? 'in-use' :
+            order.status === 'waiting' ? 'waiting' :
             order.status === 'overdue' ? 'overdue' :
             order.status === 'completed' ? 'complete' : 'paid' %>" onclick="window.location.href='/order-detail/<%= order.id %>'" style="cursor: pointer;">
       <div class="order-img-wrap">
@@ -93,9 +94,9 @@
       <div class="detail-item status-col">
         <span class="detail-label">STATUS :</span>
         <span
-          class="status-badge <%= order.status === 'pending' ? 'paid' : order.status === 'in use' ? 'in-use' : order.status === 'overdue' ? 'overdue' : order.status === 'completed' ? 'complete' : '' %>">
+          class="status-badge <%= order.status === 'pending' ? 'paid' : order.status === 'in use' ? 'in-use' : order.status === 'waiting' ? 'waiting' : order.status === 'overdue' ? 'overdue' : order.status === 'completed' ? 'complete' : '' %>">
           <%= order.status === 'pending' ? "Paid" : order.status === 'in use' ?
-          "In Use" : order.status === 'overdue' ? "Overdue" : order.status ===
+          "In Use" : order.status === 'waiting' ? "Waiting" : order.status === 'overdue' ? "Overdue" : order.status ===
           'completed' ? "Returned" : "" %>
         </span>
       </div>
