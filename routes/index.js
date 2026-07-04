@@ -178,7 +178,7 @@ router.get("/", passLoginStatus, async (req, res) => {
       path.join(__dirname, "../views/pages/user/home.ejs"),
       {
         catalogue,
-        activeFilter: filter, // 🔥 biar tombol biru sesuai filter
+        activeFilter: filter, 
       },
     );
 
@@ -810,7 +810,6 @@ router.get(
           : "/Assets/default.png",
         quantity: Number(r.qty) || 1,
 
-        // 🔥 format tanggal (HANYA YYYY-MM-DD)
         borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
         return_date: r.tgl_kembali ? String(r.tgl_kembali).slice(0, 10) : null,
 
@@ -918,7 +917,6 @@ router.get(
           price,
           quantity: qty,
 
-          // 🔥 format tanggal
           borrow_date: r.tgl_pinjam ? String(r.tgl_pinjam).slice(0, 10) : null,
           return_date: r.tgl_kembali
             ? String(r.tgl_kembali).slice(0, 10)
@@ -1148,7 +1146,7 @@ router.post(
           }
 
           /* =====================================================
-           🔥 UPDATE STOK PRODUK SECARA REAL-TIME
+             UPDATE STOK PRODUK SECARA REAL-TIME
         ===================================================== */
           const updateStockPromises = newLoanItems.map((item) => {
             return new Promise((resolve, reject) => {
@@ -1981,13 +1979,13 @@ router.get("/order", isAdmin, (req, res) => {
 
     const params = [];
 
-    // 🔎 SEARCH (nama user / nama barang / status)
+    // SEARCH (nama user / nama barang / status)
     if (search) {
       sql += ` AND (u.username LIKE ? OR pr.name LIKE ? OR COALESCE(p.status, '') LIKE ?) `;
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    // 🔥 FILTER (pending / waiting / in use / overdue)
+    // FILTER (pending / waiting / in use / overdue)
     if (filter && filter !== "all") {
       if (filter === "pending") {
         sql += ` AND COALESCE(p.status, '') IN ('pending', 'waiting', '') `;
@@ -1997,7 +1995,7 @@ router.get("/order", isAdmin, (req, res) => {
       }
     }
 
-    // 📅 DATE FILTER
+    // DATE FILTER
     if (start) {
       sql += ` AND DATE(p.tgl_pinjam) >= ? `;
       params.push(start);
