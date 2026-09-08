@@ -1,4 +1,3 @@
-// models/productModel.js
 const database = require("../config/database");
 
 const Product = {

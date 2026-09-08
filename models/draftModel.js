@@ -12,7 +12,7 @@ const Draft = {
         const params = [
             userId,
             data.product_id,
-            data.price,              // harga dari database, bukan input user
+            data.price,              
             data.borrow_date || null,
             data.return_date || null,
             data.quantity || 1,

@@ -198,7 +198,7 @@ module.exports = {
                                 <link rel="stylesheet" href="/CSS/dashboard.css">
                             `,
                 content,
-                message, // <––– INI WAJIB BANGET
+                message, 
                 showPopup: true,
                 currentPage: "/dashboard",
               });
