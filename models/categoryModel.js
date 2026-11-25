@@ -32,10 +32,15 @@ const Category = {
 
     delete: (id, callback) => {
         database.query("DELETE FROM category WHERE id = ?", [id], callback);
+    },
+
+    countProducts: (id, callback) => {
+        database.query(
+            "SELECT COUNT(*) AS total FROM products WHERE id_category = ?",
+            [id],
+            callback
+        );
     }
 };
-
-// agar controller bisa query manual cek-relasi
-Category.db = database;
 
 module.exports = Category;

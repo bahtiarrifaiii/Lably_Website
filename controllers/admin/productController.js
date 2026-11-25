@@ -1,61 +1,51 @@
-// controllers/productController.js
 const ejs = require("ejs");
 const path = require("path");
-const Product = require("../models/productModel");
-const Category = require("../models/categoryModel");
+const Product = require("../../models/productModel");
+const Category = require("../../models/categoryModel");
 
-/* ============================================================
-   LIST – FRONTEND SEARCH + FRONTEND PAGINATION
-============================================================ */
 exports.list = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
   const popupMessage = req.session.message || null;
   req.session.message = null;
 
-  // Ambil SEMUA data produk (tidak ada pagination backend)
   Product.getAllWithCategory((err, products) => {
     if (err) throw err;
 
     const filePath = path.join(
       __dirname,
-      "../views/pages/admin/product/product_list.ejs"
+      "../../views/pages/admin/product/product-list.ejs",
     );
 
     ejs.renderFile(
       filePath,
       {
         products,
-        search: "",         // frontend search
-        currentPage: 1,     // dummy
-        totalPages: 1,      // dummy
-        limit: products.length, // dummy
+        search: "",
+        currentPage: 1,
+        totalPages: 1,
+        limit: products.length,
       },
       (err2, content) => {
         if (err2) throw err2;
 
-        res.render("layouts/atmin", {
+        res.render("layouts/admin", {
           title: "Product List | Lably",
           currentPage: "/product-list",
-
           style: `
-            <link rel="stylesheet" href="/css/sidebar.css">
-            <link rel="stylesheet" href="/css/product-list.css">
+            <link rel="stylesheet" href="/css/admin/sidebar.css">
+            <link rel="stylesheet" href="/css/admin/product-list.css">
           `,
           meta: "",
-
           content,
           message: popupMessage,
           showPopup: !!popupMessage,
         });
-      }
+      },
     );
   });
 };
 
-/* ============================================================
-   CREATE PAGE
-============================================================ */
 exports.createPage = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
@@ -67,22 +57,20 @@ exports.createPage = (req, res) => {
 
     const filePath = path.join(
       __dirname,
-      "../views/pages/admin/product/product_create.ejs"
+      "../../views/pages/admin/product/product-create.ejs",
     );
 
     ejs.renderFile(filePath, { categories }, (err2, content) => {
       if (err2) throw err2;
 
-      res.render("layouts/atmin", {
+      res.render("layouts/admin", {
         title: "Product Create | Lably",
         currentPage: "/product-create",
-
         style: `
-          <link rel="stylesheet" href="/css/sidebar.css">
-          <link rel="stylesheet" href="/css/product-create.css">
+          <link rel="stylesheet" href="/css/admin/sidebar.css">
+          <link rel="stylesheet" href="/css/admin/product-create.css">
         `,
         meta: "",
-
         content,
         message: popupMessage,
         showPopup: !!popupMessage,
@@ -91,9 +79,6 @@ exports.createPage = (req, res) => {
   });
 };
 
-/* ============================================================
-   CREATE ACTION
-============================================================ */
 exports.create = (req, res) => {
   const { name, description, id_category, stock, kondisi, price } = req.body;
 
@@ -128,13 +113,10 @@ exports.create = (req, res) => {
   });
 };
 
-/* ============================================================
-   DETAIL PAGE
-============================================================ */
 exports.detailPage = (req, res) => {
   if (!req.session.admin) return res.redirect("/login");
 
-  const id = req.params.id;
+  const { id } = req.params;
   const popupMessage = req.session.message || null;
   req.session.message = null;
 
@@ -153,7 +135,7 @@ exports.detailPage = (req, res) => {
 
       const filePath = path.join(
         __dirname,
-        "../views/pages/admin/product/product_detail.ejs"
+        "../../views/pages/admin/product/product-detail.ejs",
       );
 
       ejs.renderFile(
@@ -162,31 +144,26 @@ exports.detailPage = (req, res) => {
         (err3, content) => {
           if (err3) throw err3;
 
-          res.render("layouts/atmin", {
+          res.render("layouts/admin", {
             title: "Product Detail | Lably",
             currentPage: "/product-detail",
-
             style: `
-              <link rel="stylesheet" href="/css/sidebar.css">
-              <link rel="stylesheet" href="/css/product-detail.css">
+              <link rel="stylesheet" href="/css/admin/sidebar.css">
+              <link rel="stylesheet" href="/css/admin/product-detail.css">
             `,
             meta: "",
-
             content,
             message: popupMessage,
             showPopup: !!popupMessage,
           });
-        }
+        },
       );
     });
   });
 };
 
-/* ============================================================
-   UPDATE ACTION
-============================================================ */
 exports.update = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const { name, description, id_category, stock, kondisi, price } = req.body;
 
   Product.findByNameExcludingId(name, id, (err, rows) => {
@@ -220,11 +197,8 @@ exports.update = (req, res) => {
   });
 };
 
-/* ============================================================
-   DELETE ACTION
-============================================================ */
 exports.delete = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   Product.getById(id, (err, product) => {
     if (err) throw err;
@@ -238,15 +212,5 @@ exports.delete = (req, res) => {
 
       res.redirect("/product-list");
     });
-  });
-};
-
-/* ============================================================
-    AMBIL DATA DARI CATALOGUE
-============================================================ */
-exports.getAllForCatalogue = (req, res) => {
-  Product.getAll((err, products) => {
-    if (err) return res.status(500).send("Database error");
-    res.render("pages/user/catalogue", { products });
   });
 };

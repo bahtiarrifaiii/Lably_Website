@@ -1,6 +1,6 @@
 /* --- Hero Section --- */
 .hero-section {
-  background: url(../Assets/Background.png);
+  background: url(/assets/Background.png);
   background-size: cover;
   background-position: center;
   padding-bottom: 0;

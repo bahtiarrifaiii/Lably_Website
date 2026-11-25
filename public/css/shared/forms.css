@@ -6,7 +6,7 @@
 
 .left {
   flex: 0.5;
-  background: url(../Assets/Background.png);
+  background: url(/assets/Background.png);
   background-size: cover;
   background-position: center;
   position: relative;

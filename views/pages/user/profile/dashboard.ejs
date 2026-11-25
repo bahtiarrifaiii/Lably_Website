@@ -36,7 +36,7 @@
             </div>
         </div>
         <a href="/profile-customer" class="profile-section">
-            <img src="<%= user.pp_image || '/Assets/profile.jpg' %>" alt="Profile" class="profile-img"/>
+            <img src="<%= user.pp_image || '/assets/profile.jpg' %>" alt="Profile" class="profile-img"/>
         </a>
         <p class="username">
             <%= user.username %>
@@ -157,7 +157,7 @@
             <% latestOrders.forEach((order) => { %>
                 <div class="product">
                     <div class="product-img">
-                        <img src="<%= order.product_image ? '/uploads/' + order.product_image : '/Assets/default.png' %>" alt="<%= order.product_name %>">
+                        <img src="<%= order.product_image ? '/uploads/' + order.product_image : '/assets/default.png' %>" alt="<%= order.product_name %>">
                     </div>
                     <div class="product-text">
                         <div class="product-text-info">

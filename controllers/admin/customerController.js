@@ -1,6 +1,6 @@
-const Customer = require("../models/customerModel");
 const path = require("path");
 const ejs = require("ejs");
+const Customer = require("../../models/customerModel");
 
 module.exports = {
   list: (req, res) => {
@@ -8,9 +8,9 @@ module.exports = {
     const status = req.query.status || "all";
     const dateStart = req.query.dateStart || "";
     const dateEnd = req.query.dateEnd || "";
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page, 10) || 1;
 
-    const limit = 5; // show 5 customers per page
+    const limit = 5;
     const offset = (page - 1) * limit;
 
     Customer.countFiltered(
@@ -31,16 +31,11 @@ module.exports = {
           dateEnd,
           limit,
           offset,
-          (err, users) => {
-            if (err) throw err;
-
-            console.log(
-              "LOAD CUSTOMER EJS FROM:",
-              path.join(__dirname, "../views/pages/admin/customer.ejs"),
-            );
+          (err2, users) => {
+            if (err2) throw err2;
 
             ejs.renderFile(
-              path.join(__dirname, "../views/pages/admin/customer.ejs"),
+              path.join(__dirname, "../../views/pages/admin/customer.ejs"),
               {
                 users,
                 totalCustomers,
@@ -52,15 +47,15 @@ module.exports = {
                 dateStart,
                 dateEnd,
               },
-              (err, content) => {
-                if (err) throw err;
+              (renderErr, content) => {
+                if (renderErr) throw renderErr;
 
-                res.render("layouts/atmin", {
+                res.render("layouts/admin", {
                   title: "Customers | Lably",
                   style: `
-                                <link rel="stylesheet" href="/CSS/sidebar.css">
-                                <link rel="stylesheet" href="/CSS/customer.css">
-                            `,
+                    <link rel="stylesheet" href="/css/admin/sidebar.css">
+                    <link rel="stylesheet" href="/css/admin/customer.css">
+                  `,
                   content,
                   currentPage: "/customer",
                 });
@@ -73,7 +68,7 @@ module.exports = {
   },
 
   detail: (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     Customer.getById(id, (err, userRows) => {
       if (err) throw err;
@@ -85,17 +80,17 @@ module.exports = {
       const user = userRows[0];
 
       ejs.renderFile(
-        path.join(__dirname, "../views/pages/admin/customer-detail.ejs"),
+        path.join(__dirname, "../../views/pages/admin/customer-detail.ejs"),
         { user },
-        (err, content) => {
-          if (err) throw err;
+        (renderErr, content) => {
+          if (renderErr) throw renderErr;
 
-          res.render("layouts/atmin", {
-            title: `Detail Customer | Lably`,
+          res.render("layouts/admin", {
+            title: "Detail Customer | Lably",
             style: `
-                        <link rel="stylesheet" href="/CSS/sidebar.css">
-                        <link rel="stylesheet" href="/CSS/customer-detail.css">
-                    `,
+              <link rel="stylesheet" href="/css/admin/sidebar.css">
+              <link rel="stylesheet" href="/css/admin/customer-detail.css">
+            `,
             content,
             currentPage: "/customer",
           });
@@ -105,7 +100,7 @@ module.exports = {
   },
 
   approveKtp: (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     Customer.updateKtpStatus(id, "verified", (err) => {
       if (err) throw err;
       res.redirect(`/customer/${id}`);
@@ -113,7 +108,7 @@ module.exports = {
   },
 
   rejectKtp: (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     Customer.updateKtpStatus(id, "rejected", (err) => {
       if (err) throw err;
       res.redirect(`/customer/${id}`);

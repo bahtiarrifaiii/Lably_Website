@@ -9,7 +9,7 @@
   <%- include('./payment/e-wallet', { subtotal, invoiceNumber, user }) %>
   </div>
   <div id="ewallet-qr-container" style="display:none;">
-  <%- include('./payment/e-wallet_QR', { subtotal, invoiceNumber, user }) %>
+  <%- include('./payment/e-wallet-qr', { subtotal, invoiceNumber, user }) %>
   </div>
   <section class="checkout-details">
     <h2 class="section-title">Check Out</h2>
@@ -238,7 +238,7 @@
         const walletLabel = document.getElementById('ewallet-wallet-label');
 
         if (logoImage) {
-          logoImage.src = '/Assets/' + wallet.toLowerCase() + '.png';
+          logoImage.src = '/assets/' + wallet.toLowerCase() + '.png';
           logoImage.alt = wallet + ' Logo';
         }
         if (walletLabel) {

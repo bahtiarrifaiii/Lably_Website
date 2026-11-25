@@ -8,7 +8,7 @@
 /* Left gradient area */
 .auth-left {
   flex: 1.2;
-  background: url(../Assets/Background.png);
+  background: url(/assets/Background.png);
   background-size: cover;
   background-position: center;
   position: relative;
@@ -175,7 +175,7 @@
   }
 
   .auth-right {
-    background: url(../Assets/Background.png);
+    background: url(/assets/Background.png);
     background-size: cover;
     background-position: center;
     position: relative;

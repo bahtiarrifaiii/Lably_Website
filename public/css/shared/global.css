@@ -35,9 +35,9 @@ body {
 
 .container {
   width: 100%;
-  max-width: 80vw;
+  max-width: 72.5rem;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 2rem 1.5rem;
 }
 
 /* Fluid typography */
@@ -94,7 +94,7 @@ a {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 80vw;
+  max-width: 72.5rem;
   margin: 0 auto;
 
   position: relative;
@@ -136,12 +136,13 @@ a {
 
 .mobile-menu-wrapper {
   display: flex;
-  justify-content: space-between;
-  width: 45vw;
+  justify-content: flex-end;
+  align-items: center;
+  width: auto;
 }
 
 .user {
-  width: 47vw;
+  width: auto;
 }
 
 .main-nav,
@@ -156,11 +157,14 @@ a {
 }
 
 .main-nav {
-  margin-left: 1.6rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: 0;
 }
 
 .log {
-  margin-left: 3.3rem;
+  margin-left: 0;
 }
 
 .main-nav a {
@@ -225,6 +229,7 @@ a {
   position: absolute;
   top: 100%;
   left: 0;
+  transform: none;
   width: 100%;
   margin-top: 1rem;
 
