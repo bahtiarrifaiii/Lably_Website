@@ -644,3 +644,85 @@
 }
 
 
+/* ================================
+    RESPONSIVE BREAKPOINTS
+    ================================ */
+@media screen and (max-width: 1024px) {
+  /* Tablet layout: stack sidebar above content */
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-areas: "left" "right";
+  }
+  .left {
+    display: flex; /* keep sidebar but full width */
+    padding: 2rem 0;
+    justify-content: center;
+  }
+  .right {
+    padding: 1.5rem;
+  }
+  .profile-body {
+    grid-template-columns: 1fr; /* single column for form and side */
+  }
+  .avatar-wrap {
+    width: 60px;
+    height: 60px;
+  }
+  .avatar-img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* Phone layout: hide sidebar, full‑width content */
+  .left {
+    display: none;
+  }
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-areas: "right";
+  }
+  .right {
+    padding: 1rem;
+  }
+  .profile-header h1 {
+    font-size: 1.4rem;
+  }
+  .profile-header p {
+    font-size: 0.8rem;
+  }
+  .avatar-wrap {
+    width: 50px;
+    height: 50px;
+  }
+  .avatar-img {
+    width: 50px;
+    height: 50px;
+  }
+  .profile-body {
+    grid-template-columns: 1fr;
+  }
+  .btn-edit,
+  .btn-cancel,
+  .btn-save {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+  .help-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.8rem;
+  }
+  .help-icon {
+    margin: 0 auto;
+  }
+}
+
+/* Mobile reordering: avatar card on top */
+@media screen and (max-width: 480px) {
+  .profile-side {
+    order: -1; /* move avatar above info card */
+    margin-bottom: 1.5rem;
+  }
+}
