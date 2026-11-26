@@ -647,32 +647,6 @@
 /* ================================
     RESPONSIVE BREAKPOINTS
     ================================ */
-@media screen and (max-width: 1024px) {
-  /* Tablet layout: stack sidebar above content */
-  .container {
-    grid-template-columns: 1fr;
-    grid-template-areas: "left" "right";
-  }
-  .left {
-    display: flex; /* keep sidebar but full width */
-    padding: 2rem 0;
-    justify-content: center;
-  }
-  .right {
-    padding: 1.5rem;
-  }
-  .profile-body {
-    grid-template-columns: 1fr; /* single column for form and side */
-  }
-  .avatar-wrap {
-    width: 60px;
-    height: 60px;
-  }
-  .avatar-img {
-    width: 60px;
-    height: 60px;
-  }
-}
 
 @media screen and (max-width: 480px) {
   /* Phone layout: hide sidebar, full‑width content */
